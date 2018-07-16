@@ -1,0 +1,68 @@
+apply plugin: 'com.android.application'
+def extraLibraryFile = new File("${project.projectDir}/extraLibraries.gradle")
+if (extraLibraryFile.exists()) {
+    apply from: "${project.projectDir}/extraLibraries.gradle"
+}
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
+    defaultConfig {
+        applicationId "com.ppcrong.bletoolbox"
+        minSdkVersion 21
+        targetSdkVersion 27
+        versionCode 1807161600
+        versionName "1.0.1807161600"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    signingConfigs {
+        debug {
+            storeFile file("cloudchip.jks")
+            storePassword "cloudchip"
+            keyAlias "cloudchip"
+            keyPassword "cloudchip"
+        }
+        release {
+            storeFile file("cloudchip.jks")
+            storePassword "cloudchip"
+            keyAlias "cloudchip"
+            keyPassword "cloudchip"
+        }
+    }
+    buildTypes {
+        debug {
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+            minifyEnabled false
+            signingConfig signingConfigs.debug
+        }
+        release {
+            buildConfigField "boolean", "LOG_DEBUG", "true"
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    implementation 'com.android.support:design:27.1.1'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    if (extraLibraryFile.exists()) {
+        extraLibrary.each { implementation it }
+    }
+
+    // Butter Knife
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+}

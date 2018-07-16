@@ -1,0 +1,9 @@
+include ':app'
+include ':loglib'
+project(":loglib").projectDir = file("../../libs/loglib")
+include ':rxpermlib'
+project(":rxpermlib").projectDir = file("../../libs/rxpermlib")
+include ':utils'
+project(":utils").projectDir = file("../../libs/utils")
+include ':blescanner'
+project(":blescanner").projectDir = file("../../libs/blescanner")

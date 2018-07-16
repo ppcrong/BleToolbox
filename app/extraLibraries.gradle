@@ -1,0 +1,22 @@
+ext {
+    extraLibrary = [
+            // KLog
+            'com.github.zhaokaiqiang.klog:library:1.6.0',
+            // Butter Knife
+            'com.jakewharton:butterknife:8.8.1',
+            // For size
+            'com.intuit.sdp:sdp-android:1.0.3',
+            // MaterialDialog
+            'com.afollestad.material-dialogs:commons:0.9.6.0',
+            // EventBus
+            'org.greenrobot:eventbus:3.0.0',
+            // For Android-M permission
+            project(':rxpermlib'),
+            // LogLib
+            project(':loglib'),
+            // Utils
+            project(':utils'),
+            // BleScanner
+            project(':blescanner')
+    ]
+}
