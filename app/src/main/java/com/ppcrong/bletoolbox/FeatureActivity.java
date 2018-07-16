@@ -2,6 +2,7 @@ package com.ppcrong.bletoolbox;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -112,6 +113,14 @@ public class FeatureActivity extends AppCompatActivity {
 
             KLog.i("ACCESS_COARSE_LOCATION, WRITE_EXTERNAL_STORAGE granted");
         }, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+    }
+
+    private boolean ensureBLEExists() {
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            Toast.makeText(this, R.string.no_ble, Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
     }
     // endregion [Private Function]
 }
