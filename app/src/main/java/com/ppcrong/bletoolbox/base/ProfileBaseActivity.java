@@ -8,18 +8,25 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.polidea.rxandroidble2.RxBleConnection;
+import com.polidea.rxandroidble2.RxBleDevice;
 import com.ppcrong.blescanner.BleScanner;
 import com.ppcrong.blescanner.ScannerFragment;
+import com.ppcrong.bletoolbox.BleToolboxApp;
 import com.ppcrong.bletoolbox.R;
 import com.socks.library.KLog;
 
 import java.util.UUID;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 
 public abstract class ProfileBaseActivity extends AppCompatActivity implements ScannerFragment.OnDeviceSelectedListener{
 
@@ -32,6 +39,8 @@ public abstract class ProfileBaseActivity extends AppCompatActivity implements S
     // region [Variable]
     private BluetoothDevice mBluetoothDevice;
     private String mDeviceName;
+    private RxBleDevice mBleDevice;
+    private Disposable mConnectionDisposable;
     // endregion [Variable]
 
     // region [Life Cycle]
@@ -53,6 +62,13 @@ public abstract class ProfileBaseActivity extends AppCompatActivity implements S
         setUpView();
         // View is ready to be used
         onViewCreated(savedInstanceState);
+    }
+
+    @Override
+    protected void onDestroy() {
+        discnnectBle();
+        dispose();
+        super.onDestroy();
     }
 
     /**
@@ -220,6 +236,13 @@ public abstract class ProfileBaseActivity extends AppCompatActivity implements S
     protected abstract UUID getFilterUUID();
     // endregion [Protected Function]
 
+    // region [Private Function]
+    private void updateUI() {
+        final boolean connected = isConnected();
+//        connectButton.setText(connected ? R.string.disconnect : R.string.connect);
+    }
+    // endregion [Private Function]
+
     // region [BLE]
     private void ensureBLESupported() {
         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -238,6 +261,23 @@ public abstract class ProfileBaseActivity extends AppCompatActivity implements S
         final Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
     }
+
+    private boolean isConnected() {
+        return mBleDevice != null &&
+                mBleDevice.getConnectionState() == RxBleConnection.RxBleConnectionState.CONNECTED;
+    }
+
+    private void dispose() {
+        mConnectionDisposable = null;
+        updateUI();
+    }
+
+    private void discnnectBle() {
+
+        if (mConnectionDisposable != null) {
+            mConnectionDisposable.dispose();
+        }
+    }
     // endregion [BLE]
 
     // region [Callback]
@@ -245,13 +285,39 @@ public abstract class ProfileBaseActivity extends AppCompatActivity implements S
     public void onDeviceSelected(BluetoothDevice device, String name) {
 
         KLog.i(name + "(" + device.getAddress() + ")");
-        mBluetoothDevice = device;
-        mDeviceName = name;
+        mBleDevice = BleToolboxApp.getRxBleClient(this).getBleDevice(device.getAddress());
+        mBleDevice.observeConnectionStateChanges()
+//                .compose(bindUntilEvent(DESTROY))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::onConnectionStateChange);
+        mConnectionDisposable = mBleDevice.establishConnection(false)
+//                .compose(bindUntilEvent(PAUSE))
+                .observeOn(AndroidSchedulers.mainThread())
+                .doFinally(this::dispose)
+                .subscribe(this::onConnectionReceived, this::onConnectionFailure);
     }
 
     @Override
     public void onDialogCanceled() {
         // Do nothing
+    }
+
+    private void onConnectionStateChange(RxBleConnection.RxBleConnectionState newState) {
+
+        KLog.i(newState.toString());
+    }
+
+    private void onConnectionFailure(Throwable throwable) {
+
+        KLog.i("Connection error: " + throwable);
+        Snackbar.make(findViewById(android.R.id.content), "Connection error: " + throwable, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @SuppressWarnings("unused")
+    private void onConnectionReceived(RxBleConnection connection) {
+
+        KLog.i("Connection received");
+        Snackbar.make(findViewById(android.R.id.content), "Connection received", Snackbar.LENGTH_SHORT).show();
     }
     // endregion [Callback]
 }
