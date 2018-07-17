@@ -4,21 +4,31 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ppcrong.bletoolbox.adapter.FeatureAdapter;
 import com.ppcrong.rxpermlib.RxPermLib;
 import com.socks.library.KLog;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class FeatureActivity extends AppCompatActivity {
+
+    // region [Widget]
+    @BindView(R.id.rv_feature_list)
+    RecyclerView mRvFeatureList;
+    @BindView(R.id.tv_empty)
+    TextView mTvEmpty;
+    // endregion [Widget]
 
     // region [Life Cycle]
     @Override
@@ -113,6 +123,15 @@ public class FeatureActivity extends AppCompatActivity {
 
             KLog.i("ACCESS_COARSE_LOCATION, WRITE_EXTERNAL_STORAGE granted");
         }, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        // Config feature list
+        mRvFeatureList.setLayoutManager(new GridLayoutManager(this, 3));
+        mRvFeatureList.setAdapter(new FeatureAdapter(this));
+        if (mRvFeatureList.getAdapter().getItemCount() == 0) {
+
+            // No profiles found
+            mTvEmpty.setVisibility(View.VISIBLE);
+        }
     }
 
     private boolean ensureBLEExists() {

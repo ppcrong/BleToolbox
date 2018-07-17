@@ -26,20 +26,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.support.annotation.NonNull;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ppcrong.bletoolbox.R;
+import com.socks.library.KLog;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public class FeatureAdapter extends BaseAdapter {
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class FeatureAdapter extends RecyclerView.Adapter<FeatureAdapter.FeatureViewHolder> {
 
     private static final String CATEGORY = "com.ppcrong.bletoolbox.LAUNCHER";
 
@@ -57,41 +62,38 @@ public class FeatureAdapter extends BaseAdapter {
         intent.addCategory(CATEGORY);
 
         final List<ResolveInfo> appList = mApplications = pm.queryIntentActivities(intent, 0);
+//        appList.add(appList.get(0));
+//        appList.add(appList.get(0));
+//        appList.add(appList.get(0));
+//        appList.add(appList.get(0));
+//        appList.add(appList.get(0));
+//        appList.add(appList.get(0));
+//        appList.add(appList.get(0));
+//        appList.add(appList.get(0));
+//        appList.add(appList.get(0));
+//        appList.add(appList.get(0));
+//        appList.add(appList.get(0));
+//        appList.add(appList.get(0));
+//        appList.add(appList.get(0));
+//        appList.add(appList.get(0));
+//        appList.add(appList.get(0));
         Collections.sort(appList, new ResolveInfo.DisplayNameComparator(pm));
     }
 
+    @NonNull
     @Override
-    public int getCount() {
-        return mApplications.size();
+    public FeatureViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View item = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_feature_icon, parent, false);
+        return new FeatureViewHolder(item);
     }
 
     @Override
-    public Object getItem(int position) {
-        return mApplications.get(position);
-    }
-
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
-        if (view == null) {
-            view = mInflater.inflate(R.layout.feature_icon, parent, false);
-
-            final ViewHolder holder = new ViewHolder();
-            holder.view = view;
-            holder.icon = view.findViewById(R.id.icon);
-            holder.label = view.findViewById(R.id.label);
-            view.setTag(holder);
-        }
+    public void onBindViewHolder(@NonNull FeatureViewHolder holder, int position) {
+        KLog.i("position: " + position);
 
         final ResolveInfo info = mApplications.get(position);
         final PackageManager pm = mPackageManager;
 
-        final ViewHolder holder = (ViewHolder) view.getTag();
         holder.icon.setImageDrawable(info.loadIcon(pm));
         holder.label.setText(info.loadLabel(pm).toString().toUpperCase(Locale.US));
         holder.view.setOnClickListener(v -> {
@@ -100,13 +102,25 @@ public class FeatureAdapter extends BaseAdapter {
             intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
             mContext.startActivity(intent);
         });
-
-        return view;
     }
 
-    private class ViewHolder {
-        private View view;
-        private ImageView icon;
-        private TextView label;
+    @Override
+    public int getItemCount() {
+        return mApplications.size();
+    }
+
+    public class FeatureViewHolder extends RecyclerView.ViewHolder {
+        @BindView(R.id.view)
+        View view;
+        @BindView(R.id.icon)
+        ImageView icon;
+        @BindView(R.id.label)
+        TextView label;
+
+        public FeatureViewHolder(View itemView) {
+            super(itemView);
+
+            ButterKnife.bind(this, itemView);
+        }
     }
 }

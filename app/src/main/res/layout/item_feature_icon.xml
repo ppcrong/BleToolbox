@@ -21,26 +21,28 @@
   ~ USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="wrap_content"
-	android:layout_height="wrap_content"
-	android:gravity="center_horizontal"
-	android:orientation="vertical"
-	android:paddingTop="7dp">
+              android:id="@+id/view"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:gravity="center_horizontal"
+              android:orientation="vertical"
+              android:paddingTop="@dimen/_7sdp">
 
-	<ImageView
-		android:id="@+id/icon"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_margin="3dp"
-		android:background="@drawable/ic_feature_bg"
-		android:elevation="3dp"
-		android:stateListAnimator="@animator/click_animator"/>
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="@dimen/_80sdp"
+        android:layout_height="@dimen/_80sdp"
+        android:layout_margin="@dimen/_3sdp"
+        android:background="@drawable/ic_feature_bg"
+        android:elevation="@dimen/_3sdp"
+        android:padding="@dimen/_6sdp"
+        android:stateListAnimator="@animator/click_animator"/>
 
-	<TextView
-		android:id="@+id/label"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:gravity="center"
-		android:textColor="@color/featureTitleColor"/>
+    <TextView
+        android:id="@+id/label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@color/featureTitleColor"/>
 
 </LinearLayout>
