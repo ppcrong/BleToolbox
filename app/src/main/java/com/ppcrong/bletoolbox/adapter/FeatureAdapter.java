@@ -35,6 +35,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ppcrong.bletoolbox.R;
+import com.ppcrong.utils.MiscUtils;
 import com.socks.library.KLog;
 
 import java.util.Collections;
@@ -43,6 +44,7 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class FeatureAdapter extends RecyclerView.Adapter<FeatureAdapter.FeatureViewHolder> {
 
@@ -96,12 +98,6 @@ public class FeatureAdapter extends RecyclerView.Adapter<FeatureAdapter.FeatureV
 
         holder.icon.setImageDrawable(info.loadIcon(pm));
         holder.label.setText(info.loadLabel(pm).toString().toUpperCase(Locale.US));
-        holder.view.setOnClickListener(v -> {
-            final Intent intent = new Intent();
-            intent.setComponent(new ComponentName(info.activityInfo.packageName, info.activityInfo.name));
-            intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            mContext.startActivity(intent);
-        });
     }
 
     @Override
@@ -110,8 +106,6 @@ public class FeatureAdapter extends RecyclerView.Adapter<FeatureAdapter.FeatureV
     }
 
     public class FeatureViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.view)
-        View view;
         @BindView(R.id.icon)
         ImageView icon;
         @BindView(R.id.label)
@@ -121,6 +115,19 @@ public class FeatureAdapter extends RecyclerView.Adapter<FeatureAdapter.FeatureV
             super(itemView);
 
             ButterKnife.bind(this, itemView);
+        }
+
+        @OnClick(R.id.view)
+        public void onClickFeature() {
+
+            // Get feature intent
+            ResolveInfo info = mApplications.get(getAdapterPosition());
+            final Intent intent = new Intent();
+            intent.setComponent(new ComponentName(info.activityInfo.packageName, info.activityInfo.name));
+            intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+
+            // Show feature
+            MiscUtils.startSafeIntent(mContext, intent);
         }
     }
 }

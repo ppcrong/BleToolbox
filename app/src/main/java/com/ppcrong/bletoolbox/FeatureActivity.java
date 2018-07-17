@@ -2,7 +2,6 @@ package com.ppcrong.bletoolbox;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -12,7 +11,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ppcrong.bletoolbox.adapter.FeatureAdapter;
 import com.ppcrong.rxpermlib.RxPermLib;
@@ -75,11 +73,6 @@ public class FeatureActivity extends AppCompatActivity {
         if (requestCode == RxPermLib.SETTINGS_REQ_CODE) {
 
             KLog.d("Back from settings");
-        } else {
-
-            Toast.makeText(this, R.string.bt_not_enabled, Toast.LENGTH_SHORT).show();
-            KLog.d("Finish activity");
-            finish();
         }
     }
 
@@ -132,14 +125,6 @@ public class FeatureActivity extends AppCompatActivity {
             // No profiles found
             mTvEmpty.setVisibility(View.VISIBLE);
         }
-    }
-
-    private boolean ensureBLEExists() {
-        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-            Toast.makeText(this, R.string.no_ble, Toast.LENGTH_LONG).show();
-            return false;
-        }
-        return true;
     }
     // endregion [Private Function]
 }

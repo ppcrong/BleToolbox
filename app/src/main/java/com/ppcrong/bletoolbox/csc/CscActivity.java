@@ -1,15 +1,21 @@
 package com.ppcrong.bletoolbox.csc;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
 import com.ppcrong.bletoolbox.R;
+import com.ppcrong.bletoolbox.base.ProfileBaseActivity;
 
-public class CscActivity extends AppCompatActivity {
+import butterknife.ButterKnife;
+
+public class CscActivity extends ProfileBaseActivity {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreateView(Bundle savedInstanceState) {
+
         setContentView(R.layout.activity_csc);
+
+        // Bind ButterKnife
+        ButterKnife.bind(this);
     }
 }
