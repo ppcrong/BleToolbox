@@ -14,10 +14,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.ppcrong.blescanner.BleScanner;
+import com.ppcrong.blescanner.ScannerFragment;
 import com.ppcrong.bletoolbox.R;
 import com.socks.library.KLog;
 
-public abstract class ProfileBaseActivity extends AppCompatActivity {
+import java.util.UUID;
+
+public abstract class ProfileBaseActivity extends AppCompatActivity implements ScannerFragment.OnDeviceSelectedListener{
 
     // region [Constant]
     protected static final int REQUEST_ENABLE_BT = 2;
@@ -101,8 +105,24 @@ public abstract class ProfileBaseActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_help, menu);
+        getMenuInflater().inflate(R.menu.menu_base, menu);
+
+        // Handle MenuItem
+        handleMenu(menu);
+
         return true;
+    }
+
+    private void handleMenu(Menu menu) {
+
+        boolean isConnected = false;
+        MenuItem item;
+
+        // BT icon
+        item = menu.findItem(R.id.action_ble_scan);
+        int btIcon = isConnected ?
+                R.drawable.ic_menu_bluetooth_connected : R.drawable.ic_menu_bluetooth_white;
+        item.setIcon(btIcon);
     }
 
     /**
@@ -112,7 +132,7 @@ public abstract class ProfileBaseActivity extends AppCompatActivity {
      * @return <code>true</code> if action has been handled
      */
     protected boolean onOptionsItemSelected(final int itemId) {
-        // Overwrite when using menu other than R.menu.menu_help
+        // Overwrite when using menu other than R.menu.menu_base
         return false;
     }
 
@@ -124,12 +144,27 @@ public abstract class ProfileBaseActivity extends AppCompatActivity {
             case android.R.id.home:
                 onBackPressed();
                 break;
+            case R.id.action_ble_scan:
+                scanBle();
+                break;
             case R.id.action_about:
                 break;
             default:
                 return onOptionsItemSelected(id);
         }
         return true;
+    }
+
+    public void scanBle() {
+        if (isBLEEnabled()) {
+
+            // Show scanner
+            BleScanner.showScanner(this, getFilterUUID());
+        } else {
+
+            // Ask user to enable BT
+            showBLEDialog();
+        }
     }
 
     @Override
@@ -163,6 +198,26 @@ public abstract class ProfileBaseActivity extends AppCompatActivity {
     protected void showToast(final int messageResId) {
         runOnUiThread(() -> Toast.makeText(ProfileBaseActivity.this, messageResId, Toast.LENGTH_SHORT).show());
     }
+
+    /**
+     * Returns the name of the device that the phone is currently connected to or was connected last time
+     */
+    protected String getDeviceName() {
+        return mDeviceName;
+    }
+
+    /**
+     * Restores the default UI before reconnecting
+     */
+    protected abstract void setDefaultUI();
+
+    /**
+     * The UUID filter is used to filter out available devices that does not have such UUID in their advertisement packet. See also:
+     * {@link #isChangingConfigurations()}.
+     *
+     * @return the required UUID or <code>null</code>
+     */
+    protected abstract UUID getFilterUUID();
     // endregion [Protected Function]
 
     // region [BLE]
@@ -184,4 +239,19 @@ public abstract class ProfileBaseActivity extends AppCompatActivity {
         startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
     }
     // endregion [BLE]
+
+    // region [Callback]
+    @Override
+    public void onDeviceSelected(BluetoothDevice device, String name) {
+
+        KLog.i(name + "(" + device.getAddress() + ")");
+        mBluetoothDevice = device;
+        mDeviceName = name;
+    }
+
+    @Override
+    public void onDialogCanceled() {
+        // Do nothing
+    }
+    // endregion [Callback]
 }
