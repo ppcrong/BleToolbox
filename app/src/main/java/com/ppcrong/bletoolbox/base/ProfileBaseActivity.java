@@ -9,10 +9,10 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.polidea.rxandroidble2.RxBleConnection;
@@ -26,11 +26,11 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import java.util.UUID;
 
+import butterknife.BindView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
 import static com.trello.rxlifecycle2.android.ActivityEvent.DESTROY;
-import static com.trello.rxlifecycle2.android.ActivityEvent.PAUSE;
 
 public abstract class ProfileBaseActivity extends RxAppCompatActivity implements ScannerFragment.OnDeviceSelectedListener{
 
@@ -46,6 +46,15 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     private RxBleDevice mBleDevice;
     private Disposable mConnectionDisposable;
     // endregion [Variable]
+
+    // region [Widget]
+    @BindView(R.id.tv_rx_ble_connection_state)
+    TextView mTvRxBleConnectionState;
+    @BindView(R.id.tv_ble_device)
+    TextView mTvBleDevice;
+    @BindView(R.id.tv_battery)
+    TextView mTvBattery;
+    // endregion [Widget]
 
     // region [Life Cycle]
     @Override
@@ -226,7 +235,11 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     /**
      * Restores the default UI before reconnecting
      */
-    protected abstract void setDefaultUI();
+    protected void setDefaultUI() {
+        mTvRxBleConnectionState.setText(R.string.not_available_value);
+        mTvBleDevice.setText(R.string.not_available_value);
+        mTvBattery.setText(R.string.not_available_value);
+    }
 
     /**
      * The UUID filter is used to filter out available devices that does not have such UUID in their advertisement packet. See also:
@@ -235,6 +248,16 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
      * @return the required UUID or <code>null</code>
      */
     protected abstract UUID getFilterUUID();
+
+    protected void showSnackbar(final String message) {
+
+        runOnUiThread(() -> Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show());
+    }
+
+    protected void showSnackbar(final int messageResId) {
+
+        runOnUiThread(() -> Snackbar.make(findViewById(android.R.id.content), messageResId, Snackbar.LENGTH_SHORT).show());
+    }
     // endregion [Protected Function]
 
     // region [Private Function]
@@ -287,6 +310,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
         KLog.i(name + "(" + device.getAddress() + ")");
         mBleDevice = BleToolboxApp.getRxBleClient(this).getBleDevice(device.getAddress());
+        setDefaultUI();
 
         // Subscribe ConnectionStateChanges
         mBleDevice.observeConnectionStateChanges()
@@ -296,7 +320,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
         // Connect to BLE device
         mConnectionDisposable = mBleDevice.establishConnection(false)
-                .compose(bindUntilEvent(PAUSE))
+                .compose(bindUntilEvent(DESTROY))
                 .observeOn(AndroidSchedulers.mainThread())
                 .doFinally(this::dispose)
                 .subscribe(this::onConnectionReceived, this::onConnectionFailure);
@@ -310,20 +334,23 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     private void onConnectionStateChange(RxBleConnection.RxBleConnectionState newState) {
 
         KLog.i(newState.toString());
+        mTvRxBleConnectionState.setText(newState.toString());
         updateUI();
     }
 
     private void onConnectionFailure(Throwable throwable) {
 
         KLog.i("Connection error: " + throwable);
-        Snackbar.make(findViewById(android.R.id.content), "Connection error: " + throwable, Snackbar.LENGTH_SHORT).show();
+        mTvRxBleConnectionState.setText("Connection error: " + throwable);
+        showSnackbar("Connection error: " + throwable);
     }
 
     @SuppressWarnings("unused")
     private void onConnectionReceived(RxBleConnection connection) {
 
         KLog.i("Connection received");
-        Snackbar.make(findViewById(android.R.id.content), "Connection received", Snackbar.LENGTH_SHORT).show();
+        showSnackbar("Connection received");
+        mTvBleDevice.setText(mBleDevice.getName() + "(" + mBleDevice.getMacAddress() + ")");
 
         // Refresh BT icon
         supportInvalidateOptionsMenu();

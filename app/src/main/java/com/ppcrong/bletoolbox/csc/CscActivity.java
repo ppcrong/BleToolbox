@@ -22,11 +22,6 @@ public class CscActivity extends ProfileBaseActivity {
     }
 
     @Override
-    protected void setDefaultUI() {
-
-    }
-
-    @Override
     protected UUID getFilterUUID() {
         return CscManager.CYCLING_SPEED_AND_CADENCE_SERVICE_UUID;
     }

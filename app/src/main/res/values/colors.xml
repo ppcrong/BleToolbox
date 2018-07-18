@@ -5,4 +5,6 @@
     <color name="colorAccent">#FF4081</color>
     <color name="featureTitleColor">#939597</color>
     <color name="bleConnected">#005FFF</color>
+    <color name="yellow">#FFFF00</color>
+    <color name="accent">#5d8e24</color>
 </resources>
