@@ -2,6 +2,7 @@ package com.ppcrong.bletoolbox.base;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
@@ -25,14 +26,16 @@ import com.socks.library.KLog;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import butterknife.BindView;
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
+import io.reactivex.subjects.PublishSubject;
 
 import static com.trello.rxlifecycle2.android.ActivityEvent.DESTROY;
 
-public abstract class ProfileBaseActivity extends RxAppCompatActivity implements ScannerFragment.OnDeviceSelectedListener{
+public abstract class ProfileBaseActivity extends RxAppCompatActivity implements ScannerFragment.OnDeviceSelectedListener {
 
     // region [Constant]
     protected static final int REQUEST_ENABLE_BT = 2;
@@ -44,7 +47,9 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     private BluetoothDevice mBluetoothDevice;
     private String mDeviceName;
     private RxBleDevice mBleDevice;
-    private Disposable mConnectionDisposable;
+    private Observable<RxBleConnection> mConnectionObservable;
+    private PublishSubject<Boolean> disconnectTriggerSubject = PublishSubject.create();
+    CopyOnWriteArrayList<RxBleDevice> mSelectedDevices = new CopyOnWriteArrayList<>();
     // endregion [Variable]
 
     // region [Widget]
@@ -168,7 +173,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
                 break;
             case R.id.action_ble_scan:
                 if (isConnected()) {
-                    disconnectBle();
+                    triggerDisconnect();
                 } else {
                     scanBle();
                 }
@@ -207,6 +212,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     // endregion [Life Cycle]
 
     // region [Protected Function]
+
     /**
      * Shows a message as a Toast notification. This method is thread safe, you can call it from any thread
      *
@@ -291,16 +297,18 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
                 mBleDevice.getConnectionState() == RxBleConnection.RxBleConnectionState.CONNECTED;
     }
 
-    private void dispose() {
-        mConnectionDisposable = null;
+    private void triggerDisconnect() {
+
+        disconnectTriggerSubject.onNext(true);
         updateUI();
     }
 
-    private void disconnectBle() {
-
-        if (mConnectionDisposable != null) {
-            mConnectionDisposable.dispose();
-        }
+    private Observable<RxBleConnection> prepareConnectionObservable() {
+        return mBleDevice
+                .establishConnection(false)
+                .takeUntil(disconnectTriggerSubject)
+                .compose(bindUntilEvent(DESTROY));
+//                .compose(ReplayingShare.instance());
     }
     // endregion [BLE]
 
@@ -309,20 +317,28 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     public void onDeviceSelected(BluetoothDevice device, String name) {
 
         KLog.i(name + "(" + device.getAddress() + ")");
-        mBleDevice = BleToolboxApp.getRxBleClient(this).getBleDevice(device.getAddress());
         setDefaultUI();
 
-        // Subscribe ConnectionStateChanges
-        mBleDevice.observeConnectionStateChanges()
-                .compose(bindUntilEvent(DESTROY))
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::onConnectionStateChange);
+        mBleDevice = BleToolboxApp.getRxBleClient(this).getBleDevice(device.getAddress());
+        if (mSelectedDevices.contains(mBleDevice)) {
+
+            KLog.i("The device is selected before, skip subscribe observeConnectionStateChanges");
+        } else {
+
+            // Not connect before, add into list
+            mSelectedDevices.add(mBleDevice);
+
+            // Subscribe ConnectionStateChanges
+            mBleDevice.observeConnectionStateChanges()
+                    .compose(bindUntilEvent(DESTROY))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::onConnectionStateChange);
+        }
 
         // Connect to BLE device
-        mConnectionDisposable = mBleDevice.establishConnection(false)
-                .compose(bindUntilEvent(DESTROY))
+        mConnectionObservable = prepareConnectionObservable();
+        mConnectionObservable
                 .observeOn(AndroidSchedulers.mainThread())
-                .doFinally(this::dispose)
                 .subscribe(this::onConnectionReceived, this::onConnectionFailure);
     }
 
@@ -355,5 +371,10 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         // Refresh BT icon
         supportInvalidateOptionsMenu();
     }
+
+    private void onCccGet(BluetoothGattCharacteristic ccc) {
+        KLog.i(ccc.getUuid() + " get");
+    }
+
     // endregion [Callback]
 }
