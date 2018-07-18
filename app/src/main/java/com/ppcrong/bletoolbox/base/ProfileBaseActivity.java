@@ -22,13 +22,17 @@ import com.ppcrong.blescanner.ScannerFragment;
 import com.ppcrong.bletoolbox.BleToolboxApp;
 import com.ppcrong.bletoolbox.R;
 import com.socks.library.KLog;
+import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
 import java.util.UUID;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
-public abstract class ProfileBaseActivity extends AppCompatActivity implements ScannerFragment.OnDeviceSelectedListener{
+import static com.trello.rxlifecycle2.android.ActivityEvent.DESTROY;
+import static com.trello.rxlifecycle2.android.ActivityEvent.PAUSE;
+
+public abstract class ProfileBaseActivity extends RxAppCompatActivity implements ScannerFragment.OnDeviceSelectedListener{
 
     // region [Constant]
     protected static final int REQUEST_ENABLE_BT = 2;
@@ -62,13 +66,6 @@ public abstract class ProfileBaseActivity extends AppCompatActivity implements S
         setUpView();
         // View is ready to be used
         onViewCreated(savedInstanceState);
-    }
-
-    @Override
-    protected void onDestroy() {
-        discnnectBle();
-        dispose();
-        super.onDestroy();
     }
 
     /**
@@ -131,7 +128,7 @@ public abstract class ProfileBaseActivity extends AppCompatActivity implements S
 
     private void handleMenu(Menu menu) {
 
-        boolean isConnected = false;
+        boolean isConnected = isConnected();
         MenuItem item;
 
         // BT icon
@@ -161,7 +158,11 @@ public abstract class ProfileBaseActivity extends AppCompatActivity implements S
                 onBackPressed();
                 break;
             case R.id.action_ble_scan:
-                scanBle();
+                if (isConnected()) {
+                    disconnectBle();
+                } else {
+                    scanBle();
+                }
                 break;
             case R.id.action_about:
                 break;
@@ -238,8 +239,8 @@ public abstract class ProfileBaseActivity extends AppCompatActivity implements S
 
     // region [Private Function]
     private void updateUI() {
-        final boolean connected = isConnected();
-//        connectButton.setText(connected ? R.string.disconnect : R.string.connect);
+        // Refresh BT icon
+        supportInvalidateOptionsMenu();
     }
     // endregion [Private Function]
 
@@ -262,7 +263,7 @@ public abstract class ProfileBaseActivity extends AppCompatActivity implements S
         startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
     }
 
-    private boolean isConnected() {
+    protected boolean isConnected() {
         return mBleDevice != null &&
                 mBleDevice.getConnectionState() == RxBleConnection.RxBleConnectionState.CONNECTED;
     }
@@ -272,7 +273,7 @@ public abstract class ProfileBaseActivity extends AppCompatActivity implements S
         updateUI();
     }
 
-    private void discnnectBle() {
+    private void disconnectBle() {
 
         if (mConnectionDisposable != null) {
             mConnectionDisposable.dispose();
@@ -286,12 +287,16 @@ public abstract class ProfileBaseActivity extends AppCompatActivity implements S
 
         KLog.i(name + "(" + device.getAddress() + ")");
         mBleDevice = BleToolboxApp.getRxBleClient(this).getBleDevice(device.getAddress());
+
+        // Subscribe ConnectionStateChanges
         mBleDevice.observeConnectionStateChanges()
-//                .compose(bindUntilEvent(DESTROY))
+                .compose(bindUntilEvent(DESTROY))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onConnectionStateChange);
+
+        // Connect to BLE device
         mConnectionDisposable = mBleDevice.establishConnection(false)
-//                .compose(bindUntilEvent(PAUSE))
+                .compose(bindUntilEvent(PAUSE))
                 .observeOn(AndroidSchedulers.mainThread())
                 .doFinally(this::dispose)
                 .subscribe(this::onConnectionReceived, this::onConnectionFailure);
@@ -305,6 +310,7 @@ public abstract class ProfileBaseActivity extends AppCompatActivity implements S
     private void onConnectionStateChange(RxBleConnection.RxBleConnectionState newState) {
 
         KLog.i(newState.toString());
+        updateUI();
     }
 
     private void onConnectionFailure(Throwable throwable) {
@@ -318,6 +324,9 @@ public abstract class ProfileBaseActivity extends AppCompatActivity implements S
 
         KLog.i("Connection received");
         Snackbar.make(findViewById(android.R.id.content), "Connection received", Snackbar.LENGTH_SHORT).show();
+
+        // Refresh BT icon
+        supportInvalidateOptionsMenu();
     }
     // endregion [Callback]
 }
