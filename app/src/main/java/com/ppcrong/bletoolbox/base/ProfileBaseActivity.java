@@ -375,11 +375,14 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         mTvBleDevice.setText(mBleDevice.getName() + "(" + mBleDevice.getMacAddress() + ")");
 
         // When connected, discover services
-        connection.discoverServices()
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(disposable -> mTvRxBleConnectionState.append(" discovering services"))
-                .subscribe(services -> onSvcDiscovered(connection, services),
-                        this::onConnectionFailure);
+        if (isConnected()) {
+
+            connection.discoverServices()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe(disposable -> mTvRxBleConnectionState.append(" discovering services"))
+                    .subscribe(services -> onSvcDiscovered(connection, services),
+                            this::onConnectionFailure);
+        }
 
         // Refresh BT icon
         supportInvalidateOptionsMenu();
@@ -411,13 +414,17 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 //                        this::onConnectionFailure
 //                );
 
-        services.getCharacteristic(CscManager.CSC_MEASUREMENT_CHARACTERISTIC_UUID)
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnSubscribe(disposable -> KLog.i(""))
-                .subscribe(
-                        ccc -> onCccGet(connection, ccc),
-                        this::onConnectionFailure
-                );
+        // Get CSC ccc
+        if (isConnected()) {
+
+            services.getCharacteristic(CscManager.CSC_MEASUREMENT_CHARACTERISTIC_UUID)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnSubscribe(disposable -> KLog.i(""))
+                    .subscribe(
+                            ccc -> onCccGet(connection, ccc),
+                            this::onConnectionFailure
+                    );
+        }
     }
 
 //    private void onCccsGet(Cccs cccs) {
