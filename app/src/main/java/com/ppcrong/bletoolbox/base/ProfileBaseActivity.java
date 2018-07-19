@@ -86,7 +86,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
      * You may do some initialization here. This method is called from {@link #onCreate(Bundle)} before the view was created.
      */
     protected void onInitialize(final Bundle savedInstanceState) {
-        // empty default implementation
+        mSelectedDevices.clear();
     }
 
     /**
