@@ -3,6 +3,7 @@ package com.ppcrong.bletoolbox.base;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGattCharacteristic;
+import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -18,13 +20,17 @@ import android.widget.Toast;
 
 import com.polidea.rxandroidble2.RxBleConnection;
 import com.polidea.rxandroidble2.RxBleDevice;
+import com.polidea.rxandroidble2.RxBleDeviceServices;
 import com.ppcrong.blescanner.BleScanner;
 import com.ppcrong.blescanner.ScannerFragment;
 import com.ppcrong.bletoolbox.BleToolboxApp;
 import com.ppcrong.bletoolbox.R;
+import com.ppcrong.bletoolbox.csc.CscManager;
 import com.socks.library.KLog;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -368,13 +374,93 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         showSnackbar("Connection received");
         mTvBleDevice.setText(mBleDevice.getName() + "(" + mBleDevice.getMacAddress() + ")");
 
+        // When connected, discover services
+        connection.discoverServices()
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(disposable -> mTvRxBleConnectionState.append(" discovering services"))
+                .subscribe(services -> onSvcDiscovered(connection, services),
+                        this::onConnectionFailure);
+
         // Refresh BT icon
         supportInvalidateOptionsMenu();
     }
 
-    private void onCccGet(BluetoothGattCharacteristic ccc) {
-        KLog.i(ccc.getUuid() + " get");
+//    class Cccs {
+//
+//        public BluetoothGattCharacteristic Ccc1;
+//        public BluetoothGattCharacteristic Ccc2;
+//
+//        public Cccs(BluetoothGattCharacteristic ccc1, BluetoothGattCharacteristic ccc2) {
+//            Ccc1 = ccc1;
+//            Ccc2 = ccc2;
+//        }
+//    }
+
+    private void onSvcDiscovered(RxBleConnection connection, RxBleDeviceServices services) {
+
+        // When svc discovered, get related ccc and battery ccc
+//        mConnectionObservable
+//                .flatMapSingle(rxBleConnection -> Single.zip(
+//                        services.getCharacteristic(CscManager.CSC_MEASUREMENT_CHARACTERISTIC_UUID),
+//                        services.getCharacteristic(BleBatteryManager.BATTERY_LEVEL_CHARACTERISTIC),
+//                        Cccs::new
+//                ))
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(
+//                        this::onCccsGet,
+//                        this::onConnectionFailure
+//                );
+
+        services.getCharacteristic(CscManager.CSC_MEASUREMENT_CHARACTERISTIC_UUID)
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(disposable -> KLog.i(""))
+                .subscribe(
+                        ccc -> onCccGet(connection, ccc),
+                        this::onConnectionFailure
+                );
     }
 
+//    private void onCccsGet(Cccs cccs) {
+//        KLog.i(cccs.Ccc1.getUuid());
+//        KLog.i(cccs.Ccc2.getUuid());
+//    }
+
+    private void onCccGet(RxBleConnection connection, BluetoothGattCharacteristic ccc) {
+        KLog.i("GET===" + ccc.getUuid() + "===");
+    }
+
+    private String describeProperties(BluetoothGattCharacteristic characteristic) {
+        List<String> properties = new ArrayList<>();
+        if (isCccReadable(characteristic)) properties.add("Read");
+        if (isCccWritable(characteristic)) properties.add("Write");
+        if (isCccNotifiable(characteristic)) properties.add("Notify");
+        if (isCccIndicatable(characteristic)) properties.add("Indicate");
+        return TextUtils.join(" ", properties);
+    }
+
+    private String getServiceType(BluetoothGattService service) {
+        return service.getType() == BluetoothGattService.SERVICE_TYPE_PRIMARY ? "primary" : "secondary";
+    }
+
+    private boolean isCccNotifiable(BluetoothGattCharacteristic characteristic) {
+        return hasProperty(characteristic, BluetoothGattCharacteristic.PROPERTY_NOTIFY);
+    }
+
+    private boolean isCccIndicatable(BluetoothGattCharacteristic characteristic) {
+        return hasProperty(characteristic, BluetoothGattCharacteristic.PROPERTY_INDICATE);
+    }
+
+    private boolean isCccReadable(BluetoothGattCharacteristic characteristic) {
+        return hasProperty(characteristic, BluetoothGattCharacteristic.PROPERTY_READ);
+    }
+
+    private boolean isCccWritable(BluetoothGattCharacteristic characteristic) {
+        return (hasProperty(characteristic, BluetoothGattCharacteristic.PROPERTY_WRITE
+                | BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE));
+    }
+
+    private boolean hasProperty(BluetoothGattCharacteristic characteristic, int property) {
+        return characteristic != null && (characteristic.getProperties() & property) > 0;
+    }
     // endregion [Callback]
 }
