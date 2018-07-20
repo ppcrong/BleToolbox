@@ -21,11 +21,13 @@ import android.widget.Toast;
 import com.polidea.rxandroidble2.RxBleConnection;
 import com.polidea.rxandroidble2.RxBleDevice;
 import com.polidea.rxandroidble2.RxBleDeviceServices;
+import com.polidea.rxandroidble2.helpers.ValueInterpreter;
 import com.ppcrong.blescanner.BleScanner;
 import com.ppcrong.blescanner.ScannerFragment;
 import com.ppcrong.bletoolbox.BleToolboxApp;
 import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.battery.BleBatteryManager;
+import com.ppcrong.utils.MiscUtils;
 import com.socks.library.KLog;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 
@@ -451,8 +453,10 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
             connection.discoverServices()
                     .observeOn(AndroidSchedulers.mainThread())
                     .doOnSubscribe(disposable -> mTvRxBleConnectionState.append(" discovering services"))
-                    .subscribe(services -> onSvcDiscovered(connection, services),
-                            this::onConnectionFailure);
+                    .subscribe(
+                            services -> onSvcDiscovered(connection, services),
+                            this::onConnectionFailure
+                    );
         }
 
         // Refresh BT icon
@@ -486,7 +490,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
                     MustCccs::new)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(
-                            this::onMustCccsGet,
+                            mustCccs -> onMustCccsGet(connection, mustCccs),
                             this::onConnectionFailure
                     );
         }
@@ -494,11 +498,33 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
     /**
      * When MUST filter CCC and battery CCC are GET!!!
+     *
      * @param mustCccs
      */
-    private void onMustCccsGet(MustCccs mustCccs) {
+    private void onMustCccsGet(RxBleConnection connection, MustCccs mustCccs) {
         KLog.i("GET===" + mustCccs.FilterCcc.getUuid() + "===");
         KLog.i("GET===" + mustCccs.BatteryCcc.getUuid() + "===");
+
+        // Read battery percentage
+        if (isConnected()) {
+
+            connection.readCharacteristic(BleBatteryManager.BATTERY_LEVEL_CHARACTERISTIC)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(bytes -> {
+                        String rawData = MiscUtils.getByteToHexString(bytes, ":", true); // Print raw data for debug
+                        KLog.i(rawData);
+                        int percent = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_UINT8, 0);
+                        KLog.i("Battery: " + percent + "%");
+                        mTvBattery.setText("" + percent);
+                    }, this::onReadFailure);
+        }
+    }
+
+    private void onReadFailure(Throwable throwable) {
+
+        KLog.i("Read CCC error: " + throwable);
+        mTvRxBleConnectionState.setText("Read CCC error: " + throwable);
+        showSnackbar("Read CCC error: " + throwable);
     }
     // endregion [Callback]
 }
