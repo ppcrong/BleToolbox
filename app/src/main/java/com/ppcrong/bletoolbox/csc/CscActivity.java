@@ -22,7 +22,12 @@ public class CscActivity extends ProfileBaseActivity {
     }
 
     @Override
-    protected UUID getFilterUUID() {
+    protected UUID getFilterSvcUUID() {
         return CscManager.CYCLING_SPEED_AND_CADENCE_SERVICE_UUID;
+    }
+
+    @Override
+    protected UUID getFilterCccUUID() {
+        return CscManager.CSC_MEASUREMENT_CHARACTERISTIC_UUID;
     }
 }
