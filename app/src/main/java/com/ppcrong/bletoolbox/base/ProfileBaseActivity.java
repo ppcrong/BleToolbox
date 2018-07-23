@@ -96,29 +96,30 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         // View is ready to be used
         onViewCreated(savedInstanceState);
 
-        Observable.create(new ObservableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
-                emitter.onNext(1);
-                emitter.onNext(2);
-                emitter.onNext(3);
-            }
-        }).flatMap(new Function<Integer, ObservableSource<String>>() {
-            @Override
-            public ObservableSource<String> apply(Integer integer) throws Exception {
-//                final List<String> list = new ArrayList<>();
-//                for (int i = 0; i < 4; i++) {
-//                    list.add("I am value " + integer);
-//                }
-//                return Observable.fromIterable(list).delay(10, TimeUnit.MILLISECONDS);
-                return Observable.just("I am value " + integer);
-            }
-        }).subscribe(new Consumer<String>() {
-            @Override
-            public void accept(String s) throws Exception {
-                KLog.d(s);
-            }
-        });
+        // Test code
+//        Observable.create(new ObservableOnSubscribe<Integer>() {
+//            @Override
+//            public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
+//                emitter.onNext(1);
+//                emitter.onNext(2);
+//                emitter.onNext(3);
+//            }
+//        }).flatMap(new Function<Integer, ObservableSource<String>>() {
+//            @Override
+//            public ObservableSource<String> apply(Integer integer) throws Exception {
+////                final List<String> list = new ArrayList<>();
+////                for (int i = 0; i < 4; i++) {
+////                    list.add("I am value " + integer);
+////                }
+////                return Observable.fromIterable(list).delay(10, TimeUnit.MILLISECONDS);
+//                return Observable.just("I am value " + integer);
+//            }
+//        }).subscribe(new Consumer<String>() {
+//            @Override
+//            public void accept(String s) throws Exception {
+//                KLog.d(s);
+//            }
+//        });
     }
 
     /**
@@ -399,11 +400,13 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         KLog.i(name + "(" + device.getAddress() + ")");
         setDefaultUI();
 
-        mBleDevice = BleToolboxApp.getRxBleClient(this).getBleDevice(device.getAddress());
-        if (mSelectedDevices.contains(mBleDevice)) {
+        RxBleDevice bleDevice = BleToolboxApp.getRxBleClient(this).getBleDevice(device.getAddress());
+        if (mSelectedDevices.contains(bleDevice)) {
 
             KLog.i("The device is selected before, skip subscribe observeConnectionStateChanges");
         } else {
+
+            mBleDevice = bleDevice;
 
             // Not connect before, add into list
             mSelectedDevices.add(mBleDevice);
