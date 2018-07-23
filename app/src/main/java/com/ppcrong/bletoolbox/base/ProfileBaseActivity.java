@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jakewharton.rx.ReplayingShare;
 import com.polidea.rxandroidble2.RxBleConnection;
 import com.polidea.rxandroidble2.RxBleDevice;
 import com.polidea.rxandroidble2.RxBleDeviceServices;
@@ -352,8 +353,8 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         return mBleDevice
                 .establishConnection(false)
                 .takeUntil(disconnectTriggerSubject)
-                .compose(bindUntilEvent(DESTROY));
-//                .compose(ReplayingShare.instance());
+                .compose(bindUntilEvent(DESTROY))
+                .compose(ReplayingShare.instance());
     }
 
     private String describeProperties(BluetoothGattCharacteristic characteristic) {
@@ -412,10 +413,12 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
                     .compose(bindUntilEvent(DESTROY))
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this::onConnectionStateChange);
+
+            // Prepare observable
+            mConnectionObservable = prepareConnectionObservable();
         }
 
         // Connect to BLE device
-        mConnectionObservable = prepareConnectionObservable();
         mConnectionObservable
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::onConnectionReceived, this::onConnectionFailure);
@@ -450,13 +453,11 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         // When connected, discover services
         if (isConnected()) {
 
-            connection.discoverServices()
+            mConnectionObservable
+                    .flatMapSingle(RxBleConnection::discoverServices)
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe(disposable -> mTvRxBleConnectionState.append(" discovering services"))
-                    .subscribe(
-                            services -> onSvcDiscovered(connection, services),
-                            this::onConnectionFailure
-                    );
+                    .doOnSubscribe(disposable -> runOnUiThread(() -> showSnackbar("discovering services")))
+                    .subscribe(this::onSvcDiscovered, this::onConnectionFailure);
         }
 
         // Refresh BT icon
@@ -481,18 +482,18 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         }
     }
 
-    private void onSvcDiscovered(RxBleConnection connection, RxBleDeviceServices services) {
+    private void onSvcDiscovered(RxBleDeviceServices services) {
 
         // When svc discovered, get filter ccc and battery ccc
         if (isConnected()) {
-            Single.zip(services.getCharacteristic(getFilterCccUUID()),
-                    services.getCharacteristic(BleBatteryManager.BATTERY_LEVEL_CHARACTERISTIC),
-                    MustCccs::new)
+            mConnectionObservable
+                    .firstOrError()
+                    .flatMap(rxBleConnection -> Single.zip(
+                            services.getCharacteristic(getFilterCccUUID()),
+                            services.getCharacteristic(BleBatteryManager.BATTERY_LEVEL_CHARACTERISTIC),
+                            MustCccs::new))
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                            mustCccs -> onMustCccsGet(connection, mustCccs),
-                            this::onConnectionFailure
-                    );
+                    .subscribe(this::onMustCccsGet, this::onConnectionFailure);
         }
     }
 
@@ -501,22 +502,40 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
      *
      * @param mustCccs
      */
-    private void onMustCccsGet(RxBleConnection connection, MustCccs mustCccs) {
+    private void onMustCccsGet(MustCccs mustCccs) {
         KLog.i("GET===" + mustCccs.FilterCcc.getUuid() + "===");
         KLog.i("GET===" + mustCccs.BatteryCcc.getUuid() + "===");
 
         // Read battery percentage
         if (isConnected()) {
 
-            connection.readCharacteristic(BleBatteryManager.BATTERY_LEVEL_CHARACTERISTIC)
+            mConnectionObservable
+                    .firstOrError()
+                    .flatMap(rxBleConnection ->
+                            rxBleConnection.readCharacteristic(BleBatteryManager.BATTERY_LEVEL_CHARACTERISTIC))
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(bytes -> {
-                        String rawData = MiscUtils.getByteToHexString(bytes, ":", true); // Print raw data for debug
-                        KLog.i(rawData);
-                        int percent = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_UINT8, 0);
-                        KLog.i("Battery: " + percent + "%");
-                        mTvBattery.setText("" + percent);
-                    }, this::onReadFailure);
+                    .subscribe(this::onBatteryRead, this::onReadFailure);
+        }
+    }
+
+    private void onBatteryRead(byte[] bytes) {
+
+        String rawData = MiscUtils.getByteToHexString(bytes, ":", true); // Print raw data for debug
+        KLog.i(rawData);
+        int percent = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_UINT8, 0);
+        KLog.i("Battery: " + percent + "%");
+        mTvBattery.setText("" + percent);
+
+        // Battery read ok, then enable notify of battery and selected ccc
+        if (isConnected()) {
+
+            mConnectionObservable
+                    .flatMap(rxBleConnection ->
+                            rxBleConnection.setupNotification(BleBatteryManager.BATTERY_LEVEL_CHARACTERISTIC))
+                    .doOnNext(notificationObservable -> runOnUiThread(() -> showSnackbar("Battery notify is setup")))
+                    .flatMap(notificationObservable -> notificationObservable)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::onBatteryNotificationReceived, this::onBatteryNotificationSetupFailure);
         }
     }
 
@@ -525,6 +544,17 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         KLog.i("Read CCC error: " + throwable);
         mTvRxBleConnectionState.setText("Read CCC error: " + throwable);
         showSnackbar("Read CCC error: " + throwable);
+    }
+
+    private void onBatteryNotificationReceived(byte[] bytes) {
+
+    }
+
+    private void onBatteryNotificationSetupFailure(Throwable throwable) {
+
+        KLog.i("Setup battery notify error: " + throwable);
+        mTvRxBleConnectionState.setText("Setup battery notify error: " + throwable);
+        showSnackbar("Setup battery notify error: " + throwable);
     }
     // endregion [Callback]
 }

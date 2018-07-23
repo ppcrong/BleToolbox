@@ -17,6 +17,8 @@ ext {
             // rxlifecycle
             'com.trello.rxlifecycle2:rxlifecycle:2.2.1',
             'com.trello.rxlifecycle2:rxlifecycle-components:2.2.1',
+            // rxreplayingshare
+            'com.jakewharton.rx2:replaying-share:2.0.1',
             // For Android-M permission
             project(':rxpermlib'),
             // LogLib
