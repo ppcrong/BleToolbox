@@ -523,11 +523,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
     private void onBatteryRead(byte[] bytes) {
 
-        String rawData = MiscUtils.getByteToHexString(bytes, ":", true); // Print raw data for debug
-        KLog.i(rawData);
-        int percent = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_UINT8, 0);
-        KLog.i("Battery: " + percent + "%");
-        mTvBattery.setText("" + percent);
+        onBatteryChanged(bytes);
 
         // Battery read ok, then enable notify of battery and selected ccc
         if (isConnected()) {
@@ -542,6 +538,15 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         }
     }
 
+    protected void onBatteryChanged(byte[] bytes) {
+
+        String rawData = MiscUtils.getByteToHexString(bytes, ":", true); // Print raw data for debug
+        KLog.i(rawData);
+        int percent = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_UINT8, 0);
+        KLog.i("Battery: " + percent + "%");
+        mTvBattery.setText("" + percent);
+    }
+
     private void onReadFailure(Throwable throwable) {
 
         KLog.i("Read CCC error: " + throwable);
@@ -551,6 +556,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
     private void onBatteryNotificationReceived(byte[] bytes) {
 
+        onBatteryChanged(bytes);
     }
 
     private void onBatteryNotificationSetupFailure(Throwable throwable) {
