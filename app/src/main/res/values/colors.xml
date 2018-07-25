@@ -7,4 +7,5 @@
     <color name="bleConnected">#005FFF</color>
     <color name="yellow">#FFFF00</color>
     <color name="accent">#5d8e24</color>
+    <color name="tableBackground">#E6E7E8</color>
 </resources>

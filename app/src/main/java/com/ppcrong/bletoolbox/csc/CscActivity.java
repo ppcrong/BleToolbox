@@ -16,6 +16,16 @@ import static com.ppcrong.bletoolbox.csc.CscManager.WHEEL_REVOLUTIONS_DATA_PRESE
 
 public class CscActivity extends ProfileBaseActivity {
 
+    // region [Variable]
+    private int mFirstWheelRevolutions = -1;
+    private int mLastWheelRevolutions = -1;
+    private int mLastWheelEventTime = -1;
+    private float mWheelCadence = -1;
+    private int mLastCrankRevolutions = -1;
+    private int mLastCrankEventTime = -1;
+    // endregion [Variable]
+
+    // region [Override Function]
     @Override
     protected void onCreateView(Bundle savedInstanceState) {
 
@@ -48,9 +58,9 @@ public class CscActivity extends ProfileBaseActivity {
             offset += 4;
 
             final int lastWheelEventTime = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_UINT16, offset); // 1/1024 s
-            offset += 2;
 
             KLog.i("wheelRevolutions: " + wheelRevolutions + ", lastWheelEventTime: " + lastWheelEventTime);
+            onWheelMeasurementReceived(wheelRevolutions, lastWheelEventTime);
         }
 
         if (crankRevPreset) {
@@ -58,9 +68,9 @@ public class CscActivity extends ProfileBaseActivity {
             offset += 2;
 
             final int lastCrankEventTime = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_UINT16, offset);
-            // offset += 2;
 
             KLog.i("crankRevolutions: " + crankRevolutions + ", lastCrankEventTime: " + lastCrankEventTime);
+            onCrankMeasurementReceived(crankRevolutions, lastCrankEventTime);
         }
     }
 
@@ -73,4 +83,56 @@ public class CscActivity extends ProfileBaseActivity {
     protected UUID getFilterCccUUID() {
         return CscManager.CSC_MEASUREMENT_CHARACTERISTIC_UUID;
     }
+    // endregion [Override Function]
+
+    // region [Private Function]
+    public void onWheelMeasurementReceived(final int wheelRevolutions, final int lastWheelEventTime) {
+
+//        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+//        final int circumference = Integer.parseInt(preferences.getString(SettingsFragment.SETTINGS_WHEEL_SIZE, String.valueOf(SettingsFragment.SETTINGS_WHEEL_SIZE_DEFAULT))); // [mm]
+        final int circumference = 2340;
+
+        if (mFirstWheelRevolutions < 0)
+            mFirstWheelRevolutions = wheelRevolutions;
+
+        if (mLastWheelEventTime == lastWheelEventTime)
+            return;
+
+        if (mLastWheelRevolutions >= 0) {
+            float timeDifference;
+            if (lastWheelEventTime < mLastWheelEventTime)
+                timeDifference = (65535 + lastWheelEventTime - mLastWheelEventTime) / 1024.0f; // [s]
+            else
+                timeDifference = (lastWheelEventTime - mLastWheelEventTime) / 1024.0f; // [s]
+            final float distanceDifference = (wheelRevolutions - mLastWheelRevolutions) * circumference / 1000.0f; // [m]
+            final float totalDistance = (float) wheelRevolutions * (float) circumference / 1000.0f; // [m]
+            final float distance = (float) (wheelRevolutions - mFirstWheelRevolutions) * (float) circumference / 1000.0f; // [m]
+            final float speed = distanceDifference / timeDifference;
+            mWheelCadence = (wheelRevolutions - mLastWheelRevolutions) * 60.0f / timeDifference;
+        }
+        mLastWheelRevolutions = wheelRevolutions;
+        mLastWheelEventTime = lastWheelEventTime;
+    }
+
+    public void onCrankMeasurementReceived(int crankRevolutions, int lastCrankEventTime) {
+
+        if (mLastCrankEventTime == lastCrankEventTime)
+            return;
+
+        if (mLastCrankRevolutions >= 0) {
+            float timeDifference;
+            if (lastCrankEventTime < mLastCrankEventTime)
+                timeDifference = (65535 + lastCrankEventTime - mLastCrankEventTime) / 1024.0f; // [s]
+            else
+                timeDifference = (lastCrankEventTime - mLastCrankEventTime) / 1024.0f; // [s]
+
+            final float crankCadence = (crankRevolutions - mLastCrankRevolutions) * 60.0f / timeDifference;
+            if (crankCadence > 0) {
+                final float gearRatio = mWheelCadence / crankCadence;
+            }
+        }
+        mLastCrankRevolutions = crankRevolutions;
+        mLastCrankEventTime = lastCrankEventTime;
+    }
+    // endregion [Private Function]
 }
