@@ -154,6 +154,20 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+    /**
+     * Called after all pre-works are done
+     */
+    protected void onPreWorkDone() {
+        // empty default implementation
+    }
+
+    /**
+     * Called when filter ccc changed
+     */
+    protected void onFilterCccNotified(byte[] bytes) {
+        // empty default implementation
+    }
+
     @Override
     protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -568,11 +582,51 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
             mConnectionObservable
                     .flatMap(rxBleConnection ->
                             rxBleConnection.setupNotification(BleBatteryManager.BATTERY_LEVEL_CHARACTERISTIC))
-                    .doOnNext(notificationObservable -> runOnUiThread(() -> showSnackbar("Battery notify is setup")))
+                    .doOnNext(this::onBatteryNotificationSetupDone)
                     .flatMap(notificationObservable -> notificationObservable)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this::onBatteryNotificationReceived, this::onBatteryNotificationSetupFailure);
         }
+    }
+
+    private void onBatteryNotificationSetupDone(Observable<byte[]> observable) {
+
+        runOnUiThread(() -> showSnackbar("Battery notify is setup"));
+        onPreWorkDone();
+    }
+
+    protected void setupFilterCccNotification() {
+
+        // Enable notify of selected ccc
+        if (isConnected()) {
+
+            mConnectionObservable
+                    .flatMap(rxBleConnection ->
+                            rxBleConnection.setupNotification(getFilterCccUUID()))
+                    .doOnNext(this::onFilterCccNotificationSetupDone)
+                    .flatMap(notificationObservable -> notificationObservable)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::onFilterCccNotificationReceived, this::onCccNotificationSetupFailure);
+        }
+    }
+
+    private void onCccNotificationSetupFailure(Throwable throwable) {
+
+        KLog.i("Setup Filter CCC error: " + throwable);
+        showBleError(true, "Setup Filter CCC error: " + throwable);
+        showSnackbar("Setup Filter CCC error: " + throwable);
+    }
+
+    private void onFilterCccNotificationReceived(byte[] bytes) {
+
+        String raw = MiscUtils.getByteToHexString(bytes, ":", true);
+        KLog.i(raw);
+        onFilterCccNotified(bytes);
+    }
+
+    private void onFilterCccNotificationSetupDone(Observable<byte[]> observable) {
+
+        runOnUiThread(() -> showSnackbar("Filter CCC notify is setup"));
     }
 
     protected void onBatteryChanged(byte[] bytes) {
