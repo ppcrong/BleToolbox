@@ -1,14 +1,17 @@
 package com.ppcrong.bletoolbox.csc;
 
 import android.os.Bundle;
+import android.widget.TextView;
 
 import com.polidea.rxandroidble2.helpers.ValueInterpreter;
 import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.base.ProfileBaseActivity;
 import com.socks.library.KLog;
 
+import java.util.Locale;
 import java.util.UUID;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import static com.ppcrong.bletoolbox.csc.CscManager.CRANK_REVOLUTION_DATA_PRESENT;
@@ -24,6 +27,23 @@ public class CscActivity extends ProfileBaseActivity {
     private int mLastCrankRevolutions = -1;
     private int mLastCrankEventTime = -1;
     // endregion [Variable]
+
+    // region [Widget]
+    @BindView(R.id.tv_speed)
+    TextView mTvSpeed;
+    @BindView(R.id.tv_cadence)
+    TextView mTvCadence;
+    @BindView(R.id.tv_distance)
+    TextView mTvDistance;
+    @BindView(R.id.tv_distance_unit)
+    TextView mTvDistanceUnit;
+    @BindView(R.id.tv_distance_total)
+    TextView mTvDistanceTotal;
+    @BindView(R.id.tv_distance_total_unit)
+    TextView mTvDistanceTotalUnit;
+    @BindView(R.id.tv_ratio)
+    TextView mTvRatio;
+    // endregion [Widget]
 
     // region [Override Function]
     @Override
@@ -108,10 +128,51 @@ public class CscActivity extends ProfileBaseActivity {
             final float totalDistance = (float) wheelRevolutions * (float) circumference / 1000.0f; // [m]
             final float distance = (float) (wheelRevolutions - mFirstWheelRevolutions) * (float) circumference / 1000.0f; // [m]
             final float speed = distanceDifference / timeDifference;
+
+            // Update UI
+            onMeasurementReceived(speed, distance, totalDistance);
+
             mWheelCadence = (wheelRevolutions - mLastWheelRevolutions) * 60.0f / timeDifference;
         }
         mLastWheelRevolutions = wheelRevolutions;
         mLastWheelEventTime = lastWheelEventTime;
+    }
+
+    private void onMeasurementReceived(float speed, float distance, float totalDistance) {
+//        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+//        final int unit = Integer.parseInt(preferences.getString(SettingsFragment.SETTINGS_UNIT, String.valueOf(SettingsFragment.SETTINGS_UNIT_DEFAULT)));
+        int unit = 1;
+
+        switch (unit) {
+            case 1:
+                speed = speed * 3.6f;
+                // pass through intended
+            case 0:
+                if (distance < 1000) { // 1 km in m
+                    mTvDistance.setText(String.format(Locale.US, "%.0f", distance));
+                    mTvDistanceUnit.setText(R.string.csc_distance_unit_m);
+                } else {
+                    mTvDistance.setText(String.format(Locale.US, "%.2f", distance / 1000.0f));
+                    mTvDistanceUnit.setText(R.string.csc_distance_unit_km);
+                }
+
+                mTvDistanceTotal.setText(String.format(Locale.US, "%.2f", totalDistance / 1000.0f));
+                break;
+//            case 2:
+//                speed = speed * 2.2369f;
+//                if (distance < 1760) { // 1 mile in yrs
+//                    mDistanceView.setText(String.format(Locale.US, "%.0f", distance));
+//                    mDistanceUnitView.setText(R.string.csc_distance_unit_yd);
+//                } else {
+//                    mDistanceView.setText(String.format(Locale.US, "%.2f", distance / 1760.0f));
+//                    mDistanceUnitView.setText(R.string.csc_distance_unit_mile);
+//                }
+//
+//                mTotalDistanceView.setText(String.format(Locale.US, "%.2f", totalDistance / 1609.31f));
+//                break;
+        }
+
+        mTvSpeed.setText(String.format(Locale.US, "%.1f", speed));
     }
 
     public void onCrankMeasurementReceived(int crankRevolutions, int lastCrankEventTime) {
@@ -129,10 +190,18 @@ public class CscActivity extends ProfileBaseActivity {
             final float crankCadence = (crankRevolutions - mLastCrankRevolutions) * 60.0f / timeDifference;
             if (crankCadence > 0) {
                 final float gearRatio = mWheelCadence / crankCadence;
+
+                // Update UI
+                onGearRatioUpdate(gearRatio, (int) crankCadence);
             }
         }
         mLastCrankRevolutions = crankRevolutions;
         mLastCrankEventTime = lastCrankEventTime;
+    }
+
+    private void onGearRatioUpdate(final float ratio, final int cadence) {
+        mTvRatio.setText(String.format(Locale.US, "%.1f", ratio));
+        mTvCadence.setText(String.format(Locale.US, "%d", cadence));
     }
     // endregion [Private Function]
 }
