@@ -12,7 +12,7 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tv_rx_ble_connection_state"
+            android:id="@+id/tv_ble_device"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/_6sdp"
@@ -22,7 +22,7 @@
             android:textStyle="bold"/>
 
         <TextView
-            android:id="@+id/tv_ble_device"
+            android:id="@+id/tv_rx_ble_connection_state"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/_6sdp"
@@ -32,18 +32,32 @@
             android:textColor="@color/accent"
             android:textSize="@dimen/_12sdp"
             android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/tv_rx_ble_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/_6sdp"
+            android:paddingLeft="@dimen/_6sdp"
+            android:paddingRight="@dimen/_6sdp"
+            android:text="@string/not_available_value"
+            android:textColor="@color/accent"
+            android:textSize="@dimen/_12sdp"
+            android:textStyle="bold"
+            android:visibility="gone"/>
+
     </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/container_battery"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="@dimen/_10sdp"
-        android:layout_marginTop="@dimen/_10sdp">
+        android:layout_height="match_parent"
+        android:layout_marginRight="@dimen/_10sdp">
 
         <ImageView
             android:layout_width="@dimen/_30sdp"
             android:layout_height="@dimen/_30sdp"
+            android:layout_centerInParent="true"
             android:rotation="-90"
             android:src="@drawable/battery"/>
 

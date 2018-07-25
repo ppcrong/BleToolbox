@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,13 +40,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import butterknife.BindView;
 import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.ObservableSource;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
-import io.reactivex.functions.Function;
 import io.reactivex.subjects.PublishSubject;
 
 import static com.trello.rxlifecycle2.android.ActivityEvent.DESTROY;
@@ -68,10 +64,12 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     // endregion [Variable]
 
     // region [Widget]
-    @BindView(R.id.tv_rx_ble_connection_state)
-    TextView mTvRxBleConnectionState;
     @BindView(R.id.tv_ble_device)
     TextView mTvBleDevice;
+    @BindView(R.id.tv_rx_ble_connection_state)
+    TextView mTvRxBleConnectionState;
+    @BindView(R.id.tv_rx_ble_error)
+    TextView mTvBleError;
     @BindView(R.id.tv_battery)
     TextView mTvBattery;
     // endregion [Widget]
@@ -283,6 +281,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
      */
     protected void setDefaultUI() {
         mTvRxBleConnectionState.setText(R.string.not_available_value);
+        showBleError(false, R.string.not_available_value);
         mTvBleDevice.setText(R.string.not_available_value);
         mTvBattery.setText(R.string.not_available_value);
     }
@@ -317,6 +316,36 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     private void updateUI() {
         // Refresh BT icon
         supportInvalidateOptionsMenu();
+    }
+
+    private void showBleError(final boolean show, final int messageResId) {
+
+        runOnUiThread(() -> {
+            if (show) {
+
+                mTvBleError.setVisibility(View.VISIBLE);
+                mTvBleError.setText(messageResId);
+            } else {
+
+                mTvBleError.setVisibility(View.GONE);
+                mTvBleError.setText(R.string.not_available_value);
+            }
+        });
+    }
+
+    private void showBleError(final boolean show, final String message) {
+
+        runOnUiThread(() -> {
+            if (show) {
+
+                mTvBleError.setVisibility(View.VISIBLE);
+                mTvBleError.setText(message);
+            } else {
+
+                mTvBleError.setVisibility(View.GONE);
+                mTvBleError.setText(R.string.not_available_value);
+            }
+        });
     }
     // endregion [Private Function]
 
@@ -421,6 +450,14 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
             mConnectionObservable = prepareConnectionObservable();
         }
 
+        // Reference from rxandroidble sample
+//        mConnectionObservable
+//                .flatMapSingle(RxBleConnection::discoverServices)
+//                .flatMapSingle(rxBleDeviceServices -> rxBleDeviceServices.getCharacteristic(getFilterCccUUID()))
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .doOnSubscribe(disposable -> runOnUiThread(() -> showSnackbar("discovering services")))
+//                .subscribe(this::onCccGet, this::onConnectionFailure, this::onConnectionFinished);
+
         // Connect to BLE device
         mConnectionObservable
                 .observeOn(AndroidSchedulers.mainThread())
@@ -442,7 +479,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     private void onConnectionFailure(Throwable throwable) {
 
         KLog.i("Connection error: " + throwable);
-        mTvRxBleConnectionState.setText("Connection error: " + throwable);
+        showBleError(true, "Connection error: " + throwable);
         showSnackbar("Connection error: " + throwable);
     }
 
@@ -550,7 +587,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     private void onReadFailure(Throwable throwable) {
 
         KLog.i("Read CCC error: " + throwable);
-        mTvRxBleConnectionState.setText("Read CCC error: " + throwable);
+        showBleError(true, "Read CCC error: " + throwable);
         showSnackbar("Read CCC error: " + throwable);
     }
 
@@ -562,7 +599,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     private void onBatteryNotificationSetupFailure(Throwable throwable) {
 
         KLog.i("Setup battery notify error: " + throwable);
-        mTvRxBleConnectionState.setText("Setup battery notify error: " + throwable);
+        showBleError(true, "Setup battery notify error: " + throwable);
         showSnackbar("Setup battery notify error: " + throwable);
     }
     // endregion [Callback]
