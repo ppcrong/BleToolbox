@@ -488,7 +488,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
         KLog.i("Connection received");
         showSnackbar("Connection received");
-        mTvBleDevice.setText(mBleDevice.getName() + "(" + mBleDevice.getMacAddress() + ")");
+        mTvBleDevice.setText(mBleDevice.getName() + " (" + mBleDevice.getMacAddress() + ")");
 
         // When connected, discover services
         if (isConnected()) {
