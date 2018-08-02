@@ -65,4 +65,6 @@ dependencies {
 
     // Butter Knife
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    // Apollo
+    annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.2"
 }

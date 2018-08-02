@@ -20,14 +20,20 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
-# EventBus
--keepattributes *Annotation*
--keepclassmembers class ** {
-    @org.greenrobot.eventbus.Subscribe <methods>;
-}
--keep enum org.greenrobot.eventbus.ThreadMode { *; }
+# Apollo
+-dontwarn com.esotericsoftware.kryo.**
+-dontwarn org.objenesis.instantiator.**
+-dontwarn org.codehaus.**
+-dontwarn java.nio.**
+-dontwarn java.lang.invoke.**
+-keep class com.lsxiao.apollo.generate.** { *; }
 
-# Only required if you use AsyncExecutor
--keepclassmembers class * extends org.greenrobot.eventbus.util.ThrowableFailureEvent {
-    <init>(java.lang.Throwable);
-}
+# rxjava
+-dontwarn io.reactivex.**
+-keep class io.reactivex.** { *;}
+-dontwarn org.apache.http.**
+-keep class org.apache.http.** { *;}
+
+# rxlifecycle
+-keep class com.trello.rxlifecycle2.** { *; }
+-dontwarn javax.annotation.**
