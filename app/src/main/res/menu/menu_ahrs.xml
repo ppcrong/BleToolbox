@@ -1,0 +1,22 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/action_ble_scan"
+        android:icon="@drawable/ic_menu_bluetooth_white"
+        android:orderInCategory="100"
+        android:title="@string/action_scan_device"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_ahrs_demo"
+        android:icon="@drawable/ic_menu_ahrs_demo"
+        android:orderInCategory="100"
+        android:title="@string/action_ahrs_demo"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_about"
+        android:orderInCategory="101"
+        app:showAsAction="never"
+        android:title="@string/action_about"/>
+
+</menu>

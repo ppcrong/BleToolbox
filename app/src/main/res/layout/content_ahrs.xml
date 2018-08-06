@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ahrs.AhrsActivity"
+    tools:showIn="@layout/activity_ahrs">
+
+    <include layout="@layout/content_ble_base_info"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:text="@string/ahrs_section_ahrs_header"
+            android:textColor="#FFFFFF"/>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/tableBackground">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/_10sdp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="QUATERNION X"/>
+
+                <TextView
+                    android:id="@+id/tv_quaternion_x"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="45dp"
+                    android:freezesText="true"
+                    android:gravity="right"
+                    android:text="@string/not_available_value"
+                    android:textSize="36sp"/>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_3sdp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="QUATERNION Y"/>
+
+                <TextView
+                    android:id="@+id/tv_quaternion_y"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="45dp"
+                    android:freezesText="true"
+                    android:gravity="right"
+                    android:text="@string/not_available_value"
+                    android:textSize="36sp"/>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_3sdp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="QUATERNION Z"/>
+
+                <TextView
+                    android:id="@+id/tv_quaternion_z"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="45dp"
+                    android:freezesText="true"
+                    android:gravity="right"
+                    android:text="@string/not_available_value"
+                    android:textSize="36sp"/>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_3sdp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="QUATERNION W"/>
+
+                <TextView
+                    android:id="@+id/tv_quaternion_w"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="45dp"
+                    android:freezesText="true"
+                    android:gravity="right"
+                    android:text="@string/not_available_value"
+                    android:textSize="36sp"/>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_3sdp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="MOVEMENT X"/>
+
+                <TextView
+                    android:id="@+id/tv_movement_x"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="45dp"
+                    android:freezesText="true"
+                    android:gravity="right"
+                    android:text="@string/not_available_value"
+                    android:textSize="36sp"/>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_3sdp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="MOVEMENT Y"/>
+
+                <TextView
+                    android:id="@+id/tv_movement_y"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="45dp"
+                    android:freezesText="true"
+                    android:gravity="right"
+                    android:text="@string/not_available_value"
+                    android:textSize="36sp"/>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_3sdp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="MOVEMENT Z"/>
+
+                <TextView
+                    android:id="@+id/tv_movement_z"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="45dp"
+                    android:freezesText="true"
+                    android:gravity="right"
+                    android:text="@string/not_available_value"
+                    android:textSize="36sp"/>
+            </TableRow>
+        </TableLayout>
+    </LinearLayout>
+</LinearLayout>

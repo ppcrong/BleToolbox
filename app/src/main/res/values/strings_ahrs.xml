@@ -1,0 +1,7 @@
+<resources>
+    <string name="ahrs_feature_title">AHRS</string>
+    <string name="ahrs_settings_title">AHRS Settings</string>
+    <string name="ahrs_section_ahrs_header">AHRS</string>
+
+    <string name="action_ahrs_demo">AHRS Demo</string>
+</resources>
