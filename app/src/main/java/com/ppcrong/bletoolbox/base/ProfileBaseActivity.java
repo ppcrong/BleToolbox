@@ -167,7 +167,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         return true;
     }
 
-    private void handleMenu(Menu menu) {
+    protected void handleMenu(Menu menu) {
 
         boolean isConnected = isConnected();
         MenuItem item;

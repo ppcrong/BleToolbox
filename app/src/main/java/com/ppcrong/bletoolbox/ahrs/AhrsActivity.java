@@ -5,11 +5,15 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.widget.TextView;
 
+import com.lsxiao.apollo.core.Apollo;
+import com.polidea.rxandroidble2.helpers.ValueInterpreter;
 import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.base.ProfileBaseActivity;
 import com.ppcrong.bletoolbox.rsc.RscManager;
 import com.ppcrong.unity.ahrs.UnityPlayerActivity;
+import com.ppcrong.unity.ahrs.apollo.BleEvents;
 import com.ppcrong.utils.MiscUtils;
+import com.socks.library.KLog;
 
 import java.util.UUID;
 
@@ -57,6 +61,10 @@ public class AhrsActivity extends ProfileBaseActivity {
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         getMenuInflater().inflate(R.menu.menu_ahrs, menu);
+
+        // Call handleMenu for customized menu
+        handleMenu(menu);
+
         return true;
     }
 
@@ -75,6 +83,47 @@ public class AhrsActivity extends ProfileBaseActivity {
     @Override
     protected void onFilterCccNotified(byte[] bytes) {
         super.onFilterCccNotified(bytes);
+
+        if (bytes.length < 14) {
+            KLog.i("bytes.length is less than 14");
+            return;
+        }
+
+        // Decode the new data
+        int offset = 0;
+        final int qw = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG qx
+        offset += 2;
+        final int qz = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG qy
+        offset += 2;
+        final int qx = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG qz
+        offset += 2;
+        final int qy = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG qw
+        offset += 2;
+        final int z = -ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG x
+        offset += 2;
+        final int x = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG y
+        offset += 2;
+        final int y = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG z
+        KLog.i("qx: " + qx + ", qy: " + qy + ", qz: " + qz + ", qw: " + qw +
+                ", x: " + x + ", y: " + y + ", z: " + z);
+
+        // Update UI
+        mTvQuaternionX.setText(Float.toString(((float) qx / 10000f)));
+        mTvQuaternionY.setText(Float.toString(((float) qy / 10000f)));
+        mTvQuaternionZ.setText(Float.toString(((float) qz / 10000f)));
+        mTvQuaternionW.setText(Float.toString(((float) qw / 10000f)));
+        mTvMovementX.setText(Integer.toString(x));
+        mTvMovementY.setText(Integer.toString(y));
+        mTvMovementZ.setText(Integer.toString(z));
+
+        // Notify Unity
+        Apollo.emit("BleEvents.NotifyAhrsRotateEvent",
+                new BleEvents.NotifyAhrsRotateEvent(
+                        ((float) qx / 10000f),
+                        ((float) qy / 10000f),
+                        ((float) qz / 10000f),
+                        ((float) qw / 10000f)));
+        Apollo.emit("BleEvents.NotifyAhrsMoveEvent", new BleEvents.NotifyAhrsMoveEvent(x, y, z));
     }
 
     @Override
