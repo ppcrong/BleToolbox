@@ -46,6 +46,8 @@
                 <category android:name="com.ppcrong.bletoolbox.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <!-- AHRS -->
         <activity
             android:name=".ahrs.AhrsActivity"
             android:icon="@drawable/ic_ahrs_feature"
