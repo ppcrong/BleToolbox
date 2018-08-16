@@ -358,8 +358,10 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     }
 
     protected boolean isConnected() {
-        return mBleDevice != null &&
+        boolean isConnected = mBleDevice != null &&
                 mBleDevice.getConnectionState() == RxBleConnection.RxBleConnectionState.CONNECTED;
+        KLog.i("isConnected: " + isConnected);
+        return isConnected;
     }
 
     private void triggerDisconnect() {
@@ -419,12 +421,11 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         setDefaultUI();
 
         RxBleDevice bleDevice = BleToolboxApp.getRxBleClient(this).getBleDevice(device.getAddress());
+        mBleDevice = bleDevice;
         if (mSelectedDevices.contains(bleDevice)) {
 
             KLog.i("The device is selected before, skip subscribe observeConnectionStateChanges");
         } else {
-
-            mBleDevice = bleDevice;
 
             // Not connect before, add into list
             mSelectedDevices.add(mBleDevice);
@@ -434,9 +435,6 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
                     .compose(bindUntilEvent(DESTROY))
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this::onConnectionStateChange);
-
-            // Prepare observable
-            mConnectionObservable = prepareConnectionObservable();
         }
 
         // Reference from rxandroidble sample
@@ -446,6 +444,9 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 //                .observeOn(AndroidSchedulers.mainThread())
 //                .doOnSubscribe(disposable -> runOnUiThread(() -> showSnackbar("discovering services")))
 //                .subscribe(this::onCccGet, this::onConnectionFailure, this::onConnectionFinished);
+
+        // Prepare observable
+        mConnectionObservable = prepareConnectionObservable();
 
         // Connect to BLE device
         mConnectionObservable
