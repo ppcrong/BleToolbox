@@ -34,6 +34,12 @@ public class AhrsActivity extends ProfileBaseActivity {
     TextView mTvQuaternionZ;
     @BindView(R.id.tv_quaternion_w)
     TextView mTvQuaternionW;
+    @BindView(R.id.tv_eular_x)
+    TextView mTvEularX;
+    @BindView(R.id.tv_eular_y)
+    TextView mTvEularY;
+    @BindView(R.id.tv_eular_z)
+    TextView mTvEularZ;
     @BindView(R.id.tv_movement_x)
     TextView mTvMovementX;
     @BindView(R.id.tv_movement_y)
@@ -112,17 +118,21 @@ public class AhrsActivity extends ProfileBaseActivity {
         mTvQuaternionY.setText(Float.toString(((float) qy / 10000f)));
         mTvQuaternionZ.setText(Float.toString(((float) qz / 10000f)));
         mTvQuaternionW.setText(Float.toString(((float) qw / 10000f)));
+        mTvEularX.setText(Integer.toString(x));
+        mTvEularY.setText(Integer.toString(y));
+        mTvEularZ.setText(Integer.toString(z));
         mTvMovementX.setText(Integer.toString(x));
         mTvMovementY.setText(Integer.toString(y));
         mTvMovementZ.setText(Integer.toString(z));
 
         // Notify Unity
-        Apollo.emit("BleEvents.NotifyAhrsRotateEvent",
-                new BleEvents.NotifyAhrsRotateEvent(
+        Apollo.emit("BleEvents.NotifyAhrsRotateQuaternionEvent",
+                new BleEvents.NotifyAhrsRotateQuaternionEvent(
                         ((float) qx / 10000f),
                         ((float) qy / 10000f),
                         ((float) qz / 10000f),
                         ((float) qw / 10000f)));
+        Apollo.emit("BleEvents.NotifyAhrsRotateEularEvent", new BleEvents.NotifyAhrsRotateEularEvent(x, y, z));
         Apollo.emit("BleEvents.NotifyAhrsMoveEvent", new BleEvents.NotifyAhrsMoveEvent(x, y, z));
     }
 
