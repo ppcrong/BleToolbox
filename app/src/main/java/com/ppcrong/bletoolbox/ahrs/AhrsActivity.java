@@ -34,12 +34,12 @@ public class AhrsActivity extends ProfileBaseActivity {
     TextView mTvQuaternionZ;
     @BindView(R.id.tv_quaternion_w)
     TextView mTvQuaternionW;
-    @BindView(R.id.tv_eular_x)
-    TextView mTvEularX;
-    @BindView(R.id.tv_eular_y)
-    TextView mTvEularY;
-    @BindView(R.id.tv_eular_z)
-    TextView mTvEularZ;
+    @BindView(R.id.tv_euler_x)
+    TextView mTvEulerX;
+    @BindView(R.id.tv_euler_y)
+    TextView mTvEulerY;
+    @BindView(R.id.tv_euler_z)
+    TextView mTvEulerZ;
     @BindView(R.id.tv_movement_x)
     TextView mTvMovementX;
     @BindView(R.id.tv_movement_y)
@@ -97,6 +97,8 @@ public class AhrsActivity extends ProfileBaseActivity {
 
         // Decode the new data
         int offset = 0;
+
+        // region [Quaternion]
         final int qw = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG qx
         offset += 2;
         final int qz = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG qy
@@ -104,12 +106,26 @@ public class AhrsActivity extends ProfileBaseActivity {
         final int qx = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG qz
         offset += 2;
         final int qy = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG qw
+        // endregion [Quaternion]
+
+        // region [Euler]
         offset += 2;
-        final int z = -ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG x
+        final int x = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset);
         offset += 2;
-        final int x = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG y
+        final int y = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset);
         offset += 2;
-        final int y = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG z
+        final int z = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset);
+        // endregion [Euler]
+
+        // region [Movement]
+//        offset += 2;
+//        final int z = -ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG x
+//        offset += 2;
+//        final int x = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG y
+//        offset += 2;
+//        final int y = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG z
+        // endregion [Movement]
+
         KLog.i("qx: " + qx + ", qy: " + qy + ", qz: " + qz + ", qw: " + qw +
                 ", x: " + x + ", y: " + y + ", z: " + z);
 
@@ -118,9 +134,9 @@ public class AhrsActivity extends ProfileBaseActivity {
         mTvQuaternionY.setText(Float.toString(((float) qy / 10000f)));
         mTvQuaternionZ.setText(Float.toString(((float) qz / 10000f)));
         mTvQuaternionW.setText(Float.toString(((float) qw / 10000f)));
-        mTvEularX.setText(Integer.toString(x));
-        mTvEularY.setText(Integer.toString(y));
-        mTvEularZ.setText(Integer.toString(z));
+        mTvEulerX.setText(Integer.toString(x));
+        mTvEulerY.setText(Integer.toString(y));
+        mTvEulerZ.setText(Integer.toString(z));
         mTvMovementX.setText(Integer.toString(x));
         mTvMovementY.setText(Integer.toString(y));
         mTvMovementZ.setText(Integer.toString(z));
@@ -132,7 +148,7 @@ public class AhrsActivity extends ProfileBaseActivity {
                         ((float) qy / 10000f),
                         ((float) qz / 10000f),
                         ((float) qw / 10000f)));
-        Apollo.emit("BleEvents.NotifyAhrsRotateEularEvent", new BleEvents.NotifyAhrsRotateEularEvent(x, y, z));
+        Apollo.emit("BleEvents.NotifyAhrsRotateEulerEvent", new BleEvents.NotifyAhrsRotateEulerEvent(x, y, z));
         Apollo.emit("BleEvents.NotifyAhrsMoveEvent", new BleEvents.NotifyAhrsMoveEvent(x, y, z));
     }
 

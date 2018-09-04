@@ -134,10 +134,10 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:text="EULAR X"/>
+                    android:text="EULER X"/>
 
                 <TextView
-                    android:id="@+id/tv_eular_x"
+                    android:id="@+id/tv_euler_x"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginRight="45dp"
@@ -158,10 +158,10 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:text="EULAR Y"/>
+                    android:text="EULER Y"/>
 
                 <TextView
-                    android:id="@+id/tv_eular_y"
+                    android:id="@+id/tv_euler_y"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginRight="45dp"
@@ -182,10 +182,10 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:text="EULAR Z"/>
+                    android:text="EULER Z"/>
 
                 <TextView
-                    android:id="@+id/tv_eular_z"
+                    android:id="@+id/tv_euler_z"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginRight="45dp"
