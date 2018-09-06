@@ -110,23 +110,24 @@ public class AhrsActivity extends ProfileBaseActivity {
 
         // region [Euler]
         offset += 2;
-        final int x = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset);
+        final int ez = -ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG x
         offset += 2;
-        final int y = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset);
+        final int ex = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG y
         offset += 2;
-        final int z = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset);
+        final int ey = -ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG z
         // endregion [Euler]
 
         // region [Movement]
-//        offset += 2;
-//        final int z = -ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG x
-//        offset += 2;
-//        final int x = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG y
-//        offset += 2;
-//        final int y = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG z
+        offset += 2;
+        final int z = -ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG x
+        offset += 2;
+        final int x = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG y
+        offset += 2;
+        final int y = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG z
         // endregion [Movement]
 
         KLog.i("qx: " + qx + ", qy: " + qy + ", qz: " + qz + ", qw: " + qw +
+                ", ex: " + ex + ", ey: " + ey + ", ez: " + ez +
                 ", x: " + x + ", y: " + y + ", z: " + z);
 
         // Update UI
@@ -134,9 +135,9 @@ public class AhrsActivity extends ProfileBaseActivity {
         mTvQuaternionY.setText(Float.toString(((float) qy / 10000f)));
         mTvQuaternionZ.setText(Float.toString(((float) qz / 10000f)));
         mTvQuaternionW.setText(Float.toString(((float) qw / 10000f)));
-        mTvEulerX.setText(Integer.toString(x));
-        mTvEulerY.setText(Integer.toString(y));
-        mTvEulerZ.setText(Integer.toString(z));
+        mTvEulerX.setText(Integer.toString(ex));
+        mTvEulerY.setText(Integer.toString(ey));
+        mTvEulerZ.setText(Integer.toString(ez));
         mTvMovementX.setText(Integer.toString(x));
         mTvMovementY.setText(Integer.toString(y));
         mTvMovementZ.setText(Integer.toString(z));
@@ -148,7 +149,7 @@ public class AhrsActivity extends ProfileBaseActivity {
                         ((float) qy / 10000f),
                         ((float) qz / 10000f),
                         ((float) qw / 10000f)));
-        Apollo.emit("BleEvents.NotifyAhrsRotateEulerEvent", new BleEvents.NotifyAhrsRotateEulerEvent(x, y, z));
+        Apollo.emit("BleEvents.NotifyAhrsRotateEulerEvent", new BleEvents.NotifyAhrsRotateEulerEvent(ex, ey, ez));
         Apollo.emit("BleEvents.NotifyAhrsMoveEvent", new BleEvents.NotifyAhrsMoveEvent(x, y, z));
     }
 
