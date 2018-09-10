@@ -14,6 +14,11 @@
         android:title="@string/action_ahrs_demo"
         app:showAsAction="always"/>
     <item
+        android:id="@+id/action_set_move_factor"
+        android:orderInCategory="101"
+        app:showAsAction="never"
+        android:title="Set Move Factor"/>
+    <item
         android:id="@+id/action_about"
         android:orderInCategory="101"
         app:showAsAction="never"

@@ -1,10 +1,15 @@
 package com.ppcrong.bletoolbox.ahrs;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.text.InputType;
+import android.util.Log;
 import android.view.Menu;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.lsxiao.apollo.core.Apollo;
 import com.polidea.rxandroidble2.helpers.ValueInterpreter;
 import com.ppcrong.bletoolbox.R;
@@ -23,6 +28,7 @@ import butterknife.ButterKnife;
 public class AhrsActivity extends ProfileBaseActivity {
 
     // region [Variable]
+    private int mMoveFactor = 1;
     // endregion [Variable]
 
     // region [Widget]
@@ -81,6 +87,9 @@ public class AhrsActivity extends ProfileBaseActivity {
                 Intent pageIntent = new Intent();
                 pageIntent.setClass(this, UnityPlayerActivity.class);
                 MiscUtils.startSafeIntent(this, pageIntent);
+                break;
+            case R.id.action_set_move_factor:
+                showMoveFactorDialog(true);
                 break;
         }
         return true;
@@ -150,7 +159,8 @@ public class AhrsActivity extends ProfileBaseActivity {
                         ((float) qz / 10000f),
                         ((float) qw / 10000f)));
         Apollo.emit("BleEvents.NotifyAhrsRotateEulerEvent", new BleEvents.NotifyAhrsRotateEulerEvent(ex, ey, ez));
-        Apollo.emit("BleEvents.NotifyAhrsMoveEvent", new BleEvents.NotifyAhrsMoveEvent(x, y, z));
+        Apollo.emit("BleEvents.NotifyAhrsMoveEvent",
+                new BleEvents.NotifyAhrsMoveEvent(x / (float) mMoveFactor, y / (float) mMoveFactor, z / (float) mMoveFactor));
     }
 
     @Override
@@ -165,5 +175,47 @@ public class AhrsActivity extends ProfileBaseActivity {
     // endregion [Override Function]
 
     // region [Private Function]
+    MaterialDialog mDialogSetMoveFactor;
+
+    private void showMoveFactorDialog(boolean b) {
+
+        KLog.i((b ? "SHOW" : "HIDE") + " MoveFactorDialog");
+
+        if (isFinishing()) {
+            KLog.i("Activity is finishing, ignore show dialog");
+            return;
+        }
+
+        if (b) {
+
+            mDialogSetMoveFactor = new MaterialDialog.Builder(this)
+                    .title("Set Move Factor")
+                    .titleColor(Color.DKGRAY)
+                    .content("The factor is like (x/factor), (y/factor), (z/factor)")
+                    .contentColor(Color.BLUE)
+                    .negativeText(R.string.cancel)
+                    .inputType(InputType.TYPE_CLASS_NUMBER)
+                    .input("Please input number", String.valueOf(mMoveFactor), (dialog, input) -> {
+
+                        KLog.i("input: " + input);
+                        try {
+
+                            mMoveFactor = Integer.parseInt(input.toString());
+                        } catch (Exception ex) {
+
+                            KLog.i(Log.getStackTraceString(ex));
+                        }
+                        KLog.i("mMoveFactor: " + mMoveFactor);
+                        showSnackbar("Now Move Factor is " + mMoveFactor);
+                    })
+                    .show();
+        } else {
+
+            if (mDialogSetMoveFactor != null && mDialogSetMoveFactor.isShowing()) {
+                mDialogSetMoveFactor.dismiss();
+                mDialogSetMoveFactor = null;
+            }
+        }
+    }
     // endregion [Private Function]
 }
