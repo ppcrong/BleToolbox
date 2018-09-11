@@ -121,9 +121,9 @@ public class AhrsActivity extends ProfileBaseActivity {
         offset += 2;
         final int ez = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG x
         offset += 2;
-        final int ex = -ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG y
+        final int ex = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG y
         offset += 2;
-        final int ey = -ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG z
+        final int ey = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_SINT16, offset); // ALG z
         // endregion [Euler]
 
         // region [Movement]
