@@ -28,7 +28,7 @@ import butterknife.ButterKnife;
 public class AhrsActivity extends ProfileBaseActivity {
 
     // region [Variable]
-    private int mMoveFactor = 1;
+    private float mMoveFactor = 1;
     // endregion [Variable]
 
     // region [Widget]
@@ -160,7 +160,7 @@ public class AhrsActivity extends ProfileBaseActivity {
                         ((float) qw / 10000f)));
         Apollo.emit("BleEvents.NotifyAhrsRotateEulerEvent", new BleEvents.NotifyAhrsRotateEulerEvent(ex, ey, ez));
         Apollo.emit("BleEvents.NotifyAhrsMoveEvent",
-                new BleEvents.NotifyAhrsMoveEvent(x / (float) mMoveFactor, y / (float) mMoveFactor, z / (float) mMoveFactor));
+                new BleEvents.NotifyAhrsMoveEvent(x / mMoveFactor, y / mMoveFactor, z / mMoveFactor));
     }
 
     @Override
@@ -194,13 +194,13 @@ public class AhrsActivity extends ProfileBaseActivity {
                     .content("The factor is like (x/factor), (y/factor), (z/factor)")
                     .contentColor(Color.BLUE)
                     .negativeText(R.string.cancel)
-                    .inputType(InputType.TYPE_CLASS_NUMBER)
+                    .inputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL)
                     .input("Please input number", String.valueOf(mMoveFactor), (dialog, input) -> {
 
                         KLog.i("input: " + input);
                         try {
 
-                            mMoveFactor = Integer.parseInt(input.toString());
+                            mMoveFactor = Float.parseFloat(input.toString());
                         } catch (Exception ex) {
 
                             KLog.i(Log.getStackTraceString(ex));
