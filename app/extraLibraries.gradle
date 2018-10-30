@@ -30,6 +30,8 @@ ext {
             // BleScanner
             project(':blescanner'),
             // Unity AHRS
-            project(':unityahrs')
+            project(':unityahrs'),
+            // OtaLib
+            project(':otalib')
     ]
 }

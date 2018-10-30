@@ -9,3 +9,5 @@ include ':blescanner'
 project(":blescanner").projectDir = file("../../libs/blescanner")
 include ':unityahrs'
 project(":unityahrs").projectDir = file("../../libs/unityahrs")
+include ':otalib'
+project(":otalib").projectDir = file("../../libs/otalib")
