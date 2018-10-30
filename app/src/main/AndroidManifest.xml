@@ -35,7 +35,7 @@
         <!-- CSC -->
         <activity
             android:name=".csc.CscActivity"
-            android:icon="@drawable/ic_csc_feature"
+            android:icon="@drawable/ic_feature_csc"
             android:label="@string/csc_feature_title"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
@@ -50,7 +50,7 @@
         <!-- AHRS -->
         <activity
             android:name=".ahrs.AhrsActivity"
-            android:icon="@drawable/ic_ahrs_feature"
+            android:icon="@drawable/ic_feature_ahrs"
             android:label="@string/title_activity_ahrs"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
