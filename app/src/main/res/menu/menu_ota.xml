@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_ble_scan"
+        android:icon="@drawable/ic_menu_bluetooth_white"
+        android:orderInCategory="100"
+        android:title="@string/action_scan_device"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/action_stress_test"
+        android:icon="@drawable/ic_refresh_white"
+        android:orderInCategory="100"
+        android:title="@string/ota_stress_test"
+        android:visible="false"/>
+</menu>

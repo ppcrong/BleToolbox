@@ -1,0 +1,50 @@
+<resources>
+    <string name="ota_feature_title">OTA</string>
+    <string name="ota_settings_title">OTA Settings</string>
+
+    <!-- OTA -->
+    <string name="ota_section_application_header">APPLICATION</string>
+    <string name="ota_file_name_label">File name:</string>
+    <string name="ota_file_type_label">Type:</string>
+    <string name="ota_file_size_label">Size:</string>
+    <string name="ota_file_scope_label">Scope:</string>
+    <string name="ota_file_status_label">Status:</string>
+    <string name="ota_file_status_ok">OK</string>
+    <string name="ota_file_status_no_file">File not loaded</string>
+    <string name="ota_action_select_file">SELECT FILE</string>
+    <string name="ota_section_dfu_header">DEVICE FIRMWARE UPDATE</string>
+    <string name="ota_action_upload">UPLOAD</string>
+    <string name="ota_action_upload_cancel">CANCEL</string>
+    <string name="ota_success">Application has been transferred successfully.</string>
+    <string name="ota_aborted">Uploading of the application has been canceled.</string>
+    <string name="ota_stress_test">Start Stress Test</string>
+
+    <!--DFU lib string-->
+    <string name="ota_action_abort">Abort</string>
+    <string name="ota_channel_description">Shows DFU progress.</string>
+    <string name="ota_channel_name">DFU</string>
+    <string name="ota_status_aborted">Aborted</string>
+    <string name="ota_status_aborted_msg">Application upload has been canceled.</string>
+    <string name="ota_status_aborting">Aborting…</string>
+    <string name="ota_status_completed">Done</string>
+    <string name="ota_status_completed_msg">Application has been sent successfully.</string>
+    <string name="ota_status_connecting">Connecting…</string>
+    <string name="ota_status_connecting_msg">Connecting to %s…</string>
+    <string name="ota_status_disconnecting">Disconnecting…</string>
+    <string name="ota_status_disconnecting_msg">Disconnecting from %s…</string>
+    <string name="ota_status_error">Upload failed</string>
+    <string name="ota_status_error_msg">DFU process failed.</string>
+    <string name="ota_status_foreground_content">Update in progress…</string>
+    <string name="ota_status_foreground_title">Device Firmware Update</string>
+    <string name="ota_status_initializing">Initializing…</string>
+    <string name="ota_status_starting">Starting DFU…</string>
+    <string name="ota_status_starting_msg">Initializing DFU process…</string>
+    <string name="ota_status_switching_to_dfu">Starting bootloader…</string>
+    <string name="ota_status_switching_to_dfu_msg">Waiting for bootloader…</string>
+    <string name="ota_status_uploading">Uploading…</string>
+    <string name="ota_status_uploading_msg">Transmitting firmware to %s…</string>
+    <string name="ota_status_uploading_part" formatted="false">Uploading part %d/%d…</string>
+    <string name="ota_status_validating">Validating…</string>
+    <string name="ota_status_validating_msg">Validating…</string>
+    <string name="ota_unknown_name">unnamed device</string>
+</resources>

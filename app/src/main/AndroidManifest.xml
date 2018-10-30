@@ -51,7 +51,22 @@
         <activity
             android:name=".ahrs.AhrsActivity"
             android:icon="@drawable/ic_feature_ahrs"
-            android:label="@string/title_activity_ahrs"
+            android:label="@string/ahrs_feature_title"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="com.ppcrong.bletoolbox.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- OTA -->
+        <activity
+            android:name=".ota.OtaActivity"
+            android:icon="@drawable/ic_feature_ota"
+            android:label="@string/ota_feature_title"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
