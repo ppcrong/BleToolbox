@@ -46,7 +46,8 @@ public class HrmActivity extends ProfileBaseActivity {
         } else {
             hrValue = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_UINT8, 1);
         }
-        //This will send callback to HRSActivity when new HR value is received from HR device
+
+        // New HR value is received from HR device
         onHRValueReceived(hrValue);
     }
 
