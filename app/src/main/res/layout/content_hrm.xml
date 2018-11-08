@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".hrm.HrmActivity"
+    tools:showIn="@layout/activity_hrm">
+
+    <include layout="@layout/content_ble_base_info"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:text="@string/csc_section_csc_header"
+            android:textColor="#FFFFFF"/>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/tableBackground">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/_10sdp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="SPEED"/>
+
+                <TextView
+                    android:id="@+id/tv_speed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:freezesText="true"
+                    android:gravity="right"
+                    android:text="@string/not_available_value"
+                    android:textSize="36sp"/>
+
+                <TextView
+                    android:id="@+id/tv_speed_unit"
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:freezesText="true"
+                    android:gravity="bottom"
+                    android:text="km/h"/>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_3sdp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="CADENCE"/>
+
+                <TextView
+                    android:id="@+id/tv_cadence"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:freezesText="true"
+                    android:gravity="right"
+                    android:text="@string/not_available_value"
+                    android:textSize="36sp"/>
+
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:freezesText="true"
+                    android:gravity="bottom"
+                    android:text="RPM"/>
+            </TableRow>
+
+        </TableLayout>
+    </LinearLayout>
+</LinearLayout>

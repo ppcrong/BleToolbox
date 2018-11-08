@@ -1,0 +1,23 @@
+<resources>
+    <string name="hrm_feature_title">HRM</string>
+    <string name="hrm_settings_title">HRM Settings</string>
+    <string name="hrm_section_ahrs_header">HRM</string>
+
+    <string name="hrm_default_name">DEFAULT HRM</string>
+    <string name="hrm_value_unit">bpm</string>
+    <string name="hrm_position_label">sensor position</string>
+
+    <string-array name="hrm_locations">
+        <item>Other</item>
+        <item>Chest</item>
+        <item>Wrist</item>
+        <item>Finger</item>
+        <item>Hand</item>
+        <item>Ear Lobe</item>
+        <item>Foot</item>
+    </string-array>
+    <string name="hrm_location_other">Reserved</string>
+
+    <string name="hrm_about_text">HRM (Heart Rate Monitor) profile allows you to connect to your Heart Rate sensor (f.e. a belt).
+        It shows you the current rate, location of the sensor and a historic data on the graph.</string>
+</resources>

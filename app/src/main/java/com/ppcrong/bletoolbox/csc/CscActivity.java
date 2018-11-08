@@ -106,7 +106,7 @@ public class CscActivity extends ProfileBaseActivity {
     // endregion [Override Function]
 
     // region [Private Function]
-    public void onWheelMeasurementReceived(final int wheelRevolutions, final int lastWheelEventTime) {
+    private void onWheelMeasurementReceived(final int wheelRevolutions, final int lastWheelEventTime) {
 
 //        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 //        final int circumference = Integer.parseInt(preferences.getString(SettingsFragment.SETTINGS_WHEEL_SIZE, String.valueOf(SettingsFragment.SETTINGS_WHEEL_SIZE_DEFAULT))); // [mm]

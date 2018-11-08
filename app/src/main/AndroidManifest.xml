@@ -76,6 +76,22 @@
                 <category android:name="com.ppcrong.bletoolbox.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <!-- HRM -->
+        <activity
+            android:name=".hrm.HrmActivity"
+            android:icon="@drawable/ic_feature_hrm"
+            android:label="@string/hrm_feature_title"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="com.ppcrong.bletoolbox.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

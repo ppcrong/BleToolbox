@@ -89,7 +89,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         // The onCreateView class should... create the view
         onCreateView(savedInstanceState);
 
-        // Common nRF Toolbox view references are obtained here
+        // Common Toolbox view references are obtained here
         setUpView();
         // View is ready to be used
         onViewCreated(savedInstanceState);
