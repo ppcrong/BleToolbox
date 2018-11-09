@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
             android:gravity="center"
-            android:text="@string/csc_section_csc_header"
+            android:text="@string/hrs_feature_title_long"
             android:textColor="#FFFFFF"/>
 
         <TableLayout
@@ -38,41 +38,39 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:text="SPEED"/>
+                    android:text="@string/hrs_position_label"
+                    android:textAllCaps="true"/>
 
                 <TextView
-                    android:id="@+id/tv_speed"
+                    android:id="@+id/tv_hr_sensor_position"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:freezesText="true"
-                    android:gravity="right"
+                    android:gravity="center_vertical|end"
                     android:text="@string/not_available_value"
-                    android:textSize="36sp"/>
+                    android:textSize="20sp"/>
 
                 <TextView
-                    android:id="@+id/tv_speed_unit"
                     android:layout_width="45dp"
                     android:layout_height="match_parent"
-                    android:freezesText="true"
-                    android:gravity="bottom"
-                    android:text="km/h"/>
+                    android:textSize="36sp"/>
             </TableRow>
 
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/_10sdp"
-                android:layout_marginTop="@dimen/_3sdp">
+                android:layout_marginTop="@dimen/_3sdp"
+                android:paddingLeft="@dimen/_10sdp">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:text="CADENCE"/>
+                    android:text="@string/hrs_heart_rate"/>
 
                 <TextView
-                    android:id="@+id/tv_cadence"
+                    android:id="@+id/tv_hr"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:freezesText="true"
@@ -85,9 +83,18 @@
                     android:layout_height="match_parent"
                     android:freezesText="true"
                     android:gravity="bottom"
-                    android:text="RPM"/>
+                    android:text="@string/hrs_value_unit"
+                    android:textAllCaps="true"/>
             </TableRow>
 
         </TableLayout>
+
+        <FrameLayout
+            android:id="@+id/graph_hrs"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:layout_marginLeft="@dimen/feature_horizontal_margin"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="@dimen/feature_horizontal_margin"/>
     </LinearLayout>
 </LinearLayout>

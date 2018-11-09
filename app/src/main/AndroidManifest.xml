@@ -81,7 +81,7 @@
         <activity
             android:name=".hrm.HrmActivity"
             android:icon="@drawable/ic_feature_hrm"
-            android:label="@string/hrm_feature_title"
+            android:label="@string/hrs_feature_title"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">

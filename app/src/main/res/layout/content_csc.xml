@@ -38,7 +38,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:text="SPEED"/>
+                    android:text="@string/csc_speed"/>
 
                 <TextView
                     android:id="@+id/tv_speed"
@@ -55,21 +55,21 @@
                     android:layout_height="match_parent"
                     android:freezesText="true"
                     android:gravity="bottom"
-                    android:text="km/h"/>
+                    android:text="@string/csc_speed_unit_km_h"/>
             </TableRow>
 
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/_10sdp"
-                android:layout_marginTop="@dimen/_3sdp">
+                android:layout_marginTop="@dimen/_3sdp"
+                android:paddingLeft="@dimen/_10sdp">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:text="CADENCE"/>
+                    android:text="@string/csc_cadence"/>
 
                 <TextView
                     android:id="@+id/tv_cadence"
@@ -85,21 +85,21 @@
                     android:layout_height="match_parent"
                     android:freezesText="true"
                     android:gravity="bottom"
-                    android:text="RPM"/>
+                    android:text="@string/csc_cadence_unit"/>
             </TableRow>
 
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/_10sdp"
-                android:layout_marginTop="@dimen/_3sdp">
+                android:layout_marginTop="@dimen/_3sdp"
+                android:paddingLeft="@dimen/_10sdp">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:text="DISTANCE"/>
+                    android:text="@string/csc_distance"/>
 
                 <TextView
                     android:id="@+id/tv_distance"
@@ -116,21 +116,21 @@
                     android:layout_height="match_parent"
                     android:freezesText="true"
                     android:gravity="bottom"
-                    android:text="m"/>
+                    android:text="@string/csc_distance_unit_m"/>
             </TableRow>
 
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/_10sdp"
-                android:layout_marginTop="@dimen/_3sdp">
+                android:layout_marginTop="@dimen/_3sdp"
+                android:paddingLeft="@dimen/_10sdp">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:text="TOTAL DISTANCE"/>
+                    android:text="@string/csc_total_distance"/>
 
                 <TextView
                     android:id="@+id/tv_distance_total"
@@ -147,21 +147,21 @@
                     android:layout_height="match_parent"
                     android:freezesText="true"
                     android:gravity="bottom"
-                    android:text="km"/>
+                    android:text="@string/csc_distance_unit_km"/>
             </TableRow>
 
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="@dimen/_10sdp"
-                android:layout_marginTop="@dimen/_3sdp">
+                android:layout_marginTop="@dimen/_3sdp"
+                android:paddingLeft="@dimen/_10sdp">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:text="GEAR RATIO"/>
+                    android:text="@string/csc_gear_ratio"/>
 
                 <TextView
                     android:id="@+id/tv_ratio"

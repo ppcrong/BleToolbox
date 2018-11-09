@@ -42,6 +42,7 @@ import butterknife.BindView;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
 import io.reactivex.subjects.PublishSubject;
 
 import static com.trello.rxlifecycle2.android.ActivityEvent.DESTROY;
@@ -524,6 +525,25 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
                             MustCccs::new))
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this::onMustCccsGet, this::onConnectionFailure);
+        }
+    }
+
+    /**
+     * Read characteristic
+     * @param uuid The ccc to be read
+     * @param onSuccess The callback when read ok
+     * @param onError The callback when error
+     */
+    protected void readCcc(UUID uuid, final Consumer<byte[]> onSuccess, final Consumer<? super Throwable> onError) {
+
+        if (isConnected()) {
+
+            mConnectionObservable
+                    .firstOrError()
+                    .flatMap(rxBleConnection ->
+                            rxBleConnection.readCharacteristic(uuid))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(onSuccess, onError);
         }
     }
 
