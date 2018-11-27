@@ -280,16 +280,27 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
      * The UUID filter is used to filter out available devices that does not have such UUID in their advertisement packet. See also:
      * {@link #isChangingConfigurations()}.
      *
-     * @return the required UUID or <code>null</code>
+     * @return the required service UUID or <code>null</code>
      */
     protected abstract UUID getFilterSvcUUID();
 
     /**
-     * The CCC UUID is used with filter UUID (Service UUID)
+     * The CCC UUID is used (with filter service UUID) to make sure device that does have such CCC
      *
-     * @return the required UUID or <code>null</code>
+     * @return the required ccc UUID or <code>null</code>
      */
     protected abstract UUID getFilterCccUUID();
+
+    /**
+     * The 2nd CCC UUID is used (with filter service UUID) to make sure device that does have such CCC.
+     * <br/>
+     * This API is used for the profile needs 2 must CCCs, like UART.
+     *
+     * @return the required ccc UUID or <code>null</code>
+     */
+    protected UUID getFilterCccUUID2() {
+        return null;
+    }
 
     protected void showSnackbar(final String message) {
 
@@ -496,35 +507,66 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     }
 
     /**
-     * Must have 2 Characteristics
+     * Must have 2 or 3 Characteristics
      * <br/>
      * 1. Filter CCC
+     * <br/>
+     * 1. Filter CCC2
      * <br/>
      * 2. Battery CCC
      */
     class MustCccs {
 
         BluetoothGattCharacteristic FilterCcc;
+        BluetoothGattCharacteristic FilterCcc2;
         BluetoothGattCharacteristic BatteryCcc;
 
         public MustCccs(BluetoothGattCharacteristic filterCcc, BluetoothGattCharacteristic batteryCcc) {
             FilterCcc = filterCcc;
             BatteryCcc = batteryCcc;
         }
+
+        public MustCccs(BluetoothGattCharacteristic filterCcc, BluetoothGattCharacteristic filterCcc2,
+                        BluetoothGattCharacteristic batteryCcc) {
+            FilterCcc = filterCcc;
+            FilterCcc2 = filterCcc2;
+            BatteryCcc = batteryCcc;
+        }
     }
 
     private void onSvcDiscovered(RxBleDeviceServices services) {
 
-        // When svc discovered, get filter ccc and battery ccc
+        // When svc discovered, get filter ccc/ccc2 and battery ccc
         if (isConnected()) {
-            mConnectionObservable
-                    .firstOrError()
-                    .flatMap(rxBleConnection -> Single.zip(
-                            services.getCharacteristic(getFilterCccUUID()),
-                            services.getCharacteristic(BleBatteryManager.BATTERY_LEVEL_CHARACTERISTIC),
-                            MustCccs::new))
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(this::onMustCccsGet, this::onConnectionFailure);
+
+            /**
+             * If 2nd CCC UUID is null, just get 1 filter ccc and battery ccc.
+             * If 2nd CCC UUID is not null, get 2 filter cccs and battery ccc.
+             */
+            if (getFilterCccUUID2() == null) {
+
+                KLog.i("2nd CCC UUID is null");
+                mConnectionObservable
+                        .firstOrError()
+                        .flatMap(rxBleConnection -> Single.zip(
+                                services.getCharacteristic(getFilterCccUUID()),
+                                services.getCharacteristic(BleBatteryManager.BATTERY_LEVEL_CHARACTERISTIC),
+                                MustCccs::new))
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(this::onMustCccsGet, this::onConnectionFailure);
+            } else {
+
+                KLog.i("2nd CCC UUID is NOT null");
+                mConnectionObservable
+                        .firstOrError()
+                        .flatMap(rxBleConnection -> Single.zip(
+                                services.getCharacteristic(getFilterCccUUID()),
+                                services.getCharacteristic(getFilterCccUUID2()),
+                                services.getCharacteristic(BleBatteryManager.BATTERY_LEVEL_CHARACTERISTIC),
+                                MustCccs::new))
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(this::onMustCccsGet, this::onConnectionFailure);
+            }
         }
     }
 
@@ -548,13 +590,19 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     }
 
     /**
-     * When MUST filter CCC and battery CCC are GET!!!
+     * When MUST filter CCC/CCC2 and battery CCC are GET!!!
      *
      * @param mustCccs
      */
     private void onMustCccsGet(MustCccs mustCccs) {
-        KLog.i("GET===" + mustCccs.FilterCcc.getUuid() + "===");
-        KLog.i("GET===" + mustCccs.BatteryCcc.getUuid() + "===");
+
+        UUID filterCcc = mustCccs.FilterCcc != null ? mustCccs.FilterCcc.getUuid() : null;
+        UUID filterCcc2 = mustCccs.FilterCcc2 != null ? mustCccs.FilterCcc2.getUuid() : null;
+        UUID batteryCcc = mustCccs.BatteryCcc != null ? mustCccs.BatteryCcc.getUuid() : null;
+
+        KLog.i("GET===" + filterCcc + "===");
+        KLog.i("GET===" + filterCcc2 + "===");
+        KLog.i("GET===" + batteryCcc + "===");
 
         // Read battery percentage
         if (isConnected()) {
