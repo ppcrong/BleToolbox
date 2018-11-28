@@ -135,6 +135,14 @@ public class HrmActivity extends ProfileBaseActivity {
         mTvHrSensorPosition.setText(R.string.not_available);
         clearGraph();
     }
+
+    protected void onDeviceDisconnected() {
+
+        super.onDeviceDisconnected();
+
+        // Stop mRepeatTask
+        stopShowGraph();
+    }
     // endregion [Override Function]
 
     // region [Private Function]

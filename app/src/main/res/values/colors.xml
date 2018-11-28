@@ -6,6 +6,7 @@
     <color name="featureTitleColor">#939597</color>
     <color name="bleConnected">#005FFF</color>
     <color name="yellow">#FFFF00</color>
+    <color name="lighter_green">#81c285</color>
     <color name="accent">#5d8e24</color>
     <color name="tableBackground">#E6E7E8</color>
     <color name="lighter_gray">#eee</color>

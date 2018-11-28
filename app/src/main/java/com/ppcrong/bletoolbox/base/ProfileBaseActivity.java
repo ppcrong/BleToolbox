@@ -324,8 +324,12 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         runOnUiThread(() -> {
             if (show) {
 
+                // TextView
                 mTvBleError.setVisibility(View.VISIBLE);
                 mTvBleError.setText(messageResId);
+
+                // Snackbar
+                showSnackbar(messageResId);
             } else {
 
                 mTvBleError.setVisibility(View.GONE);
@@ -339,8 +343,12 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         runOnUiThread(() -> {
             if (show) {
 
+                // TextView
                 mTvBleError.setVisibility(View.VISIBLE);
                 mTvBleError.setText(message);
+
+                // Snackbar
+                showSnackbar(message);
             } else {
 
                 mTvBleError.setVisibility(View.GONE);
@@ -423,6 +431,24 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     private boolean hasProperty(BluetoothGattCharacteristic characteristic, int property) {
         return characteristic != null && (characteristic.getProperties() & property) > 0;
     }
+
+    // region [Callback of BLE Connection State Change]
+    protected void onDeviceConnecting() {
+        KLog.i();
+    }
+
+    protected void onDeviceConnected() {
+        KLog.i();
+    }
+
+    protected void onDeviceDisconnected() {
+        KLog.i();
+    }
+
+    protected void onDeviceDisconnecting() {
+        KLog.i();
+    }
+    // endregion [Callback of BLE Connection State Change]
     // endregion [BLE]
 
     // region [Callback]
@@ -474,6 +500,26 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     private void onConnectionStateChange(RxBleConnection.RxBleConnectionState newState) {
 
         KLog.i(newState.toString());
+        String state;
+
+        switch (newState) {
+            case CONNECTING:
+                state = RxBleConnection.RxBleConnectionState.CONNECTING.toString();
+                onDeviceConnecting();
+                break;
+            case CONNECTED:
+                onDeviceConnected();
+                break;
+            case DISCONNECTED:
+                onDeviceDisconnected();
+                break;
+            case DISCONNECTING:
+                onDeviceDisconnecting();
+                break;
+            default:
+                break;
+        }
+
         mTvRxBleConnectionState.setText(newState.toString());
         updateUI();
     }
@@ -482,7 +528,6 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
         KLog.i("Connection error: " + throwable);
         showBleError(true, "Connection error: " + throwable);
-        showSnackbar("Connection error: " + throwable);
     }
 
     @SuppressWarnings("unused")
@@ -572,9 +617,10 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
     /**
      * Read characteristic
-     * @param uuid The ccc to be read
+     *
+     * @param uuid      The ccc to be read
      * @param onSuccess The callback when read ok
-     * @param onError The callback when error
+     * @param onError   The callback when error
      */
     protected void readCcc(UUID uuid, final Consumer<byte[]> onSuccess, final Consumer<? super Throwable> onError) {
 
@@ -658,7 +704,6 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
         KLog.i("Setup Filter CCC error: " + throwable);
         showBleError(true, "Setup Filter CCC error: " + throwable);
-        showSnackbar("Setup Filter CCC error: " + throwable);
     }
 
     private void onFilterCccNotificationReceived(byte[] bytes) {
@@ -686,7 +731,6 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
         KLog.i("Read CCC error: " + throwable);
         showBleError(true, "Read CCC error: " + throwable);
-        showSnackbar("Read CCC error: " + throwable);
     }
 
     private void onBatteryNotificationReceived(byte[] bytes) {
@@ -698,7 +742,6 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
         KLog.i("Setup battery notify error: " + throwable);
         showBleError(true, "Setup battery notify error: " + throwable);
-        showSnackbar("Setup battery notify error: " + throwable);
     }
     // endregion [Callback]
 }
