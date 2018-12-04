@@ -92,6 +92,21 @@
             </intent-filter>
         </activity>
 
+        <!-- UART -->
+        <activity
+            android:name=".uart.UartActivity"
+            android:icon="@drawable/ic_feature_uart"
+            android:label="@string/uart_feature_title"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="com.ppcrong.bletoolbox.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>
