@@ -1,6 +1,7 @@
 package com.ppcrong.bletoolbox.uart;
 
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 
 import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.base.ProfileBaseActivity;
@@ -28,6 +29,14 @@ public class UartActivity extends ProfileBaseActivity {
 
         // Bind ButterKnife
         ButterKnife.bind(this);
+    }
+
+    @Override
+    protected void onViewCreated(Bundle savedInstanceState) {
+        super.onViewCreated(savedInstanceState);
+
+        // Empty Toolbar title to avoid overlap with spinner
+        getSupportActionBar().setTitle("");
     }
 
     @Override
