@@ -52,12 +52,10 @@ public class FeatureAdapter extends RecyclerView.Adapter<FeatureAdapter.FeatureV
 
     private final Context mContext;
     private final PackageManager mPackageManager;
-    private final LayoutInflater mInflater;
     private final List<ResolveInfo> mApplications;
 
     public FeatureAdapter(final Context context) {
         mContext = context;
-        mInflater = LayoutInflater.from(context);
 
         final PackageManager pm = mPackageManager = context.getPackageManager();
         final Intent intent = new Intent(Intent.ACTION_MAIN);
