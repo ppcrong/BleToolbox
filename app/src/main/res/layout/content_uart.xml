@@ -23,5 +23,11 @@
             android:text="@string/uart_feature_title"
             android:textColor="#FFFFFF"/>
 
+        <fragment
+            android:id="@+id/fragment_control"
+            android:name="com.ppcrong.bletoolbox.uart.fragment.UartControlFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout="@layout/fragment_feature_uart_control"/>
     </LinearLayout>
 </LinearLayout>

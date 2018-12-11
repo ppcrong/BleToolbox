@@ -67,4 +67,9 @@ dependencies {
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
     // Apollo
     annotationProcessor "com.github.lsxiao.Apollo:processor:1.0.2"
+    // XML for UART
+    implementation('org.simpleframework:simple-xml:2.7.1') {
+        exclude group: 'stax', module: 'stax-api'
+        exclude group: 'xpp3', module: 'xpp3'
+    }
 }

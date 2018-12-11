@@ -42,4 +42,7 @@
     <dimen name="alert_dialog_padding_top">18dp</dimen>
     <dimen name="alert_dialog_padding_bottom">0dp</dimen>
 
+    <!--Other-->
+    <dimen name="headerbar_elevation">6dp</dimen>
+
 </resources>

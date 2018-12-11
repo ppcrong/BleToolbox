@@ -11,7 +11,7 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:theme="@style/ActionBarThemeOverlay">
 
         <include
             android:id="@+id/toolbar"
@@ -19,12 +19,26 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.NestedScrollView
+    <android.support.v4.widget.SlidingPaneLayout
+        android:id="@+id/sliding_pane"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <include layout="@layout/content_uart"/>
-    </android.support.v4.widget.NestedScrollView>
+        <fragment
+            android:id="@+id/fragment_log"
+            android:name="com.ppcrong.bletoolbox.uart.fragment.UartLogFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:layout="@layout/fragment_feature_uart_log"/>
+
+        <android.support.v4.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <include layout="@layout/content_uart"/>
+        </android.support.v4.widget.NestedScrollView>
+
+    </android.support.v4.widget.SlidingPaneLayout>
 
 </android.support.design.widget.CoordinatorLayout>
