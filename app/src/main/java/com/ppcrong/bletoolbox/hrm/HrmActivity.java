@@ -136,6 +136,7 @@ public class HrmActivity extends ProfileBaseActivity {
         clearGraph();
     }
 
+    @Override
     protected void onDeviceDisconnected() {
 
         super.onDeviceDisconnected();
