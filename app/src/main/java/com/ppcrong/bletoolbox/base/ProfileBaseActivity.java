@@ -39,6 +39,7 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import butterknife.BindView;
+import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -62,6 +63,12 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     private Observable<RxBleConnection> mConnectionObservable;
     private PublishSubject<Boolean> disconnectTriggerSubject = PublishSubject.create();
     CopyOnWriteArrayList<RxBleDevice> mSelectedDevices = new CopyOnWriteArrayList<>();
+
+    /**
+     * Show Detail Log
+     */
+    private int mShowDetailLogCount = 0;
+    private Toast mToastShowDetailLog;
     // endregion [Variable]
 
     // region [Widget]
@@ -74,6 +81,33 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     @BindView(R.id.tv_battery)
     TextView mTvBattery;
     // endregion [Widget]
+
+    // region [OnClick]
+    @OnClick(R.id.tv_ble_device)
+    public void onClickTvBleDevice() {
+
+        if (mShowDetailLogCount >= 5) {
+            return;
+        }
+
+        mShowDetailLogCount++;
+        if (mShowDetailLogCount > 2 && mShowDetailLogCount < 5) {
+            if (mToastShowDetailLog != null) mToastShowDetailLog.cancel();
+            mToastShowDetailLog = Toast.makeText(this, "" + (5 - mShowDetailLogCount) + " more clicks will show DetailLog", Toast.LENGTH_SHORT);
+            mToastShowDetailLog.show();
+        }
+        if (mShowDetailLogCount == 5) {
+            if (mToastShowDetailLog != null) mToastShowDetailLog.cancel();
+            mToastShowDetailLog = Toast.makeText(this, "DetailLog mode...", Toast.LENGTH_SHORT);
+            mToastShowDetailLog.show();
+            mTvBleError.setVisibility(View.GONE);
+        }
+    }
+
+    private boolean isShowDetailLog() {
+        return mShowDetailLogCount >= 5;
+    }
+    // endregion [OnClick]
 
     // region [Life Cycle]
     @Override
@@ -322,7 +356,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     private void showBleError(final boolean show, final int messageResId) {
 
         runOnUiThread(() -> {
-            if (show) {
+            if (show && isShowDetailLog()) {
 
                 // TextView
                 mTvBleError.setVisibility(View.VISIBLE);
@@ -341,7 +375,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     private void showBleError(final boolean show, final String message) {
 
         runOnUiThread(() -> {
-            if (show) {
+            if (show && isShowDetailLog()) {
 
                 // TextView
                 mTvBleError.setVisibility(View.VISIBLE);
