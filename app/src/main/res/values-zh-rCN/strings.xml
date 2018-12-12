@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BleToolbox</string>
+    <string name="app_name">CC Toolbox</string>
 
     <string name="bt_not_enabled">Bluetooth is not enabled!!!</string>
 
