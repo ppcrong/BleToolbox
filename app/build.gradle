@@ -11,7 +11,7 @@ android {
         applicationId "com.ppcrong.bletoolbox"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 1812121600
+        versionCode 1812121400
         versionName "1.000.000"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }

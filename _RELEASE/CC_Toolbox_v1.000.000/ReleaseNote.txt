@@ -1,0 +1,3 @@
+[CC_Toolbox_v1.000.000]
+  1. 1st formal release.
+  2. Current scope includes CSC, HRM and OTA
