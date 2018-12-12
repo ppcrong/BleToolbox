@@ -31,9 +31,60 @@
 # rxjava
 -dontwarn io.reactivex.**
 -keep class io.reactivex.** { *;}
+-dontwarn org.reactivestreams.**
+-keep class org.reactivestreams.** { *;}
 -dontwarn org.apache.http.**
 -keep class org.apache.http.** { *;}
 
 # rxlifecycle
 -keep class com.trello.rxlifecycle2.** { *; }
 -dontwarn javax.annotation.**
+
+# EventBus
+-keepattributes *Annotation*
+-keepclassmembers class ** {
+    @org.greenrobot.eventbus.Subscribe <methods>;
+}
+-keep enum org.greenrobot.eventbus.ThreadMode { *; }
+
+# Only required if you use AsyncExecutor
+-keepclassmembers class * extends org.greenrobot.eventbus.util.ThrowableFailureEvent {
+    <init>(java.lang.Throwable);
+}
+
+# Other
+-libraryjars ../app/libs
+
+# Java
+-keep class java.** { *; }
+-dontnote java.**
+-dontwarn java.**
+
+-keep class javax.** { *; }
+-dontnote javax.**
+-dontwarn javax.**
+
+-keep class sun.misc.Unsafe { *; }
+-dontnote sun.misc.Unsafe
+
+-keep class javax.xml.stream.XMLOutputFactory { *; }
+
+# Chart Engine
+-keep class org.achartengine.** { *; }
+-dontnote org.achartengine.**
+
+# Simple XML
+-keep public class org.simpleframework.** { *; }
+-keep class org.simpleframework.xml.** { *; }
+-keep class org.simpleframework.xml.core.** { *; }
+-keep class org.simpleframework.xml.util.** { *; }
+
+-keepattributes ElementList, Root, InnerClasses, LineNumberTable
+
+-keepclasseswithmembers class * {
+    @org.simpleframework.xml.* <fields>;
+}
+
+# (the rt.jar has them)
+-dontwarn com.bea.xml.stream.**
+-dontwarn javax.xml.stream.events.**
