@@ -103,6 +103,19 @@ public class CscActivity extends ProfileBaseActivity {
     protected UUID getFilterCccUUID() {
         return CscManager.CSC_MEASUREMENT_CHARACTERISTIC_UUID;
     }
+
+    @Override
+    protected void setDefaultUI() {
+        super.setDefaultUI();
+
+        // Clear all values
+        mTvCadence.setText(R.string.not_available_value);
+        mTvSpeed.setText(R.string.not_available_value);
+        mTvDistance.setText(R.string.not_available_value);
+        mTvDistanceTotal.setText(R.string.not_available_value);
+        mTvRatio.setText(R.string.not_available_value);
+    }
+
     // endregion [Override Function]
 
     // region [Private Function]
