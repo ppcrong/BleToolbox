@@ -27,6 +27,8 @@
 -dontwarn java.nio.**
 -dontwarn java.lang.invoke.**
 -keep class com.lsxiao.apollo.generate.** { *; }
+-keep class net.rehacktive.waspdb.** { *; }
+-keep class com.esotericsoftware.kryo.** { *; }
 
 # rxjava
 -dontwarn io.reactivex.**
