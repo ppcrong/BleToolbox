@@ -37,7 +37,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.lsxiao.apollo.core.annotations.Receive;
 import com.ppcrong.bletoolbox.R;
+import com.ppcrong.bletoolbox.apollo.BleEvents;
 import com.ppcrong.bletoolbox.base.ProfileBaseActivity;
 import com.ppcrong.bletoolbox.uart.adapter.FileBrowserAppsAdapter;
 import com.ppcrong.bletoolbox.uart.adapter.UartConfigurationsAdapter;
@@ -306,30 +308,6 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
     @Override
     protected UUID getFilterCccUUID2() {
         return UartManager.UART_RX_CHARACTERISTIC_UUID;
-    }
-
-    @Override
-    protected void onDeviceConnected() {
-        super.onDeviceConnected();
-
-        new Thread(() -> {
-            final Cursor cursor = mDatabaseHelper.getConfigurations();
-            try {
-                while (cursor.moveToNext()) {
-                    final long id = cursor.getLong(0 /* _ID */);
-                    try {
-                        final String xml = cursor.getString(2 /* XML */);
-                        final Format format = new Format(new HyphenStyle());
-                        final Serializer serializer = new Persister(format);
-                        final UartConfiguration configuration = serializer.read(UartConfiguration.class, xml);
-                    } catch (final Exception e) {
-                        KLog.i("Deserializing configuration with id " + id + " failed", e);
-                    }
-                }
-            } finally {
-                cursor.close();
-            }
-        }).start();
     }
 
     // endregion [ProfileBase]
@@ -771,4 +749,41 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
         }
     }
     // endregion [Private Class]
+
+    // region [Apollo]
+    @Receive("BleEvents.NotifyBleConnectionStateEvent")
+    public void onNotifyBleConnectionStateEvent(BleEvents.NotifyBleConnectionStateEvent event) {
+
+        switch (event.getState()) {
+            case CONNECTING:
+                break;
+            case CONNECTED:
+                new Thread(() -> {
+                    final Cursor cursor = mDatabaseHelper.getConfigurations();
+                    try {
+                        while (cursor.moveToNext()) {
+                            final long id = cursor.getLong(0 /* _ID */);
+                            try {
+                                final String xml = cursor.getString(2 /* XML */);
+                                final Format format = new Format(new HyphenStyle());
+                                final Serializer serializer = new Persister(format);
+                                final UartConfiguration configuration = serializer.read(UartConfiguration.class, xml);
+                            } catch (final Exception e) {
+                                KLog.i("Deserializing configuration with id " + id + " failed", e);
+                            }
+                        }
+                    } finally {
+                        cursor.close();
+                    }
+                }).start();
+                break;
+            case DISCONNECTED:
+                break;
+            case DISCONNECTING:
+                break;
+            default:
+                break;
+        }
+    }
+    // endregion [Apollo]
 }

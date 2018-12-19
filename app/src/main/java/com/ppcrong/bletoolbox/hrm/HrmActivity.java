@@ -7,8 +7,10 @@ import android.support.annotation.NonNull;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.lsxiao.apollo.core.annotations.Receive;
 import com.polidea.rxandroidble2.helpers.ValueInterpreter;
 import com.ppcrong.bletoolbox.R;
+import com.ppcrong.bletoolbox.apollo.BleEvents;
 import com.ppcrong.bletoolbox.base.ProfileBaseActivity;
 import com.socks.library.KLog;
 
@@ -136,14 +138,6 @@ public class HrmActivity extends ProfileBaseActivity {
         clearGraph();
     }
 
-    @Override
-    protected void onDeviceDisconnected() {
-
-        super.onDeviceDisconnected();
-
-        // Stop mRepeatTask
-        stopShowGraph();
-    }
     // endregion [Override Function]
 
     // region [Private Function]
@@ -252,6 +246,30 @@ public class HrmActivity extends ProfileBaseActivity {
 
     private void onHrSensorLocationReadFailure(Throwable throwable) {
 
+        KLog.i();
     }
     // endregion [Callback]
+
+    // region [Apollo]
+    @Receive("BleEvents.NotifyBleConnectionStateEvent")
+    public void onNotifyBleConnectionStateEvent(BleEvents.NotifyBleConnectionStateEvent event) {
+
+        KLog.i();
+
+        switch (event.getState()) {
+            case CONNECTING:
+                break;
+            case CONNECTED:
+                break;
+            case DISCONNECTED:
+                // Stop mRepeatTask
+                stopShowGraph();
+                break;
+            case DISCONNECTING:
+                break;
+            default:
+                break;
+        }
+    }
+    // endregion [Apollo]
 }

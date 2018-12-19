@@ -41,7 +41,10 @@ import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.lsxiao.apollo.core.annotations.Receive;
 import com.ppcrong.bletoolbox.R;
+import com.ppcrong.bletoolbox.apollo.BleEvents;
+import com.ppcrong.bletoolbox.uart.UartActivity;
 import com.ppcrong.bletoolbox.uart.UartInterface;
 import com.ppcrong.bletoolbox.uart.adapter.UartLogAdapter;
 
@@ -151,6 +154,11 @@ public class UartLogFragment extends ListFragment implements LoaderManager.Loade
          */
 //        final Intent service = new Intent(getActivity(), UARTService.class);
 //        getActivity().bindService(service, mServiceConnection, 0); // we pass 0 as a flag so the service will not be created if not exists
+
+        if (getActivity() instanceof UartActivity) {
+
+            mUARTInterface = (UartActivity) getActivity();
+        }
     }
 
     @Override
@@ -269,25 +277,26 @@ public class UartLogFragment extends ListFragment implements LoaderManager.Loade
         imm.hideSoftInputFromWindow(mField.getWindowToken(), 0);
     }
 
-    /**
-     * Method called when the target device has connected.
-     */
-    protected void onDeviceConnected() {
-        mField.setEnabled(true);
-        mSendButton.setEnabled(true);
-    }
+    // region [Apollo]
+    @Receive("BleEvents.NotifyBleConnectionStateEvent")
+    public void onNotifyBleConnectionStateEvent(BleEvents.NotifyBleConnectionStateEvent event) {
 
-    /**
-     * Method called when user disconnected from the target UART device or the connection was lost.
-     */
-    protected void onDeviceDisconnected() {
-        mField.setEnabled(false);
-        mSendButton.setEnabled(false);
+        switch (event.getState()) {
+            case CONNECTING:
+                break;
+            case CONNECTED:
+                mField.setEnabled(true);
+                mSendButton.setEnabled(true);
+                break;
+            case DISCONNECTED:
+                mField.setEnabled(false);
+                mSendButton.setEnabled(false);
+                break;
+            case DISCONNECTING:
+                break;
+            default:
+                break;
+        }
     }
-
-//    private static IntentFilter makeIntentFilter() {
-//        final IntentFilter intentFilter = new IntentFilter();
-//        intentFilter.addAction(BleProfileService.BROADCAST_CONNECTION_STATE);
-//        return intentFilter;
-//    }
+    // endregion [Apollo]
 }

@@ -20,6 +20,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jakewharton.rx.ReplayingShare;
+import com.lsxiao.apollo.core.Apollo;
+import com.lsxiao.apollo.core.contract.ApolloBinder;
 import com.polidea.rxandroidble2.RxBleConnection;
 import com.polidea.rxandroidble2.RxBleDevice;
 import com.polidea.rxandroidble2.RxBleDeviceServices;
@@ -28,6 +30,7 @@ import com.ppcrong.blescanner.BleScanner;
 import com.ppcrong.blescanner.ScannerFragment;
 import com.ppcrong.bletoolbox.BleToolboxApp;
 import com.ppcrong.bletoolbox.R;
+import com.ppcrong.bletoolbox.apollo.BleEvents;
 import com.ppcrong.bletoolbox.battery.BleBatteryManager;
 import com.ppcrong.utils.MiscUtils;
 import com.socks.library.KLog;
@@ -63,6 +66,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     private Observable<RxBleConnection> mConnectionObservable;
     private PublishSubject<Boolean> disconnectTriggerSubject = PublishSubject.create();
     CopyOnWriteArrayList<RxBleDevice> mSelectedDevices = new CopyOnWriteArrayList<>();
+    private ApolloBinder mBinder;
 
     /**
      * Show Detail Log
@@ -128,6 +132,19 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         setUpView();
         // View is ready to be used
         onViewCreated(savedInstanceState);
+
+        // Apollo
+        mBinder = Apollo.bind(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Apollo
+        if (mBinder != null) {
+            mBinder.unbind();
+        }
     }
 
     /**
@@ -466,23 +483,6 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         return characteristic != null && (characteristic.getProperties() & property) > 0;
     }
 
-    // region [Callback of BLE Connection State Change]
-    protected void onDeviceConnecting() {
-        KLog.i();
-    }
-
-    protected void onDeviceConnected() {
-        KLog.i();
-    }
-
-    protected void onDeviceDisconnected() {
-        KLog.i();
-    }
-
-    protected void onDeviceDisconnecting() {
-        KLog.i();
-    }
-    // endregion [Callback of BLE Connection State Change]
     // endregion [BLE]
 
     // region [Callback]
@@ -534,21 +534,15 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     private void onConnectionStateChange(RxBleConnection.RxBleConnectionState newState) {
 
         KLog.i(newState.toString());
-        String state;
 
         switch (newState) {
             case CONNECTING:
-                state = RxBleConnection.RxBleConnectionState.CONNECTING.toString();
-                onDeviceConnecting();
                 break;
             case CONNECTED:
-                onDeviceConnected();
                 break;
             case DISCONNECTED:
-                onDeviceDisconnected();
                 break;
             case DISCONNECTING:
-                onDeviceDisconnecting();
                 break;
             default:
                 break;
@@ -556,6 +550,10 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
         mTvRxBleConnectionState.setText(newState.toString());
         updateUI();
+
+        // Apollo
+        Apollo.emit("BleEvents.NotifyBleConnectionStateEvent",
+                new BleEvents.NotifyBleConnectionStateEvent(newState));
     }
 
     private void onConnectionFailure(Throwable throwable) {
