@@ -67,6 +67,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     private PublishSubject<Boolean> disconnectTriggerSubject = PublishSubject.create();
     CopyOnWriteArrayList<RxBleDevice> mSelectedDevices = new CopyOnWriteArrayList<>();
     private ApolloBinder mBinder;
+    private MustCccs mMustCccs;
 
     /**
      * Show Detail Log
@@ -353,6 +354,16 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         return null;
     }
 
+    /**
+     * Get MustCccs which has filterUUID and filterUUID2 (also battery)
+     *
+     * @return MustCccs
+     */
+    protected MustCccs getMustCccs() {
+
+        return mMustCccs;
+    }
+
     protected void showSnackbar(final String message) {
 
         runOnUiThread(() -> Snackbar.make(findViewById(android.R.id.content), message, Snackbar.LENGTH_SHORT).show());
@@ -449,7 +460,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
                 .compose(ReplayingShare.instance());
     }
 
-    private String describeProperties(BluetoothGattCharacteristic characteristic) {
+    protected String describeProperties(BluetoothGattCharacteristic characteristic) {
         List<String> properties = new ArrayList<>();
         if (isCccReadable(characteristic)) properties.add("Read");
         if (isCccWritable(characteristic)) properties.add("Write");
@@ -458,28 +469,28 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         return TextUtils.join(" ", properties);
     }
 
-    private String getServiceType(BluetoothGattService service) {
+    protected String getServiceType(BluetoothGattService service) {
         return service.getType() == BluetoothGattService.SERVICE_TYPE_PRIMARY ? "primary" : "secondary";
     }
 
-    private boolean isCccNotifiable(BluetoothGattCharacteristic characteristic) {
+    protected boolean isCccNotifiable(BluetoothGattCharacteristic characteristic) {
         return hasProperty(characteristic, BluetoothGattCharacteristic.PROPERTY_NOTIFY);
     }
 
-    private boolean isCccIndicatable(BluetoothGattCharacteristic characteristic) {
+    protected boolean isCccIndicatable(BluetoothGattCharacteristic characteristic) {
         return hasProperty(characteristic, BluetoothGattCharacteristic.PROPERTY_INDICATE);
     }
 
-    private boolean isCccReadable(BluetoothGattCharacteristic characteristic) {
+    protected boolean isCccReadable(BluetoothGattCharacteristic characteristic) {
         return hasProperty(characteristic, BluetoothGattCharacteristic.PROPERTY_READ);
     }
 
-    private boolean isCccWritable(BluetoothGattCharacteristic characteristic) {
+    protected boolean isCccWritable(BluetoothGattCharacteristic characteristic) {
         return (hasProperty(characteristic, BluetoothGattCharacteristic.PROPERTY_WRITE
                 | BluetoothGattCharacteristic.PROPERTY_WRITE_NO_RESPONSE));
     }
 
-    private boolean hasProperty(BluetoothGattCharacteristic characteristic, int property) {
+    protected boolean hasProperty(BluetoothGattCharacteristic characteristic, int property) {
         return characteristic != null && (characteristic.getProperties() & property) > 0;
     }
 
@@ -586,28 +597,18 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     /**
      * Must have 2 or 3 Characteristics
      * <br/>
-     * 1. Filter CCC
+     * 1. Filter CCC with notification
      * <br/>
-     * 1. Filter CCC2
-     * <br/>
-     * 2. Battery CCC
+     * 2. Filter CCC2
      */
-    class MustCccs {
+    public class MustCccs {
 
-        BluetoothGattCharacteristic FilterCcc;
-        BluetoothGattCharacteristic FilterCcc2;
-        BluetoothGattCharacteristic BatteryCcc;
+        public BluetoothGattCharacteristic FilterCcc;
+        public BluetoothGattCharacteristic FilterCcc2;
 
-        public MustCccs(BluetoothGattCharacteristic filterCcc, BluetoothGattCharacteristic batteryCcc) {
-            FilterCcc = filterCcc;
-            BatteryCcc = batteryCcc;
-        }
-
-        public MustCccs(BluetoothGattCharacteristic filterCcc, BluetoothGattCharacteristic filterCcc2,
-                        BluetoothGattCharacteristic batteryCcc) {
+        public MustCccs(BluetoothGattCharacteristic filterCcc, BluetoothGattCharacteristic filterCcc2) {
             FilterCcc = filterCcc;
             FilterCcc2 = filterCcc2;
-            BatteryCcc = batteryCcc;
         }
     }
 
@@ -616,21 +617,13 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         // When svc discovered, get filter ccc/ccc2 and battery ccc
         if (isConnected()) {
 
-            /**
-             * If 2nd CCC UUID is null, just get 1 filter ccc and battery ccc.
-             * If 2nd CCC UUID is not null, get 2 filter cccs and battery ccc.
-             */
             if (getFilterCccUUID2() == null) {
 
                 KLog.i("2nd CCC UUID is null");
                 mConnectionObservable
-                        .firstOrError()
-                        .flatMap(rxBleConnection -> Single.zip(
-                                services.getCharacteristic(getFilterCccUUID()),
-                                services.getCharacteristic(BleBatteryManager.BATTERY_LEVEL_CHARACTERISTIC),
-                                MustCccs::new))
+                        .flatMapSingle(rxBleConnection -> services.getCharacteristic(getFilterCccUUID()))
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(this::onMustCccsGet, this::onConnectionFailure);
+                        .subscribe(this::onMustCccGet, this::onConnectionFailure);
             } else {
 
                 KLog.i("2nd CCC UUID is NOT null");
@@ -639,7 +632,6 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
                         .flatMap(rxBleConnection -> Single.zip(
                                 services.getCharacteristic(getFilterCccUUID()),
                                 services.getCharacteristic(getFilterCccUUID2()),
-                                services.getCharacteristic(BleBatteryManager.BATTERY_LEVEL_CHARACTERISTIC),
                                 MustCccs::new))
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(this::onMustCccsGet, this::onConnectionFailure);
@@ -654,7 +646,9 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
      * @param onSuccess The callback when read ok
      * @param onError   The callback when error
      */
-    protected void readCcc(UUID uuid, final Consumer<byte[]> onSuccess, final Consumer<? super Throwable> onError) {
+    protected void readCcc(UUID uuid,
+                           final Consumer<byte[]> onSuccess,
+                           final Consumer<? super Throwable> onError) {
 
         if (isConnected()) {
 
@@ -668,19 +662,96 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     }
 
     /**
-     * When MUST filter CCC/CCC2 and battery CCC are GET!!!
+     * Write characteristic
+     *
+     * @param uuid      The ccc to be written
+     * @param onSuccess The callback when write ok
+     * @param onError   The callback when error
+     */
+    protected void writeCcc(UUID uuid, byte[] bytes,
+                            final Consumer<byte[]> onSuccess,
+                            final Consumer<? super Throwable> onError) {
+
+        if (isConnected()) {
+
+            mConnectionObservable
+                    .firstOrError()
+                    .flatMap(rxBleConnection ->
+                            rxBleConnection.writeCharacteristic(uuid, bytes))
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(onSuccess, onError);
+        }
+    }
+
+    /**
+     * Write characteristic
+     *
+     * @param uuid      The ccc to be written
+     * @param onSuccess The callback when write ok
+     * @param onError   The callback when error
+     */
+    protected void longWriteCcc(UUID uuid, byte[] bytes,
+                                final Consumer<byte[]> onSuccess,
+                                final Consumer<? super Throwable> onError) {
+
+        if (isConnected()) {
+
+            mConnectionObservable
+                    .flatMap(rxBleConnection ->
+                            rxBleConnection.createNewLongWriteBuilder()
+                                    .setCharacteristicUuid(uuid)
+                                    .setBytes(bytes)
+                                    .build())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(onSuccess, onError);
+        }
+    }
+
+    /**
+     * When MUST filter CCC and CCC2  are GET!!!
      *
      * @param mustCccs
      */
     private void onMustCccsGet(MustCccs mustCccs) {
 
+        mMustCccs = mustCccs;
+
+        showCccLog(mustCccs);
+
+        readBattery();
+    }
+
+    /**
+     * When MUST filter CCC is GET!!!
+     *
+     * @param ccc
+     */
+    private void onMustCccGet(BluetoothGattCharacteristic ccc) {
+
+        mMustCccs = new MustCccs(ccc, null);
+
+        showCccLog(mMustCccs);
+
+        readBattery();
+    }
+
+    /**
+     * Show log to print filter CCC and CCC2 UUIDs
+     *
+     * @param mustCccs
+     */
+    private void showCccLog(MustCccs mustCccs) {
+
         UUID filterCcc = mustCccs.FilterCcc != null ? mustCccs.FilterCcc.getUuid() : null;
         UUID filterCcc2 = mustCccs.FilterCcc2 != null ? mustCccs.FilterCcc2.getUuid() : null;
-        UUID batteryCcc = mustCccs.BatteryCcc != null ? mustCccs.BatteryCcc.getUuid() : null;
 
         KLog.i("GET===" + filterCcc + "===");
         KLog.i("GET===" + filterCcc2 + "===");
-        KLog.i("GET===" + batteryCcc + "===");
+    }
+
+    private void readBattery() {
+
+        KLog.i();
 
         // Read battery percentage
         if (isConnected()) {
@@ -763,6 +834,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
         KLog.i("Read CCC error: " + throwable);
         showBleError(true, "Read CCC error: " + throwable);
+        onPreWorkDone();
     }
 
     private void onBatteryNotificationReceived(byte[] bytes) {

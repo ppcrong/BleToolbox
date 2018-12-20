@@ -31,6 +31,8 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -50,6 +52,7 @@ import com.ppcrong.bletoolbox.uart.fragment.UartLogFragment;
 import com.ppcrong.bletoolbox.uart.fragment.UartNewConfigurationDialogFragment;
 import com.ppcrong.bletoolbox.uart.utils.FileHelper;
 import com.ppcrong.bletoolbox.widget.ClosableSpinner;
+import com.ppcrong.utils.MiscUtils;
 import com.socks.library.KLog;
 
 import org.simpleframework.xml.Serializer;
@@ -73,6 +76,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 import butterknife.ButterKnife;
@@ -107,7 +111,6 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
     private View mContainer;
     private ConfigurationListener mConfigurationListener;
     private boolean mEditMode;
-
     // endregion [Current Config]
     // endregion [Variable]
 
@@ -293,6 +296,12 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
     protected void onFilterCccNotified(byte[] bytes) {
         super.onFilterCccNotified(bytes);
 
+        KLog.i(MiscUtils.getByteToHexString(bytes, ":", true));
+        try {
+            KLog.i(new String(bytes, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            KLog.i(Log.getStackTraceString(e));
+        }
     }
 
     @Override
@@ -302,7 +311,7 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
 
     @Override
     protected UUID getFilterCccUUID() {
-        return UartManager.UART_TX_CHARACTERISTIC_UUID;
+        return UartManager.UART_TX_CHARACTERISTIC_UUID; // TX needs to enable notification
     }
 
     @Override
@@ -316,6 +325,32 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
     @Override
     public void send(String text) {
 
+        KLog.i("send text: " + text);
+
+        if (!TextUtils.isEmpty(text)) {
+            final byte[] buffer = text.getBytes();
+
+            // Depending on whether the characteristic has the WRITE REQUEST property or not, we will either send it as it is (hoping the long write is implemented),
+            // or divide it into up to 20 bytes chunks and send them one by one.
+            final boolean writeRequest = isCccWritable(getMustCccs().FilterCcc2);
+            KLog.i("writeRequest: " + writeRequest);
+
+            if (!writeRequest) { // no WRITE REQUEST property
+                writeCcc(UartManager.UART_RX_CHARACTERISTIC_UUID, buffer, this::onRxWrite, this::onRxWriteFailure);
+            } else { // there is WRITE REQUEST property, let's try Long Write
+                longWriteCcc(UartManager.UART_RX_CHARACTERISTIC_UUID, buffer, this::onRxWrite, this::onRxWriteFailure);
+            }
+        }
+    }
+
+    private void onRxWrite(byte[] bytes) {
+
+        KLog.i(MiscUtils.getByteToHexString(bytes, ":", true));
+    }
+
+    private void onRxWriteFailure(Throwable throwable) {
+
+        KLog.i(throwable.toString());
     }
 
     public void setEditMode(final boolean editMode) {
