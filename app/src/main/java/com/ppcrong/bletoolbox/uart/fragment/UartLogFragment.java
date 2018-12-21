@@ -41,12 +41,15 @@ import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.lsxiao.apollo.core.Apollo;
 import com.lsxiao.apollo.core.annotations.Receive;
+import com.lsxiao.apollo.core.contract.ApolloBinder;
 import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.apollo.BleEvents;
 import com.ppcrong.bletoolbox.uart.UartActivity;
 import com.ppcrong.bletoolbox.uart.UartInterface;
 import com.ppcrong.bletoolbox.uart.adapter.UartLogAdapter;
+import com.socks.library.KLog;
 
 import no.nordicsemi.android.log.ILogSession;
 import no.nordicsemi.android.log.LogContract;
@@ -80,57 +83,10 @@ public class UartLogFragment extends ListFragment implements LoaderManager.Loade
      */
     private int mLogScrollPosition;
 
-//    /**
-//     * The receiver that listens for {@link BleProfileService#BROADCAST_CONNECTION_STATE} action.
-//     */
-//    private final BroadcastReceiver mCommonBroadcastReceiver = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(final Context context, final Intent intent) {
-//            // This receiver listens only for the BleProfileService.BROADCAST_CONNECTION_STATE action, no need to check it.
-//            final int state = intent.getIntExtra(BleProfileService.EXTRA_CONNECTION_STATE, BleProfileService.STATE_DISCONNECTED);
-//
-//            switch (state) {
-//                case BleProfileService.STATE_CONNECTED: {
-//                    onDeviceConnected();
-//                    break;
-//                }
-//                case BleProfileService.STATE_DISCONNECTED: {
-//                    onDeviceDisconnected();
-//                    break;
-//                }
-//                case BleProfileService.STATE_CONNECTING:
-//                case BleProfileService.STATE_DISCONNECTING:
-//                    // current implementation does nothing in this states
-//                default:
-//                    // there should be no other actions
-//                    break;
-//            }
-//        }
-//    };
-
-//    private ServiceConnection mServiceConnection = new ServiceConnection() {
-//        @Override
-//        public void onServiceConnected(final ComponentName name, final IBinder service) {
-//            final UARTService.UARTBinder bleService = (UARTService.UARTBinder) service;
-//            mUARTInterface = bleService;
-//            mLogSession = bleService.getLogSession();
-//
-//            // Start the loader
-//            if (mLogSession != null) {
-//                getLoaderManager().restartLoader(LOG_REQUEST_ID, null, UARTLogFragment.this);
-//            }
-//
-//            // and notify user if device is connected
-//            if (bleService.isConnected())
-//                onDeviceConnected();
-//        }
-//
-//        @Override
-//        public void onServiceDisconnected(final ComponentName name) {
-//            onDeviceDisconnected();
-//            mUARTInterface = null;
-//        }
-//    };
+    /**
+     * Apollo
+     */
+    private ApolloBinder mBinder;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -142,19 +98,16 @@ public class UartLogFragment extends ListFragment implements LoaderManager.Loade
         if (savedInstanceState != null) {
             mLogScrollPosition = savedInstanceState.getInt(SIS_LOG_SCROLL_POSITION);
         }
+
+        // Apollo
+        mBinder = Apollo.bind(this);
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        /*
-         * If the service has not been started before the following lines will not start it. However, if it's running, the Activity will be binded to it
-         * and notified via mServiceConnection.
-         */
-//        final Intent service = new Intent(getActivity(), UARTService.class);
-//        getActivity().bindService(service, mServiceConnection, 0); // we pass 0 as a flag so the service will not be created if not exists
-
+        // Assign mUartInterface from parent activity
         if (getActivity() instanceof UartActivity) {
 
             mUARTInterface = (UartActivity) getActivity();
@@ -166,7 +119,6 @@ public class UartLogFragment extends ListFragment implements LoaderManager.Loade
         super.onStop();
 
         try {
-//            getActivity().unbindService(mServiceConnection);
             mUARTInterface = null;
         } catch (final IllegalArgumentException e) {
             // do nothing, we were not connected to the sensor
@@ -187,7 +139,10 @@ public class UartLogFragment extends ListFragment implements LoaderManager.Loade
     public void onDestroy() {
         super.onDestroy();
 
-//        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(mCommonBroadcastReceiver);
+        // Apollo
+        if (mBinder != null) {
+            mBinder.unbind();
+        }
     }
 
     @Override
@@ -260,16 +215,6 @@ public class UartLogFragment extends ListFragment implements LoaderManager.Loade
     }
 
     /**
-     * Method called when user selected a device on the scanner dialog after the service has been started.
-     * Here we may bind this fragment to it.
-     */
-    public void onServiceStarted() {
-        // The service has been started, bind to it
-//        final Intent service = new Intent(getActivity(), UARTService.class);
-//        getActivity().bindService(service, mServiceConnection, 0);
-    }
-
-    /**
      * This method is called when user closes the pane in horizontal orientation. The EditText is no longer visible so we need to close the soft keyboard here.
      */
     public void onFragmentHidden() {
@@ -280,6 +225,8 @@ public class UartLogFragment extends ListFragment implements LoaderManager.Loade
     // region [Apollo]
     @Receive("BleEvents.NotifyBleConnectionStateEvent")
     public void onNotifyBleConnectionStateEvent(BleEvents.NotifyBleConnectionStateEvent event) {
+
+        KLog.i();
 
         switch (event.getState()) {
             case CONNECTING:

@@ -341,6 +341,7 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
             // or divide it into up to 20 bytes chunks and send them one by one.
             final boolean writeRequest = isCccWritable(getMustCccs().FilterCcc2);
             KLog.i("writeRequest: " + writeRequest);
+            KLog.i("text.length: " + text.length());
 
             if (!writeRequest) { // no WRITE REQUEST property
                 writeCcc(UartManager.UART_RX_CHARACTERISTIC_UUID, buffer, this::onRxWrite, this::onRxWriteFailure);
@@ -353,6 +354,11 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
     private void onRxWrite(byte[] bytes) {
 
         KLog.i(MiscUtils.getByteToHexString(bytes, ":", true));
+        try {
+            KLog.i(new String(bytes, "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            KLog.i(Log.getStackTraceString(e));
+        }
     }
 
     private void onRxWriteFailure(Throwable throwable) {
@@ -795,6 +801,8 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
     // region [Apollo]
     @Receive("BleEvents.NotifyBleConnectionStateEvent")
     public void onNotifyBleConnectionStateEvent(BleEvents.NotifyBleConnectionStateEvent event) {
+
+        KLog.i();
 
         switch (event.getState()) {
             case CONNECTING:

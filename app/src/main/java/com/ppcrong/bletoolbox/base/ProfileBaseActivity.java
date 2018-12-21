@@ -439,7 +439,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
     }
 
-    protected boolean isConnected() {
+    public boolean isConnected() {
         boolean isConnected = mBleDevice != null &&
                 mBleDevice.getConnectionState() == RxBleConnection.RxBleConnectionState.CONNECTED;
         KLog.i("isConnected: " + isConnected);
