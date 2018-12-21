@@ -373,15 +373,8 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
         runOnUiThread(() -> Snackbar.make(findViewById(android.R.id.content), messageResId, Snackbar.LENGTH_SHORT).show());
     }
-    // endregion [Protected Function]
 
-    // region [Private Function]
-    private void updateUI() {
-        // Refresh BT icon
-        supportInvalidateOptionsMenu();
-    }
-
-    private void showBleError(final boolean show, final int messageResId) {
+    protected void showBleError(final boolean show, final int messageResId) {
 
         runOnUiThread(() -> {
             if (show && isShowDetailLog()) {
@@ -400,7 +393,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         });
     }
 
-    private void showBleError(final boolean show, final String message) {
+    protected void showBleError(final boolean show, final String message) {
 
         runOnUiThread(() -> {
             if (show && isShowDetailLog()) {
@@ -417,6 +410,13 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
                 mTvBleError.setText(R.string.not_available_value);
             }
         });
+    }
+    // endregion [Protected Function]
+
+    // region [Private Function]
+    private void updateUI() {
+        // Refresh BT icon
+        supportInvalidateOptionsMenu();
     }
     // endregion [Private Function]
 

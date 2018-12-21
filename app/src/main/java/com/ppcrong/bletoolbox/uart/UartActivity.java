@@ -327,6 +327,13 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
 
         KLog.i("send text: " + text);
 
+        if (!isConnected()) {
+
+            KLog.i("Not connected yet!!!");
+            showBleError(true, "Not connected yet!!!");
+            return;
+        }
+
         if (!TextUtils.isEmpty(text)) {
             final byte[] buffer = text.getBytes();
 
