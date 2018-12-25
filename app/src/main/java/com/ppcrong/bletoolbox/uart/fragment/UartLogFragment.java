@@ -224,9 +224,9 @@ public class UartLogFragment extends ListFragment implements LoaderManager.Loade
 
     // region [Apollo]
     @Receive("BleEvents.NotifyBleConnectionStateEvent")
-    public void onNotifyBleConnectionStateEvent(BleEvents.NotifyBleConnectionStateEvent event) {
+    public void onNotifyBleStateUartLogFragment(BleEvents.NotifyBleConnectionStateEvent event) {
 
-        KLog.i();
+        KLog.i(event);
 
         switch (event.getState()) {
             case CONNECTING:

@@ -253,9 +253,9 @@ public class HrmActivity extends ProfileBaseActivity {
 
     // region [Apollo]
     @Receive("BleEvents.NotifyBleConnectionStateEvent")
-    public void onNotifyBleConnectionStateEvent(BleEvents.NotifyBleConnectionStateEvent event) {
+    public void onNotifyBleStateHrmActivity(BleEvents.NotifyBleConnectionStateEvent event) {
 
-        KLog.i();
+        KLog.i(event);
 
         switch (event.getState()) {
             case CONNECTING:

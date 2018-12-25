@@ -795,9 +795,9 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
 
     // region [Apollo]
     @Receive("BleEvents.NotifyBleConnectionStateEvent")
-    public void onNotifyBleConnectionStateEvent(BleEvents.NotifyBleConnectionStateEvent event) {
+    public void onNotifyBleStateUartActivity(BleEvents.NotifyBleConnectionStateEvent event) {
 
-        KLog.i();
+        KLog.i(event);
 
         switch (event.getState()) {
             case CONNECTING:
