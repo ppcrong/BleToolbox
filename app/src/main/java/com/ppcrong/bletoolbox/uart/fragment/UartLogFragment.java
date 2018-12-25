@@ -23,23 +23,18 @@
 package com.ppcrong.bletoolbox.uart.fragment;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
+import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.CursorAdapter;
 import android.widget.EditText;
-import android.widget.ListView;
+import android.widget.TextView;
 
 import com.lsxiao.apollo.core.Apollo;
 import com.lsxiao.apollo.core.annotations.Receive;
@@ -48,13 +43,18 @@ import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.apollo.BleEvents;
 import com.ppcrong.bletoolbox.uart.UartActivity;
 import com.ppcrong.bletoolbox.uart.UartInterface;
-import com.ppcrong.bletoolbox.uart.adapter.UartLogAdapter;
+import com.ppcrong.bletoolbox.uart.log.LogData;
+import com.ppcrong.bletoolbox.uart.log.LogListAdapter;
 import com.socks.library.KLog;
 
-import no.nordicsemi.android.log.ILogSession;
+import java.util.Calendar;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import no.nordicsemi.android.log.LogContract;
 
-public class UartLogFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class UartLogFragment extends Fragment {
     private static final String SIS_LOG_SCROLL_POSITION = "sis_scroll_position";
     private static final int LOG_SCROLL_NULL = -1;
     private static final int LOG_SCROLLED_TO_BOTTOM = -2;
@@ -65,42 +65,32 @@ public class UartLogFragment extends ListFragment implements LoaderManager.Loade
     /**
      * The service UART interface that may be used to send data to the target.
      */
-    private UartInterface mUARTInterface;
-    /**
-     * The adapter used to populate the list with log entries.
-     */
-    private CursorAdapter mLogAdapter;
-    /**
-     * The log session created to log events related with the target device.
-     */
-    private ILogSession mLogSession;
-
-    private EditText mField;
-    private Button mSendButton;
-
-    /**
-     * The last list view position.
-     */
-    private int mLogScrollPosition;
+    private UartInterface mUartInterface;
 
     /**
      * Apollo
      */
     private ApolloBinder mBinder;
 
+    // region [Adapter]
+    private LogListAdapter mLogListAdapter;
+    private CopyOnWriteArrayList<LogData> mLogDataList = new CopyOnWriteArrayList<>();
+    // endregion [Adapter]
+
+    // region [Widget]
+    @BindView(R.id.rv_log)
+    RecyclerView mRvLogList;
+    @BindView(R.id.tv_empty)
+    TextView mTvEmpty;
+    @BindView(R.id.field)
+    EditText mField;
+    @BindView(R.id.action_send)
+    Button mSendButton;
+    // endregion [Widget]
+
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-//        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(mCommonBroadcastReceiver, makeIntentFilter());
-
-        // Load the last log list view scroll position
-        if (savedInstanceState != null) {
-            mLogScrollPosition = savedInstanceState.getInt(SIS_LOG_SCROLL_POSITION);
-        }
-
-        // Apollo
-        mBinder = Apollo.bind(this);
     }
 
     @Override
@@ -110,7 +100,7 @@ public class UartLogFragment extends ListFragment implements LoaderManager.Loade
         // Assign mUartInterface from parent activity
         if (getActivity() instanceof UartActivity) {
 
-            mUARTInterface = (UartActivity) getActivity();
+            mUartInterface = (UartActivity) getActivity();
         }
     }
 
@@ -119,7 +109,7 @@ public class UartLogFragment extends ListFragment implements LoaderManager.Loade
         super.onStop();
 
         try {
-            mUARTInterface = null;
+            mUartInterface = null;
         } catch (final IllegalArgumentException e) {
             // do nothing, we were not connected to the sensor
         }
@@ -130,26 +120,24 @@ public class UartLogFragment extends ListFragment implements LoaderManager.Loade
         super.onSaveInstanceState(outState);
 
         // Save the last log list view scroll position
-        final ListView list = getListView();
-        final boolean scrolledToBottom = list.getCount() > 0 && list.getLastVisiblePosition() == list.getCount() - 1;
-        outState.putInt(SIS_LOG_SCROLL_POSITION, scrolledToBottom ? LOG_SCROLLED_TO_BOTTOM : list.getFirstVisiblePosition());
+//        final ListView list = getListView();
+//        final boolean scrolledToBottom = list.getCount() > 0 && list.getLastVisiblePosition() == list.getCount() - 1;
+//        outState.putInt(SIS_LOG_SCROLL_POSITION, scrolledToBottom ? LOG_SCROLLED_TO_BOTTOM : list.getFirstVisiblePosition());
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        // Apollo
-        if (mBinder != null) {
-            mBinder.unbind();
-        }
     }
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
         final View view = inflater.inflate(R.layout.fragment_feature_uart_log, container, false);
 
-        final EditText field = mField = view.findViewById(R.id.field);
+        // Bind ButterKnife
+        ButterKnife.bind(this, view);
+
+        final EditText field = mField;
         field.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEND) {
                 onSendClicked();
@@ -158,7 +146,7 @@ public class UartLogFragment extends ListFragment implements LoaderManager.Loade
             return false;
         });
 
-        final Button sendButton = mSendButton = view.findViewById(R.id.action_send);
+        final Button sendButton = mSendButton;
         sendButton.setOnClickListener(v -> onSendClicked());
         return view;
     }
@@ -167,48 +155,35 @@ public class UartLogFragment extends ListFragment implements LoaderManager.Loade
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Apollo
+        mBinder = Apollo.bind(this);
+
         // Create the log adapter, initially with null cursor
-        mLogAdapter = new UartLogAdapter(getActivity());
-        setListAdapter(mLogAdapter);
+//        mLogAdapter = new UartLogAdapter(getActivity());
+//        setListAdapter(mLogAdapter);
+
+        // LogData list
+        Context ctx = getActivity();
+        mLogListAdapter = new LogListAdapter(ctx, mLogDataList);
+        mRvLogList.setLayoutManager(new LinearLayoutManager(ctx));
+        mRvLogList.setAdapter(mLogListAdapter);
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(final int id, final Bundle args) {
-        switch (id) {
-            case LOG_REQUEST_ID: {
-                return new CursorLoader(getActivity(), mLogSession.getSessionEntriesUri(), LOG_PROJECTION, null, null, LogContract.Log.TIME);
-            }
+    public void onDestroyView() {
+        super.onDestroyView();
+
+        // Apollo
+        if (mBinder != null) {
+            mBinder.unbind();
         }
-        return null;
-    }
-
-    @Override
-    public void onLoadFinished(final Loader<Cursor> loader, final Cursor data) {
-        // Here we have to restore the old saved scroll position, or scroll to the bottom if before adding new events it was scrolled to the bottom.
-        final ListView list = getListView();
-        final int position = mLogScrollPosition;
-        final boolean scrolledToBottom = position == LOG_SCROLLED_TO_BOTTOM || (list.getCount() > 0 && list.getLastVisiblePosition() == list.getCount() - 1);
-
-        mLogAdapter.swapCursor(data);
-
-        if (position > LOG_SCROLL_NULL) {
-            list.setSelectionFromTop(position, 0);
-        } else {
-            if (scrolledToBottom)
-                list.setSelection(list.getCount() - 1);
-        }
-        mLogScrollPosition = LOG_SCROLL_NULL;
-    }
-
-    @Override
-    public void onLoaderReset(final Loader<Cursor> loader) {
-        mLogAdapter.swapCursor(null);
     }
 
     private void onSendClicked() {
         final String text = mField.getText().toString();
 
-        mUARTInterface.send(text);
+        mUartInterface.send(text);
+//        addLog(LogListAdapter.Level.DEBUG, Calendar.getInstance().getTimeInMillis(), text);
 
         mField.setText(null);
         mField.requestFocus();
@@ -221,6 +196,25 @@ public class UartLogFragment extends ListFragment implements LoaderManager.Loade
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mField.getWindowToken(), 0);
     }
+
+    // region [Add log]
+    private void addLog(int level, long time, String data) {
+
+        if (mTvEmpty.getVisibility() == View.VISIBLE) {
+
+            mTvEmpty.setVisibility(View.GONE);
+        }
+
+        mLogDataList.add(new LogData.Builder().setLevel(level).setTime(time).setData(data).build());
+        mLogListAdapter.notifyDataSetChanged();
+    }
+
+    private void addLog(LogData data) {
+
+        mLogDataList.add(data);
+        mLogListAdapter.notifyDataSetChanged();
+    }
+    // endregion [Add log]
 
     // region [Apollo]
     @Receive("BleEvents.NotifyBleConnectionStateEvent")
