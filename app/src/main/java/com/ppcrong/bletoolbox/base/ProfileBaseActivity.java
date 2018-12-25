@@ -42,6 +42,7 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.Single;
@@ -77,6 +78,8 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     // endregion [Variable]
 
     // region [Widget]
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
     @BindView(R.id.tv_ble_device)
     TextView mTvBleDevice;
     @BindView(R.id.tv_rx_ble_connection_state)
@@ -129,6 +132,9 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         // The onCreateView class should... create the view
         onCreateView(savedInstanceState);
 
+        // Bind ButterKnife
+        ButterKnife.bind(this);
+
         // Common Toolbox view references are obtained here
         setUpView();
         // View is ready to be used
@@ -177,8 +183,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
      */
     protected final void setUpView() {
         // set Toolbar
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 

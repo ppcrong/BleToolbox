@@ -19,7 +19,6 @@ import org.achartengine.GraphicalView;
 import java.util.UUID;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class HrmActivity extends ProfileBaseActivity {
 
@@ -87,9 +86,11 @@ public class HrmActivity extends ProfileBaseActivity {
     protected void onCreateView(Bundle savedInstanceState) {
 
         setContentView(R.layout.activity_hrm);
+    }
 
-        // Bind ButterKnife
-        ButterKnife.bind(this);
+    @Override
+    protected void onViewCreated(Bundle savedInstanceState) {
+        super.onViewCreated(savedInstanceState);
 
         setGUI();
     }

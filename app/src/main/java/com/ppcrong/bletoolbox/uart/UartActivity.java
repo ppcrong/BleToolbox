@@ -79,8 +79,6 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
-import butterknife.ButterKnife;
-
 public class UartActivity extends ProfileBaseActivity implements UartInterface,
         UartConfigurationsAdapter.ActionListener, AdapterView.OnItemSelectedListener,
         UartNewConfigurationDialogFragment.NewConfigurationDialogListener {
@@ -149,9 +147,11 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
     protected void onCreateView(Bundle savedInstanceState) {
 
         setContentView(R.layout.activity_uart);
+    }
 
-        // Bind ButterKnife
-        ButterKnife.bind(this);
+    @Override
+    protected void onViewCreated(Bundle savedInstanceState) {
+        super.onViewCreated(savedInstanceState);
 
         // SlidingPane
         mContainer = findViewById(R.id.container);
@@ -169,11 +169,6 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
                 }
             });
         }
-    }
-
-    @Override
-    protected void onViewCreated(Bundle savedInstanceState) {
-        super.onViewCreated(savedInstanceState);
 
         // Empty Toolbar title to avoid overlap with spinner
         getSupportActionBar().setTitle("");

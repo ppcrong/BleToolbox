@@ -12,7 +12,6 @@ import java.util.Locale;
 import java.util.UUID;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 import static com.ppcrong.bletoolbox.csc.CscManager.CRANK_REVOLUTION_DATA_PRESENT;
 import static com.ppcrong.bletoolbox.csc.CscManager.WHEEL_REVOLUTIONS_DATA_PRESENT;
@@ -50,9 +49,6 @@ public class CscActivity extends ProfileBaseActivity {
     protected void onCreateView(Bundle savedInstanceState) {
 
         setContentView(R.layout.activity_csc);
-
-        // Bind ButterKnife
-        ButterKnife.bind(this);
     }
 
     @Override

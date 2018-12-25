@@ -3,7 +3,6 @@ package com.ppcrong.bletoolbox.ahrs;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
@@ -23,7 +22,6 @@ import com.socks.library.KLog;
 import java.util.UUID;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class AhrsActivity extends ProfileBaseActivity {
 
@@ -59,9 +57,6 @@ public class AhrsActivity extends ProfileBaseActivity {
     protected void onCreateView(Bundle savedInstanceState) {
 
         setContentView(R.layout.activity_ahrs);
-
-        // Bind ButterKnife
-        ButterKnife.bind(this);
     }
 
     @Override
