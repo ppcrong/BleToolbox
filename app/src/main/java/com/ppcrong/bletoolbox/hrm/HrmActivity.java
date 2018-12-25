@@ -7,14 +7,15 @@ import android.support.annotation.NonNull;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.lsxiao.apollo.core.annotations.Receive;
 import com.polidea.rxandroidble2.helpers.ValueInterpreter;
 import com.ppcrong.bletoolbox.R;
-import com.ppcrong.bletoolbox.apollo.BleEvents;
+import com.ppcrong.bletoolbox.eventbus.BleEvents;
 import com.ppcrong.bletoolbox.base.ProfileBaseActivity;
 import com.socks.library.KLog;
 
 import org.achartengine.GraphicalView;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.UUID;
 
@@ -251,9 +252,9 @@ public class HrmActivity extends ProfileBaseActivity {
     }
     // endregion [Callback]
 
-    // region [Apollo]
-    @Receive("BleEvents.NotifyBleConnectionStateEvent")
-    public void onNotifyBleStateHrmActivity(BleEvents.NotifyBleConnectionStateEvent event) {
+    // region [EventBus]
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onBleConnectionStateChange(BleEvents.BleConnectionState event) {
 
         KLog.i(event);
 
@@ -272,5 +273,5 @@ public class HrmActivity extends ProfileBaseActivity {
                 break;
         }
     }
-    // endregion [Apollo]
+    // endregion [EventBus]
 }

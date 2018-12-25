@@ -1,4 +1,4 @@
-package com.ppcrong.bletoolbox.apollo;
+package com.ppcrong.bletoolbox.eventbus;
 
 import com.polidea.rxandroidble2.RxBleConnection;
 
@@ -8,15 +8,11 @@ import com.polidea.rxandroidble2.RxBleConnection;
 
 public class BleEvents {
 
-    public static class NotifyBleConnectionStateEvent {
+    public static class BleConnectionState {
 
         private RxBleConnection.RxBleConnectionState state;
 
-        // Apollo MUST: no-arg ctr
-        public NotifyBleConnectionStateEvent() {
-        }
-
-        public NotifyBleConnectionStateEvent(RxBleConnection.RxBleConnectionState state) {
+        public BleConnectionState(RxBleConnection.RxBleConnectionState state) {
             this.state = state;
         }
 

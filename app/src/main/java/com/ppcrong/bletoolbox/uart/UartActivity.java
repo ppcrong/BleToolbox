@@ -39,9 +39,8 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.lsxiao.apollo.core.annotations.Receive;
 import com.ppcrong.bletoolbox.R;
-import com.ppcrong.bletoolbox.apollo.BleEvents;
+import com.ppcrong.bletoolbox.eventbus.BleEvents;
 import com.ppcrong.bletoolbox.base.ProfileBaseActivity;
 import com.ppcrong.bletoolbox.uart.adapter.FileBrowserAppsAdapter;
 import com.ppcrong.bletoolbox.uart.adapter.UartConfigurationsAdapter;
@@ -55,6 +54,8 @@ import com.ppcrong.bletoolbox.widget.ClosableSpinner;
 import com.ppcrong.utils.MiscUtils;
 import com.socks.library.KLog;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.strategy.Strategy;
@@ -793,9 +794,9 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
     }
     // endregion [Private Class]
 
-    // region [Apollo]
-    @Receive("BleEvents.NotifyBleConnectionStateEvent")
-    public void onNotifyBleStateUartActivity(BleEvents.NotifyBleConnectionStateEvent event) {
+    // region [EventBus]
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onBleConnectionStateChange(BleEvents.BleConnectionState event) {
 
         KLog.i(event);
 
@@ -830,5 +831,5 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
                 break;
         }
     }
-    // endregion [Apollo]
+    // endregion [EventBus]
 }

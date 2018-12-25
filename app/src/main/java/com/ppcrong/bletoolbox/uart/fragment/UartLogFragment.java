@@ -36,18 +36,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.lsxiao.apollo.core.Apollo;
-import com.lsxiao.apollo.core.annotations.Receive;
-import com.lsxiao.apollo.core.contract.ApolloBinder;
 import com.ppcrong.bletoolbox.R;
-import com.ppcrong.bletoolbox.apollo.BleEvents;
+import com.ppcrong.bletoolbox.eventbus.BleEvents;
 import com.ppcrong.bletoolbox.uart.UartActivity;
 import com.ppcrong.bletoolbox.uart.UartInterface;
 import com.ppcrong.bletoolbox.uart.log.LogData;
 import com.ppcrong.bletoolbox.uart.log.LogListAdapter;
 import com.socks.library.KLog;
 
-import java.util.Calendar;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import butterknife.BindView;
@@ -66,11 +66,6 @@ public class UartLogFragment extends Fragment {
      * The service UART interface that may be used to send data to the target.
      */
     private UartInterface mUartInterface;
-
-    /**
-     * Apollo
-     */
-    private ApolloBinder mBinder;
 
     // region [Adapter]
     private LogListAdapter mLogListAdapter;
@@ -102,10 +97,15 @@ public class UartLogFragment extends Fragment {
 
             mUartInterface = (UartActivity) getActivity();
         }
+
+        EventBus.getDefault().register(this);
     }
 
     @Override
     public void onStop() {
+
+        EventBus.getDefault().unregister(this);
+
         super.onStop();
 
         try {
@@ -155,9 +155,6 @@ public class UartLogFragment extends Fragment {
     public void onViewCreated(final View view, final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Apollo
-        mBinder = Apollo.bind(this);
-
         // Create the log adapter, initially with null cursor
 //        mLogAdapter = new UartLogAdapter(getActivity());
 //        setListAdapter(mLogAdapter);
@@ -172,11 +169,6 @@ public class UartLogFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-
-        // Apollo
-        if (mBinder != null) {
-            mBinder.unbind();
-        }
     }
 
     private void onSendClicked() {
@@ -216,9 +208,9 @@ public class UartLogFragment extends Fragment {
     }
     // endregion [Add log]
 
-    // region [Apollo]
-    @Receive("BleEvents.NotifyBleConnectionStateEvent")
-    public void onNotifyBleStateUartLogFragment(BleEvents.NotifyBleConnectionStateEvent event) {
+    // region [EventBus]
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onBleConnectionStateChange(BleEvents.BleConnectionState event) {
 
         KLog.i(event);
 
@@ -239,5 +231,5 @@ public class UartLogFragment extends Fragment {
                 break;
         }
     }
-    // endregion [Apollo]
+    // endregion [EventBus]
 }

@@ -20,7 +20,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jakewharton.rx.ReplayingShare;
-import com.lsxiao.apollo.core.Apollo;
 import com.lsxiao.apollo.core.contract.ApolloBinder;
 import com.polidea.rxandroidble2.RxBleConnection;
 import com.polidea.rxandroidble2.RxBleDevice;
@@ -30,11 +29,13 @@ import com.ppcrong.blescanner.BleScanner;
 import com.ppcrong.blescanner.ScannerFragment;
 import com.ppcrong.bletoolbox.BleToolboxApp;
 import com.ppcrong.bletoolbox.R;
-import com.ppcrong.bletoolbox.apollo.BleEvents;
 import com.ppcrong.bletoolbox.battery.BleBatteryManager;
+import com.ppcrong.bletoolbox.eventbus.BleEvents;
 import com.ppcrong.utils.MiscUtils;
 import com.socks.library.KLog;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -139,19 +140,23 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         setUpView();
         // View is ready to be used
         onViewCreated(savedInstanceState);
+    }
 
-        // Apollo
-        mBinder = Apollo.bind(this);
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        // Apollo
-        if (mBinder != null) {
-            mBinder.unbind();
-        }
     }
 
     /**
@@ -567,9 +572,8 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         mTvRxBleConnectionState.setText(newState.toString());
         updateUI();
 
-        // Apollo
-        Apollo.emit("BleEvents.NotifyBleConnectionStateEvent",
-                new BleEvents.NotifyBleConnectionStateEvent(newState));
+        // EventBus
+        EventBus.getDefault().post(new BleEvents.BleConnectionState(newState));
     }
 
     private void onConnectionFailure(Throwable throwable) {
