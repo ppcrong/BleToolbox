@@ -36,7 +36,7 @@
     <string name="scanner_subtitle_not_bonded">AVAILABLE DEVICES:</string>
     <string name="scanner_permission_rationale">Since Android 6.0 Marshmallow system requires granting access to device\'s location in order to scan for Bluetooth Smart devices. Bluetooth beacons may be used to determine the phone\'s and user\'s location.</string>
 
-    <string name="log" formatted="false">%1$tR:%1$tS.%1$tL</string>
+    <string name="log_time" formatted="false">%1$tR:%1$tS.%1$tL</string>
 
     <string name="permission_title">Permission required</string>
     <string name="permission_sd_text">nRF Toolbox would like to copy some sample applications, that may be uploaded onto your nRF51 device using the DFU (Device Firmware Update), to the memory of this device. If you agree, you will be asked to give the application permission to access files on your device.</string>

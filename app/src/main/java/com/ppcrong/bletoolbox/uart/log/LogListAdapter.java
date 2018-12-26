@@ -12,8 +12,7 @@ import android.widget.TextView;
 import com.ppcrong.bletoolbox.R;
 import com.socks.library.KLog;
 
-import java.text.DateFormat;
-import java.util.Date;
+import java.util.Calendar;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import butterknife.BindView;
@@ -90,8 +89,9 @@ public class LogListAdapter extends RecyclerView.Adapter<LogListAdapter.LogViewH
         final int level = data.getLevel();
 
         // Time
-        Date date = new Date(data.getTime());
-        holder.mTvTime.setText(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM).format(date));
+        final Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(data.getTime());
+        holder.mTvTime.setText(mContext.getString(R.string.log_time, calendar));
 
         // Data and text color
         holder.mTvData.setText(data.getData());

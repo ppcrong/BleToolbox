@@ -25,8 +25,6 @@ ext {
             'com.trello.rxlifecycle2:rxlifecycle-components:2.2.1',
             // rxreplayingshare
             'com.jakewharton.rx2:replaying-share:2.0.1',
-            // nordic log for UART
-            'no.nordicsemi.android:log:2.1.1',
             // For Android-M permission
             project(':rxpermlib'),
             // LogLib
