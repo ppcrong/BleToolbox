@@ -2,6 +2,7 @@ package com.ppcrong.bletoolbox.uart.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +21,7 @@ import com.ppcrong.bletoolbox.uart.UartActivity;
 import com.ppcrong.bletoolbox.uart.UartInterface;
 import com.ppcrong.bletoolbox.uart.log.LogData;
 import com.ppcrong.bletoolbox.uart.log.LogListAdapter;
+import com.ppcrong.bletoolbox.uart.log.LogManager;
 import com.socks.library.KLog;
 
 import org.greenrobot.eventbus.EventBus;
@@ -138,7 +140,7 @@ public class UartLogFragment extends Fragment {
         final String text = mField.getText().toString();
 
         mUartInterface.send(text);
-//        addLog(LogListAdapter.Level.DEBUG, text);
+//        addLog(LogManager.Level.DEBUG, Calendar.getInstance().getTimeInMillis(), text);
 
         mField.setText(null);
         mField.requestFocus();
@@ -153,36 +155,14 @@ public class UartLogFragment extends Fragment {
     }
 
     // region [Add log]
-    private void addLog(int level, String data) {
+    private void addLog(@NonNull int level, @NonNull long time, @NonNull String data) {
 
         if (mTvEmpty.getVisibility() == View.VISIBLE) {
 
             mTvEmpty.setVisibility(View.GONE);
         }
 
-        mLogDataList.add(new LogData.Builder()
-                .setLevel(level)
-                .setTime(Calendar.getInstance().getTimeInMillis())
-                .setData(data)
-                .build());
-        mLogListAdapter.notifyDataSetChanged();
-    }
-
-    private void addLog(int level, long time, String data) {
-
-        if (mTvEmpty.getVisibility() == View.VISIBLE) {
-
-            mTvEmpty.setVisibility(View.GONE);
-        }
-
-        mLogDataList.add(new LogData.Builder().setLevel(level).setTime(time).setData(data).build());
-        mLogListAdapter.notifyDataSetChanged();
-    }
-
-    private void addLog(LogData data) {
-
-        mLogDataList.add(data);
-        mLogListAdapter.notifyDataSetChanged();
+        LogManager.addLog(level, time, data);
     }
     // endregion [Add log]
 
@@ -208,6 +188,16 @@ public class UartLogFragment extends Fragment {
             default:
                 break;
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAddLog(LogData data) {
+
+        KLog.i(data);
+
+        // Add log to rv_log
+        mLogDataList.add(data);
+        mLogListAdapter.notifyDataSetChanged();
     }
     // endregion [EventBus]
 }

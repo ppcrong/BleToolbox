@@ -16,6 +16,11 @@ public class LogData {
         this.data = data;
     }
 
+    @Override
+    public String toString() {
+        return data;
+    }
+
     public int getLevel() {
         return level;
     }

@@ -24,47 +24,6 @@ import butterknife.ButterKnife;
 
 public class LogListAdapter extends RecyclerView.Adapter<LogListAdapter.LogViewHolder> {
 
-    private static final SparseIntArray mColors = new SparseIntArray();
-
-    static {
-        mColors.put(Level.DEBUG, 0xFF009CDE);
-        mColors.put(Level.VERBOSE, 0xFFB8B056);
-        mColors.put(Level.INFO, Color.BLACK);
-        mColors.put(Level.APPLICATION, 0xFF238C0F);
-        mColors.put(Level.WARNING, 0xFFD77926);
-        mColors.put(Level.ERROR, Color.RED);
-    }
-
-    /**
-     * A helper class that contains predefined static level values:
-     * <ul>
-     * <li>{@link #DEBUG}</li>
-     * <li>{@link #VERBOSE}</li>
-     * <li>{@link #INFO}</li>
-     * <li>{@link #APPLICATION}</li>
-     * <li>{@link #WARNING}</li>
-     * <li>{@link #ERROR}</li>
-     * </ul>
-     */
-    public final class Level {
-        /** Level used just for debugging purposes. It has lowest level */
-        public final static int DEBUG = 0;
-        /** Log entries with minor importance */
-        public final static int VERBOSE = 1;
-        /** Default logging level for important entries */
-        public final static int INFO = 5;
-        /** Log entries level for applications */
-        public final static int APPLICATION = 10;
-        /** Log entries with high importance */
-        public final static int WARNING = 15;
-        /** Log entries with very high importance, like errors */
-        public final static int ERROR = 20;
-
-        private Level() {
-            // empty
-        }
-    }
-
     private Context mContext;
     private CopyOnWriteArrayList<LogData> mLogDataList;
 
@@ -95,7 +54,7 @@ public class LogListAdapter extends RecyclerView.Adapter<LogListAdapter.LogViewH
 
         // Data and text color
         holder.mTvData.setText(data.getData());
-        holder.mTvData.setTextColor(mColors.get(level));
+        holder.mTvData.setTextColor(LogManager.LOG_COLORS.get(level));
     }
 
     @Override
