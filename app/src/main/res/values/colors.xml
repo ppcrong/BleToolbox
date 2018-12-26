@@ -15,6 +15,14 @@
     <color name="dimgray">#696969</color>
     <color name="deepskyblue">#00BFFF</color>
 
+    <!-- Log level -->
+    <color name="log_d">#009CDE</color>
+    <color name="log_v">#B8B056</color>
+    <color name="log_i">#000000</color>
+    <color name="log_a">#238C0F</color>
+    <color name="log_w">#D77926</color>
+    <color name="log_e">#FF0000</color>
+
     <!-- From other -->
     <color name="featureTitleColor">#939597</color>
     <color name="actionBarColor">#009CDE</color>

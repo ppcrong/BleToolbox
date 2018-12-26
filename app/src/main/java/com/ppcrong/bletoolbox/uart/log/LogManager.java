@@ -71,10 +71,12 @@ public class LogManager {
      * Add log to event bus
      *
      * @param data
+     * @return Formatted log data with level and time
      */
-    static public void addLog(@NonNull LogData data) {
+    static public String addLog(@NonNull LogData data) {
 
         EventBus.getDefault().post(data);
+        return data.toString();
     }
 
     /**
@@ -82,28 +84,33 @@ public class LogManager {
      *
      * @param level
      * @param data
+     * @return Formatted log data with level and time
      */
-    static public void addLog(@NonNull int level, @NonNull String data) {
+    static public String addLog(@NonNull int level, @NonNull String data) {
 
-        EventBus.getDefault().post(new LogData.Builder()
+        LogData logData = new LogData.Builder()
                 .setLevel(level)
                 .setTime(Calendar.getInstance().getTimeInMillis())
                 .setData(data)
-                .build());
+                .build();
+        return addLog(logData);
     }
 
     /**
      * Add log to event bus
+     *
      * @param level
      * @param time
      * @param data
+     * @return Formatted log data with level and time
      */
-    static public void addLog(@NonNull int level, @NonNull long time, @NonNull String data) {
+    static public String addLog(@NonNull int level, @NonNull long time, @NonNull String data) {
 
-        EventBus.getDefault().post(new LogData.Builder()
+        LogData logData = new LogData.Builder()
                 .setLevel(level)
                 .setTime(time)
                 .setData(data)
-                .build());
+                .build();
+        return addLog(logData);
     }
 }

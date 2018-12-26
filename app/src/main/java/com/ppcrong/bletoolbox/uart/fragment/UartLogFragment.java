@@ -28,7 +28,6 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.util.Calendar;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import butterknife.BindView;
@@ -154,18 +153,6 @@ public class UartLogFragment extends Fragment {
         imm.hideSoftInputFromWindow(mField.getWindowToken(), 0);
     }
 
-    // region [Add log]
-    private void addLog(@NonNull int level, @NonNull long time, @NonNull String data) {
-
-        if (mTvEmpty.getVisibility() == View.VISIBLE) {
-
-            mTvEmpty.setVisibility(View.GONE);
-        }
-
-        LogManager.addLog(level, time, data);
-    }
-    // endregion [Add log]
-
     // region [EventBus]
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onBleConnectionStateChange(BleEvents.BleConnectionState event) {
@@ -174,6 +161,14 @@ public class UartLogFragment extends Fragment {
 
         switch (event.getState()) {
             case CONNECTING:
+                // Clear log for new connection
+                if (mLogDataList.size() > 0) {
+                    mLogDataList.clear();
+                    mLogListAdapter.notifyDataSetChanged();
+
+                    // Show empty text
+                    mTvEmpty.setVisibility(View.VISIBLE);
+                }
                 break;
             case CONNECTED:
                 mField.setEnabled(true);
@@ -194,6 +189,11 @@ public class UartLogFragment extends Fragment {
     public void onAddLog(LogData data) {
 
         KLog.i(data);
+
+        if (mTvEmpty.getVisibility() == View.VISIBLE) {
+
+            mTvEmpty.setVisibility(View.GONE);
+        }
 
         // Add log to rv_log
         mLogDataList.add(data);

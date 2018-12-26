@@ -49,6 +49,7 @@ import com.ppcrong.bletoolbox.uart.domain.Command;
 import com.ppcrong.bletoolbox.uart.domain.UartConfiguration;
 import com.ppcrong.bletoolbox.uart.fragment.UartLogFragment;
 import com.ppcrong.bletoolbox.uart.fragment.UartNewConfigurationDialogFragment;
+import com.ppcrong.bletoolbox.uart.log.LogManager;
 import com.ppcrong.bletoolbox.uart.utils.FileHelper;
 import com.ppcrong.bletoolbox.widget.ClosableSpinner;
 import com.ppcrong.utils.MiscUtils;
@@ -78,6 +79,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.Calendar;
 import java.util.UUID;
 
 public class UartActivity extends ProfileBaseActivity implements UartInterface,
@@ -292,9 +294,15 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
     protected void onFilterCccNotified(byte[] bytes) {
         super.onFilterCccNotified(bytes);
 
+        String data = "Notification received from " + getFilterCccUUID().toString() + ", value: (0x) " +
+                MiscUtils.getByteToHexString(bytes, ":", true);
+        KLog.i(LogManager.addLog(LogManager.Level.INFO,
+                Calendar.getInstance().getTimeInMillis(), data));
         KLog.i(MiscUtils.getByteToHexString(bytes, ":", true));
         try {
-            KLog.i(new String(bytes, "UTF-8"));
+            data = new String(bytes, "UTF-8");
+            KLog.i(LogManager.addLog(LogManager.Level.APPLICATION,
+                    Calendar.getInstance().getTimeInMillis(), data));
         } catch (UnsupportedEncodingException e) {
             KLog.i(Log.getStackTraceString(e));
         }
@@ -349,9 +357,14 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
 
     private void onRxWrite(byte[] bytes) {
 
-        KLog.i(MiscUtils.getByteToHexString(bytes, ":", true));
+        String data = "Data written to " + getFilterCccUUID2().toString() + ", value: (0x) " +
+                MiscUtils.getByteToHexString(bytes, ":", true);
+        KLog.i(LogManager.addLog(LogManager.Level.INFO,
+                Calendar.getInstance().getTimeInMillis(), data));
         try {
-            KLog.i(new String(bytes, "UTF-8"));
+            data = new String(bytes, "UTF-8");
+            KLog.i(LogManager.addLog(LogManager.Level.APPLICATION,
+                    Calendar.getInstance().getTimeInMillis(), data));
         } catch (UnsupportedEncodingException e) {
             KLog.i(Log.getStackTraceString(e));
         }

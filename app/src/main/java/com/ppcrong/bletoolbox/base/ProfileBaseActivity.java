@@ -31,6 +31,7 @@ import com.ppcrong.bletoolbox.BleToolboxApp;
 import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.battery.BleBatteryManager;
 import com.ppcrong.bletoolbox.eventbus.BleEvents;
+import com.ppcrong.bletoolbox.uart.log.LogManager;
 import com.ppcrong.utils.MiscUtils;
 import com.socks.library.KLog;
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
@@ -38,6 +39,7 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity;
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -556,14 +558,27 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
         KLog.i(newState.toString());
 
+        // EventBus
+        EventBus.getDefault().post(new BleEvents.BleConnectionState(newState));
+
+        // Add log for new state
         switch (newState) {
             case CONNECTING:
+                LogManager.addLog(LogManager.Level.VERBOSE,
+                        Calendar.getInstance().getTimeInMillis(), "Connecting...");
                 break;
             case CONNECTED:
+                LogManager.addLog(LogManager.Level.INFO,
+                        Calendar.getInstance().getTimeInMillis(),
+                        "Connected to " + mBleDevice.getMacAddress());
                 break;
             case DISCONNECTED:
+                LogManager.addLog(LogManager.Level.INFO,
+                        Calendar.getInstance().getTimeInMillis(), "Disconnected");
                 break;
             case DISCONNECTING:
+                LogManager.addLog(LogManager.Level.VERBOSE,
+                        Calendar.getInstance().getTimeInMillis(), "Disconnecting...");
                 break;
             default:
                 break;
@@ -571,9 +586,6 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
         mTvRxBleConnectionState.setText(newState.toString());
         updateUI();
-
-        // EventBus
-        EventBus.getDefault().post(new BleEvents.BleConnectionState(newState));
     }
 
     private void onConnectionFailure(Throwable throwable) {

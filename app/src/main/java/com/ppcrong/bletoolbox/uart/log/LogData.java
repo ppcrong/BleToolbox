@@ -1,5 +1,7 @@
 package com.ppcrong.bletoolbox.uart.log;
 
+import java.util.Calendar;
+
 /**
  * LogData.
  */
@@ -18,7 +20,12 @@ public class LogData {
 
     @Override
     public String toString() {
-        return data;
+
+        final Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(time);
+        String message = String.format("%1$tR:%1$tS.%1$tL", calendar) + ", (LEVEL: " + level + "), " + data;
+
+        return message;
     }
 
     public int getLevel() {
