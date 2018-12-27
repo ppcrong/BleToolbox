@@ -302,7 +302,7 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
         try {
             data = new String(bytes, "UTF-8");
             KLog.i(LogManager.addLog(LogManager.Level.APPLICATION,
-                    Calendar.getInstance().getTimeInMillis(), data));
+                    Calendar.getInstance().getTimeInMillis(), "\"" + data + "\" received"));
         } catch (UnsupportedEncodingException e) {
             KLog.i(Log.getStackTraceString(e));
         }
@@ -364,7 +364,7 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
         try {
             data = new String(bytes, "UTF-8");
             KLog.i(LogManager.addLog(LogManager.Level.APPLICATION,
-                    Calendar.getInstance().getTimeInMillis(), data));
+                    Calendar.getInstance().getTimeInMillis(), "\"" + data + "\" sent"));
         } catch (UnsupportedEncodingException e) {
             KLog.i(Log.getStackTraceString(e));
         }

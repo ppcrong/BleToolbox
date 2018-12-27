@@ -607,7 +607,11 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
             mConnectionObservable
                     .flatMapSingle(RxBleConnection::discoverServices)
                     .observeOn(AndroidSchedulers.mainThread())
-                    .doOnSubscribe(disposable -> runOnUiThread(() -> showSnackbar("discovering services")))
+                    .doOnSubscribe(disposable -> runOnUiThread(() -> {
+                        showSnackbar("Discovering Services...");
+                        KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
+                                Calendar.getInstance().getTimeInMillis(), "Discovering Services..."));
+                    }))
                     .subscribe(this::onSvcDiscovered, this::onConnectionFailure);
         }
 
@@ -673,6 +677,10 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
         if (isConnected()) {
 
+            KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
+                    Calendar.getInstance().getTimeInMillis(),
+                    "Reading characteristic  " + uuid));
+
             mConnectionObservable
                     .firstOrError()
                     .flatMap(rxBleConnection ->
@@ -694,6 +702,10 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
                             final Consumer<? super Throwable> onError) {
 
         if (isConnected()) {
+
+            KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
+                    Calendar.getInstance().getTimeInMillis(),
+                    "Writing characteristic  " + uuid));
 
             mConnectionObservable
                     .firstOrError()
@@ -717,6 +729,10 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
         if (isConnected()) {
 
+            KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
+                    Calendar.getInstance().getTimeInMillis(),
+                    "Long Writing characteristic  " + getFilterCccUUID2()));
+
             mConnectionObservable
                     .flatMap(rxBleConnection ->
                             rxBleConnection.createNewLongWriteBuilder()
@@ -735,6 +751,9 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
      */
     private void onMustCccsGet(MustCccs mustCccs) {
 
+        KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
+                Calendar.getInstance().getTimeInMillis(), "Primary and Secondary services found"));
+
         mMustCccs = mustCccs;
 
         showCccLog(mustCccs);
@@ -748,6 +767,9 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
      * @param ccc
      */
     private void onMustCccGet(BluetoothGattCharacteristic ccc) {
+
+        KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
+                Calendar.getInstance().getTimeInMillis(), "Primary service found"));
 
         mMustCccs = new MustCccs(ccc, null);
 
@@ -777,6 +799,9 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         // Read battery percentage
         if (isConnected()) {
 
+            KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
+                    Calendar.getInstance().getTimeInMillis(), "Read battery"));
+
             mConnectionObservable
                     .firstOrError()
                     .flatMap(rxBleConnection ->
@@ -792,6 +817,10 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
         // Battery read ok, then enable notify of battery and selected ccc
         if (isConnected()) {
+
+            KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
+                    Calendar.getInstance().getTimeInMillis(),
+                    "Enabling notifications for " + BleBatteryManager.BATTERY_LEVEL_CHARACTERISTIC));
 
             mConnectionObservable
                     .flatMap(rxBleConnection ->
@@ -813,6 +842,10 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
         // Enable notify of selected ccc
         if (isConnected()) {
+
+            KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
+                    Calendar.getInstance().getTimeInMillis(),
+                    "Enabling notifications for " + getFilterCccUUID()));
 
             mConnectionObservable
                     .flatMap(rxBleConnection ->
