@@ -1,9 +1,7 @@
 package com.ppcrong.bletoolbox.uart.log;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.util.SparseIntArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +38,7 @@ public class LogListAdapter extends RecyclerView.Adapter<LogListAdapter.LogViewH
 
     @Override
     public void onBindViewHolder(LogListAdapter.LogViewHolder holder, final int position) {
+
         KLog.i("position: " + position);
 
         LogData data = mLogDataList.get(position);

@@ -2,7 +2,6 @@ package com.ppcrong.bletoolbox.uart.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -21,7 +20,6 @@ import com.ppcrong.bletoolbox.uart.UartActivity;
 import com.ppcrong.bletoolbox.uart.UartInterface;
 import com.ppcrong.bletoolbox.uart.log.LogData;
 import com.ppcrong.bletoolbox.uart.log.LogListAdapter;
-import com.ppcrong.bletoolbox.uart.log.LogManager;
 import com.socks.library.KLog;
 
 import org.greenrobot.eventbus.EventBus;
@@ -139,7 +137,6 @@ public class UartLogFragment extends Fragment {
         final String text = mField.getText().toString();
 
         mUartInterface.send(text);
-//        addLog(LogManager.Level.DEBUG, Calendar.getInstance().getTimeInMillis(), text);
 
         mField.setText(null);
         mField.requestFocus();
@@ -198,6 +195,9 @@ public class UartLogFragment extends Fragment {
         // Add log to rv_log
         mLogDataList.add(data);
         mLogListAdapter.notifyDataSetChanged();
+
+        // Scroll to last item
+        mRvLogList.smoothScrollToPosition(mLogListAdapter.getItemCount() - 1);
     }
     // endregion [EventBus]
 }
