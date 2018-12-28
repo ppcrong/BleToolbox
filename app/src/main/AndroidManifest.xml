@@ -99,7 +99,7 @@
             android:label="@string/uart_feature_title"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.Uart">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

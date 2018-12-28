@@ -6,7 +6,11 @@ import android.widget.TextView;
 import com.polidea.rxandroidble2.helpers.ValueInterpreter;
 import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.base.ProfileBaseActivity;
+import com.ppcrong.bletoolbox.eventbus.BleEvents;
 import com.socks.library.KLog;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.Locale;
 import java.util.UUID;
@@ -213,4 +217,25 @@ public class CscActivity extends ProfileBaseActivity {
         mTvCadence.setText(String.format(Locale.US, "%d", cadence));
     }
     // endregion [Private Function]
+
+    // region [EventBus]
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onBleConnectionStateChange(BleEvents.BleConnectionState event) {
+
+        KLog.i(event);
+
+        switch (event.getState()) {
+            case CONNECTING:
+                break;
+            case CONNECTED:
+                break;
+            case DISCONNECTED:
+                break;
+            case DISCONNECTING:
+                break;
+            default:
+                break;
+        }
+    }
+    // endregion [EventBus]
 }

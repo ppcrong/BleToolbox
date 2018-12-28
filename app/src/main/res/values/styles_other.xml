@@ -40,4 +40,10 @@
     <style name="ActionBar.SpinnerTitle" parent="@style/Widget.AppCompat.TextView.SpinnerItem">
         <item name="android:textColor">#fff</item>
     </style>
+
+    <!-- UART theme -->
+    <style name="AppTheme.Uart" parent="AppTheme.NoActionBar">
+        <item name="android:spinnerItemStyle">@style/ActionBar.SpinnerTitle</item>
+        <item name="actionMenuTextColor">@color/actionBarMenuTextColor</item>
+    </style>
 </resources>
