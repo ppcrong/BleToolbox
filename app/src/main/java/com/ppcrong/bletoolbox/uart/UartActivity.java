@@ -82,6 +82,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.UUID;
 
+import butterknife.BindView;
+
 public class UartActivity extends ProfileBaseActivity implements UartInterface,
         UartConfigurationsAdapter.ActionListener, AdapterView.OnItemSelectedListener,
         UartNewConfigurationDialogFragment.NewConfigurationDialogListener {
@@ -108,7 +110,7 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
     private SharedPreferences mPreferences;
     private UartConfigurationsAdapter mConfigurationsAdapter;
     private ClosableSpinner mConfigurationSpinner;
-    private SlidingPaneLayout mSlider;
+    //    private SlidingPaneLayout mSlider;
     private View mContainer;
     private ConfigurationListener mConfigurationListener;
     private boolean mEditMode;
@@ -118,6 +120,8 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
     // region [Widget]
 //    @BindView(R.id.tv_speed)
 //    TextView mTvSpeed;
+    @BindView(R.id.sliding_pane)
+    SlidingPaneLayout mSlider;
     // endregion [Widget]
 
     // region [Listener]
@@ -159,11 +163,11 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
         // SlidingPane
         mContainer = findViewById(R.id.container);
         // Setup the sliding pane if it exists
-        final SlidingPaneLayout slidingPane = mSlider = findViewById(R.id.sliding_pane);
-        if (slidingPane != null) {
-            slidingPane.setSliderFadeColor(Color.TRANSPARENT);
-            slidingPane.setShadowResourceLeft(R.drawable.shadow_r);
-            slidingPane.setPanelSlideListener(new SlidingPaneLayout.SimplePanelSlideListener() {
+//        final SlidingPaneLayout slidingPane = mSlider = findViewById(R.id.sliding_pane);
+        if (mSlider != null) {
+            mSlider.setSliderFadeColor(Color.TRANSPARENT);
+            mSlider.setShadowResourceLeft(R.drawable.shadow_r);
+            mSlider.setPanelSlideListener(new SlidingPaneLayout.SimplePanelSlideListener() {
                 @Override
                 public void onPanelClosed(final View panel) {
                     // Close the keyboard
@@ -208,9 +212,9 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
             case R.id.action_configure:
                 setEditMode(!mEditMode);
                 return true;
-//            case R.id.action_show_log:
-//                mSlider.openPane();
-//                return true;
+            case R.id.action_show_log:
+                mSlider.openPane();
+                return true;
             case R.id.action_share: {
                 final String xml = mDatabaseHelper.getConfiguration(mConfigurationSpinner.getSelectedItemId());
 
