@@ -53,7 +53,7 @@
     <string name="uart_configuration_save_error">Export failed.</string>
     <string name="uart_configuration_load_error">Import failed.</string>
     <string name="uart_configuration_export_succeeded_ticker">File saved</string>
-    <string name="uart_configuration_export_succeeded">Configuration saved in /sdcard/Nordic Semiconductor</string>
+    <string name="uart_configuration_export_succeeded">Configuration saved in /sdcard/Cloudchip</string>
 
     <string name="uart_edit_title">Configure button</string>
     <string name="uart_edit_command_hint">Enter command</string>

@@ -44,8 +44,8 @@ public class FileHelper {
     private static final String PREFS_SAMPLES_VERSION = "no.nordicsemi.android.nrftoolbox.dfu.PREFS_SAMPLES_VERSION";
     private static final int CURRENT_SAMPLES_VERSION = 4;
 
-    public static final String NORDIC_FOLDER = "Nordic Semiconductor";
-    public static final String UART_FOLDER = "UART Configurations";
+    public static final String CC_FOLDER = "Cloudchip";
+    public static final String UART_FOLDER = "UART_Config";
     public static final String BOARD_FOLDER = "Board";
     public static final String BOARD_NRF6310_FOLDER = "nrf6310";
     public static final String BOARD_PCA10028_FOLDER = "pca10028";
