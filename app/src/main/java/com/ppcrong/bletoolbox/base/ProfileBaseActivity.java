@@ -30,6 +30,7 @@ import com.ppcrong.blescanner.ScannerFragment;
 import com.ppcrong.bletoolbox.BleToolboxApp;
 import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.battery.BleBatteryManager;
+import com.ppcrong.bletoolbox.csc.CscActivity;
 import com.ppcrong.bletoolbox.eventbus.BleEvents;
 import com.ppcrong.bletoolbox.uart.log.LogManager;
 import com.ppcrong.utils.MiscUtils;
@@ -242,6 +243,14 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         int btIcon = isConnected ?
                 R.drawable.ic_menu_bluetooth_connected : R.drawable.ic_menu_bluetooth_white;
         item.setIcon(btIcon);
+
+        // Settings item (for CSC, OTA, HTM)
+        item = menu.findItem(R.id.action_settings);
+        if (this instanceof CscActivity) {
+            item.setVisible(true);
+        } else {
+            item.setVisible(false);
+        }
     }
 
     /**
@@ -269,6 +278,13 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
                 } else {
                     scanBle();
                 }
+                break;
+            case R.id.action_settings:
+                final Intent intent = new Intent(this, SettingsActivity.class);
+                if (this instanceof CscActivity) {
+                    intent.putExtra(SettingsActivity.SETTINGS_TITLE, getString(R.string.csc_settings_title));
+                }
+                MiscUtils.startSafeIntent(this, intent);
                 break;
             case R.id.action_about:
                 break;

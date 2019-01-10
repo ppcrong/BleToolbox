@@ -107,6 +107,12 @@
             </intent-filter>
         </activity>
 
+        <!-- Settings -->
+        <activity
+            android:name=".base.SettingsActivity"
+            android:label="@string/action_settings"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>

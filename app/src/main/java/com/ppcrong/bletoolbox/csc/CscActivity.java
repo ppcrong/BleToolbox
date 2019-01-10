@@ -1,11 +1,14 @@
 package com.ppcrong.bletoolbox.csc;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.widget.TextView;
 
 import com.polidea.rxandroidble2.helpers.ValueInterpreter;
 import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.base.ProfileBaseActivity;
+import com.ppcrong.bletoolbox.csc.settings.CscSettingsFragment;
 import com.ppcrong.bletoolbox.eventbus.BleEvents;
 import com.socks.library.KLog;
 
@@ -53,6 +56,12 @@ public class CscActivity extends ProfileBaseActivity {
     protected void onCreateView(Bundle savedInstanceState) {
 
         setContentView(R.layout.activity_csc);
+
+        // Print current setting values
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        final int circumference = Integer.parseInt(preferences.getString(CscSettingsFragment.SETTINGS_WHEEL_SIZE, String.valueOf(CscSettingsFragment.SETTINGS_WHEEL_SIZE_DEFAULT))); // [mm]
+        final int unit = Integer.parseInt(preferences.getString(CscSettingsFragment.SETTINGS_UNIT, String.valueOf(CscSettingsFragment.SETTINGS_UNIT_DEFAULT)));
+        KLog.i("circumference: " + circumference + ", unit: " + unit);
     }
 
     @Override
@@ -121,9 +130,8 @@ public class CscActivity extends ProfileBaseActivity {
     // region [Private Function]
     private void onWheelMeasurementReceived(final int wheelRevolutions, final int lastWheelEventTime) {
 
-//        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-//        final int circumference = Integer.parseInt(preferences.getString(SettingsFragment.SETTINGS_WHEEL_SIZE, String.valueOf(SettingsFragment.SETTINGS_WHEEL_SIZE_DEFAULT))); // [mm]
-        final int circumference = 2340;
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        final int circumference = Integer.parseInt(preferences.getString(CscSettingsFragment.SETTINGS_WHEEL_SIZE, String.valueOf(CscSettingsFragment.SETTINGS_WHEEL_SIZE_DEFAULT))); // [mm]
 
         if (mFirstWheelRevolutions < 0)
             mFirstWheelRevolutions = wheelRevolutions;
@@ -152,9 +160,9 @@ public class CscActivity extends ProfileBaseActivity {
     }
 
     private void onMeasurementReceived(float speed, float distance, float totalDistance) {
-//        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-//        final int unit = Integer.parseInt(preferences.getString(SettingsFragment.SETTINGS_UNIT, String.valueOf(SettingsFragment.SETTINGS_UNIT_DEFAULT)));
-        int unit = 1;
+
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        final int unit = Integer.parseInt(preferences.getString(CscSettingsFragment.SETTINGS_UNIT, String.valueOf(CscSettingsFragment.SETTINGS_UNIT_DEFAULT)));
 
         switch (unit) {
             case 1:
@@ -171,18 +179,18 @@ public class CscActivity extends ProfileBaseActivity {
 
                 mTvDistanceTotal.setText(String.format(Locale.US, "%.2f", totalDistance / 1000.0f));
                 break;
-//            case 2:
-//                speed = speed * 2.2369f;
-//                if (distance < 1760) { // 1 mile in yrs
-//                    mDistanceView.setText(String.format(Locale.US, "%.0f", distance));
-//                    mDistanceUnitView.setText(R.string.csc_distance_unit_yd);
-//                } else {
-//                    mDistanceView.setText(String.format(Locale.US, "%.2f", distance / 1760.0f));
-//                    mDistanceUnitView.setText(R.string.csc_distance_unit_mile);
-//                }
-//
-//                mTotalDistanceView.setText(String.format(Locale.US, "%.2f", totalDistance / 1609.31f));
-//                break;
+            case 2:
+                speed = speed * 2.2369f;
+                if (distance < 1760) { // 1 mile in yrs
+                    mTvDistance.setText(String.format(Locale.US, "%.0f", distance));
+                    mTvDistanceUnit.setText(R.string.csc_distance_unit_yd);
+                } else {
+                    mTvDistance.setText(String.format(Locale.US, "%.2f", distance / 1760.0f));
+                    mTvDistanceUnit.setText(R.string.csc_distance_unit_mile);
+                }
+
+                mTvDistanceTotal.setText(String.format(Locale.US, "%.2f", totalDistance / 1609.31f));
+                break;
         }
 
         mTvSpeed.setText(String.format(Locale.US, "%.1f", speed));

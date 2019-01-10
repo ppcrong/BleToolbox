@@ -19,6 +19,9 @@ import com.ppcrong.unity.ahrs.apollo.BleEvents;
 import com.ppcrong.utils.MiscUtils;
 import com.socks.library.KLog;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.UUID;
 
 import butterknife.BindView;
@@ -67,12 +70,10 @@ public class AhrsActivity extends ProfileBaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
+
         getMenuInflater().inflate(R.menu.menu_ahrs, menu);
 
-        // Call handleMenu for customized menu
-        handleMenu(menu);
-
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -213,4 +214,25 @@ public class AhrsActivity extends ProfileBaseActivity {
         }
     }
     // endregion [Private Function]
+
+    // region [EventBus]
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onBleConnectionStateChange(com.ppcrong.bletoolbox.eventbus.BleEvents.BleConnectionState event) {
+
+        KLog.i(event);
+
+        switch (event.getState()) {
+            case CONNECTING:
+                break;
+            case CONNECTED:
+                break;
+            case DISCONNECTED:
+                break;
+            case DISCONNECTING:
+                break;
+            default:
+                break;
+        }
+    }
+    // endregion [EventBus]
 }
