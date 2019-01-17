@@ -744,7 +744,7 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
         // This method ensures that the "old", single configuration has been saved to the database.
         if (mDatabaseHelper.getConfigurationsCount() == 0) {
             final UartConfiguration configuration = new UartConfiguration();
-            configuration.setName("First configuration");
+            configuration.setName("First config");
             final Command[] commands = configuration.getCommands();
 
             for (int i = 0; i < 9; ++i) {
