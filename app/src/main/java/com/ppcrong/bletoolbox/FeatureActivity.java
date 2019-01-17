@@ -109,7 +109,7 @@ public class FeatureActivity extends AppCompatActivity {
         setContentView(R.layout.activity_feature);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setSubtitle(BuildConfig.VERSION_NAME);
+//        getSupportActionBar().setSubtitle(BuildConfig.VERSION_NAME);
 
         // Bind ButterKnife
         ButterKnife.bind(this);
