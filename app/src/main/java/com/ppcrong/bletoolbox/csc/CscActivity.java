@@ -114,6 +114,11 @@ public class CscActivity extends ProfileBaseActivity {
     }
 
     @Override
+    protected int getAboutTextId() {
+        return R.string.csc_about_text;
+    }
+
+    @Override
     protected void setDefaultUI() {
         super.setDefaultUI();
 

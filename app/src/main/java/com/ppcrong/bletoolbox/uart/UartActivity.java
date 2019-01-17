@@ -324,6 +324,11 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
     }
 
     @Override
+    protected int getAboutTextId() {
+        return R.string.uart_about_text;
+    }
+
+    @Override
     protected UUID getFilterCccUUID2() {
         return UartManager.UART_RX_CHARACTERISTIC_UUID;
     }

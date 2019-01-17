@@ -47,4 +47,5 @@
     <string name="ota_status_validating">Validating…</string>
     <string name="ota_status_validating_msg">Validating…</string>
     <string name="ota_unknown_name">unnamed device</string>
+    <string name="ota_about_text">The over-the-air (OTA) app allows you to update the firmware of your Bluetooth Smart device over-the-air.</string>
 </resources>

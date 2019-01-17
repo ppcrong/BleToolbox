@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.ppcrong.bletoolbox.adapter.FeatureAdapter;
+import com.ppcrong.bletoolbox.base.AppHelpFragment;
 import com.ppcrong.rxpermlib.RxPermLib;
 import com.socks.library.KLog;
 
@@ -92,6 +93,8 @@ public class FeatureActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_about) {
+            final AppHelpFragment fragment = AppHelpFragment.getInstance(R.string.about_text, true);
+            fragment.show(getSupportFragmentManager(), null);
             return true;
         }
 

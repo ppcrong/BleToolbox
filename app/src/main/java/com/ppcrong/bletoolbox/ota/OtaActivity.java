@@ -21,6 +21,7 @@ import com.afollestad.materialdialogs.folderselector.FileChooserDialog;
 import com.ppcrong.bletoolbox.R;
 import com.ppcrong.blescanner.BleScanner;
 import com.ppcrong.blescanner.ScannerFragment;
+import com.ppcrong.bletoolbox.base.AppHelpFragment;
 import com.ppcrong.otalib.OtaLib;
 import com.ppcrong.otalib.ota.OtaService;
 import com.ppcrong.otalib.ota.eventbus.OtaEvents;
@@ -194,6 +195,9 @@ public class OtaActivity extends AppCompatActivity implements FileChooserDialog.
 
                 stopOtaStress(item);
             }
+        } else if (id == R.id.action_about) {
+            final AppHelpFragment fragment = AppHelpFragment.getInstance(R.string.ota_about_text);
+            fragment.show(getSupportFragmentManager(), "help_fragment");
         }
 
         return super.onOptionsItemSelected(item);

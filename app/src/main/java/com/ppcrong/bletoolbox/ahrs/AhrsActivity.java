@@ -69,6 +69,11 @@ public class AhrsActivity extends ProfileBaseActivity {
     }
 
     @Override
+    protected int getAboutTextId() {
+        return R.string.ahrs_about_text;
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
 
         getMenuInflater().inflate(R.menu.menu_ahrs, menu);

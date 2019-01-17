@@ -287,6 +287,8 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
                 MiscUtils.startSafeIntent(this, intent);
                 break;
             case R.id.action_about:
+                final AppHelpFragment fragment = AppHelpFragment.getInstance(getAboutTextId());
+                fragment.show(getSupportFragmentManager(), "help_fragment");
                 break;
             default:
                 return onOptionsItemSelected(id);
@@ -391,6 +393,13 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
         return mMustCccs;
     }
+
+    /**
+     * Returns the string resource id that will be shown in About box
+     *
+     * @return the about resource id
+     */
+    protected abstract int getAboutTextId();
 
     protected void showSnackbar(final String message) {
 

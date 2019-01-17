@@ -132,6 +132,11 @@ public class HrmActivity extends ProfileBaseActivity {
     }
 
     @Override
+    protected int getAboutTextId() {
+        return R.string.hrs_about_text;
+    }
+
+    @Override
     protected void setDefaultUI() {
 
         super.setDefaultUI();
