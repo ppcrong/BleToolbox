@@ -65,7 +65,7 @@ public class AppHelpFragment extends DialogFragment {
 
         final boolean appendVersion = args.getBoolean(ARG_VERSION);
         if (appendVersion) {
-            text.append(getString(R.string.about_version, BuildConfig.VERSION_NAME));
+            text.append(getString(R.string.about_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE));
         }
         return new AlertDialog.Builder(getActivity()).setTitle(R.string.about_title).setMessage(text)
                 .setPositiveButton(R.string.ok, null).create();

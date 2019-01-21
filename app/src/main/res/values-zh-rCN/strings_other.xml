@@ -41,7 +41,7 @@
     <string name="permission_title">Permission required</string>
     <string name="permission_sd_text">CC Toolbox would like to copy some sample applications, that may be uploaded onto your device using the OTA (over-the-air), to the memory of this device. If you agree, you will be asked to give the application permission to access files on your device.</string>
     <string name="about_title">About</string>
-    <string name="about_version">\n\nVersion: %s</string>
+    <string name="about_version">\n\nVersion: %s\nBuild number: %d</string>
     <string name="about_text">CC Toolbox is a container application that provides many features in one location.</string>
 
     <!--FileBrowser-->
