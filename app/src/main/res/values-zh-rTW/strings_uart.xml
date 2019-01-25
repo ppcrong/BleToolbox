@@ -71,5 +71,5 @@
     <string name="uart_about_text">UART profile (Universal Asynchronous Receiver and Transmitter) is a Bluetooth Smart implementation of the UART standard. It allows for bidirectional 
         text based communication that is often used for debugging and control. 
         \nEach configuration contains 9 programmable buttons that may send commands to the UART TX characteristic. Click on the EDIT menu item to edit buttons actions.
-        \nScroll the main pane right.</string>
+        \nScroll the main pane right to see the oncoming and incoming data as well as other connection events.</string>
 </resources>
