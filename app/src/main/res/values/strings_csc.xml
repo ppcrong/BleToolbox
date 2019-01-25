@@ -170,6 +170,5 @@
     </string-array>
 
     <string name="csc_about_text">CSC (Cycling Speed and Cadence) profile allows you to connect to your bike activity sensor.
-        \nIt reads wheel and crank data if they are supported by the sensor and calculates speed, cadence, total and trip distance and gear ratio. Set up your wheel size in the settings to get correct readings. 
-        \nYou may exit the application when connected while still getting notifications.</string>
+        \nIt reads wheel and crank data if they are supported by the sensor and calculates speed, cadence, total and trip distance and gear ratio. Set up your wheel size in the settings to get correct readings.</string>
 </resources>
