@@ -20,7 +20,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.jakewharton.rx.ReplayingShare;
-import com.lsxiao.apollo.core.contract.ApolloBinder;
 import com.polidea.rxandroidble2.RxBleConnection;
 import com.polidea.rxandroidble2.RxBleDevice;
 import com.polidea.rxandroidble2.RxBleDeviceServices;
@@ -71,7 +70,6 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     private Observable<RxBleConnection> mConnectionObservable;
     private PublishSubject<Boolean> disconnectTriggerSubject = PublishSubject.create();
     CopyOnWriteArrayList<RxBleDevice> mSelectedDevices = new CopyOnWriteArrayList<>();
-    private ApolloBinder mBinder;
     private MustCccs mMustCccs;
 
     /**
