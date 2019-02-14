@@ -31,6 +31,7 @@ import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.battery.BleBatteryManager;
 import com.ppcrong.bletoolbox.csc.CscActivity;
 import com.ppcrong.bletoolbox.eventbus.BleEvents;
+import com.ppcrong.bletoolbox.rsc.RscActivity;
 import com.ppcrong.bletoolbox.uart.log.LogManager;
 import com.ppcrong.utils.MiscUtils;
 import com.socks.library.KLog;
@@ -244,7 +245,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
 
         // Settings item (for CSC, OTA, HTM)
         item = menu.findItem(R.id.action_settings);
-        if (this instanceof CscActivity) {
+        if (this instanceof CscActivity || this instanceof RscActivity) {
             item.setVisible(true);
         } else {
             item.setVisible(false);
@@ -281,6 +282,8 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
                 final Intent intent = new Intent(this, SettingsActivity.class);
                 if (this instanceof CscActivity) {
                     intent.putExtra(SettingsActivity.SETTINGS_TITLE, getString(R.string.csc_settings_title));
+                } else if (this instanceof RscActivity) {
+                    intent.putExtra(SettingsActivity.SETTINGS_TITLE, getString(R.string.rsc_settings_title));
                 }
                 MiscUtils.startSafeIntent(this, intent);
                 break;

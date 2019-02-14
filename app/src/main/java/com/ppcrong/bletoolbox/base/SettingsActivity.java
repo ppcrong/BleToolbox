@@ -8,6 +8,7 @@ import android.view.MenuItem;
 
 import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.csc.settings.CscSettingsFragment;
+import com.ppcrong.bletoolbox.rsc.settings.RscSettingsFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,14 +36,20 @@ public class SettingsActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Set title
+        String title = "";
         Intent intent = getIntent();
         if (intent.hasExtra(SETTINGS_TITLE)) {
 
-            getSupportActionBar().setTitle(intent.getStringExtra(SETTINGS_TITLE));
+            title = intent.getStringExtra(SETTINGS_TITLE);
+            getSupportActionBar().setTitle(title);
         }
 
         // Display the fragment as the main content.
-        getFragmentManager().beginTransaction().replace(R.id.content, new CscSettingsFragment()).commit();
+        if (title.equalsIgnoreCase(getString(R.string.csc_settings_title))) {
+            getFragmentManager().beginTransaction().replace(R.id.content, new CscSettingsFragment()).commit();
+        } else if (title.equalsIgnoreCase(getString(R.string.rsc_settings_title))) {
+            getFragmentManager().beginTransaction().replace(R.id.content, new RscSettingsFragment()).commit();
+        }
     }
 
     @Override
