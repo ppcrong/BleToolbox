@@ -37,6 +37,8 @@ public class CscActivity extends ProfileBaseActivity {
     // region [Widget]
     @BindView(R.id.tv_speed)
     TextView mTvSpeed;
+    @BindView(R.id.tv_speed_unit)
+    TextView mTvSpeedUnit;
     @BindView(R.id.tv_cadence)
     TextView mTvCadence;
     @BindView(R.id.tv_distance)
@@ -52,6 +54,13 @@ public class CscActivity extends ProfileBaseActivity {
     // endregion [Widget]
 
     // region [Override Function]
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        setDefaultUI();
+    }
+
     @Override
     protected void onCreateView(Bundle savedInstanceState) {
 
@@ -128,6 +137,8 @@ public class CscActivity extends ProfileBaseActivity {
         mTvDistance.setText(R.string.not_available_value);
         mTvDistanceTotal.setText(R.string.not_available_value);
         mTvRatio.setText(R.string.not_available_value);
+
+        setUnits();
     }
 
     // endregion [Override Function]
@@ -228,6 +239,29 @@ public class CscActivity extends ProfileBaseActivity {
     private void onGearRatioUpdate(final float ratio, final int cadence) {
         mTvRatio.setText(String.format(Locale.US, "%.1f", ratio));
         mTvCadence.setText(String.format(Locale.US, "%d", cadence));
+    }
+
+    private void setUnits() {
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        final int unit = Integer.parseInt(preferences.getString(CscSettingsFragment.SETTINGS_UNIT, String.valueOf(CscSettingsFragment.SETTINGS_UNIT_DEFAULT)));
+
+        switch (unit) {
+            case CscSettingsFragment.SETTINGS_UNIT_M_S: // [m/s]
+                mTvSpeedUnit.setText(R.string.csc_speed_unit_m_s);
+                mTvDistanceUnit.setText(R.string.csc_distance_unit_m);
+                mTvDistanceTotalUnit.setText(R.string.csc_total_distance_unit_km);
+                break;
+            case CscSettingsFragment.SETTINGS_UNIT_KM_H: // [km/h]
+                mTvSpeedUnit.setText(R.string.csc_speed_unit_km_h);
+                mTvDistanceUnit.setText(R.string.csc_distance_unit_m);
+                mTvDistanceTotalUnit.setText(R.string.csc_total_distance_unit_km);
+                break;
+            case CscSettingsFragment.SETTINGS_UNIT_MPH: // [mph]
+                mTvSpeedUnit.setText(R.string.csc_speed_unit_mph);
+                mTvDistanceUnit.setText(R.string.csc_distance_unit_yd);
+                mTvDistanceTotalUnit.setText(R.string.csc_total_distance_unit_mile);
+                break;
+        }
     }
     // endregion [Private Function]
 
