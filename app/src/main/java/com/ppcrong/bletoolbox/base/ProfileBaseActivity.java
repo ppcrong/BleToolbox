@@ -202,9 +202,16 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     }
 
     /**
-     * Called when filter ccc changed
+     * Called when filter ccc changed for notification
      */
     protected void onFilterCccNotified(byte[] bytes) {
+        // empty default implementation
+    }
+
+    /**
+     * Called when filter ccc changed for indication
+     */
+    protected void onFilterCccIndicated(byte[] bytes) {
         // empty default implementation
     }
 
@@ -883,10 +890,48 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         }
     }
 
+    protected void setupFilterCccNotification(final Consumer<Observable<byte[]>> onFilterCccNotificationSetupDone) {
+
+        // Enable notify of selected ccc
+        if (isConnected()) {
+
+            KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
+                    Calendar.getInstance().getTimeInMillis(),
+                    "Enabling notifications for " + getFilterCccUUID()));
+
+            mConnectionObservable
+                    .flatMap(rxBleConnection ->
+                            rxBleConnection.setupNotification(getFilterCccUUID()))
+                    .doOnNext(onFilterCccNotificationSetupDone)
+                    .flatMap(notificationObservable -> notificationObservable)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::onFilterCccNotificationReceived, this::onCccNotificationSetupFailure);
+        }
+    }
+
+    protected void setupFilterCccIndication() {
+
+        // Enable indication of selected ccc
+        if (isConnected()) {
+
+            KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
+                    Calendar.getInstance().getTimeInMillis(),
+                    "Enabling indications for " + getFilterCccUUID2()));
+
+            mConnectionObservable
+                    .flatMap(rxBleConnection ->
+                            rxBleConnection.setupIndication(getFilterCccUUID2()))
+                    .doOnNext(this::onFilterCccIndicationSetupDone)
+                    .flatMap(notificationObservable -> notificationObservable)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::onFilterCccIndicationReceived, this::onCccIndicationSetupFailure);
+        }
+    }
+
     private void onCccNotificationSetupFailure(Throwable throwable) {
 
-        KLog.i("Setup Filter CCC error: " + throwable);
-        showBleError(true, "Setup Filter CCC error: " + throwable);
+        KLog.i("Setup Filter CCC notify error: " + throwable);
+        showBleError(true, "Setup Filter CCC notify error: " + throwable);
     }
 
     private void onFilterCccNotificationReceived(byte[] bytes) {
@@ -899,6 +944,24 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     private void onFilterCccNotificationSetupDone(Observable<byte[]> observable) {
 
         runOnUiThread(() -> showSnackbar("Filter CCC notify is setup"));
+    }
+
+    private void onCccIndicationSetupFailure(Throwable throwable) {
+
+        KLog.i("Setup Filter CCC indicate error: " + throwable);
+        showBleError(true, "Setup Filter CCC indicate error: " + throwable);
+    }
+
+    private void onFilterCccIndicationReceived(byte[] bytes) {
+
+        String raw = MiscUtils.getByteToHexString(bytes, ":", true);
+        KLog.i(raw);
+        onFilterCccIndicated(bytes);
+    }
+
+    private void onFilterCccIndicationSetupDone(Observable<byte[]> observable) {
+
+        runOnUiThread(() -> showSnackbar("Filter CCC indicate is setup"));
     }
 
     protected void onBatteryChanged(byte[] bytes) {

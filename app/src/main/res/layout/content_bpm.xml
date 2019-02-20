@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".csc.CscActivity"
+    tools:showIn="@layout/activity_bpm">
+
+    <include layout="@layout/content_ble_base_info"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:text="@string/bpm_section_bp_header"
+            android:textColor="#FFFFFF"/>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/tableBackground">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:paddingLeft="@dimen/_10sdp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/bpm_systolic"/>
+
+                <TextView
+                    android:id="@+id/tv_systolic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:freezesText="true"
+                    android:gravity="right"
+                    android:text="@string/not_available_value"
+                    android:textSize="36sp"/>
+
+                <TextView
+                    android:id="@+id/tv_systolic_unit"
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:freezesText="true"
+                    android:gravity="bottom"/>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:paddingLeft="@dimen/_10sdp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/bpm_diastolic"/>
+
+                <TextView
+                    android:id="@+id/tv_diastolic"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:freezesText="true"
+                    android:gravity="right"
+                    android:text="@string/not_available_value"
+                    android:textSize="36sp"/>
+
+                <TextView
+                    android:id="@+id/tv_diastolic_unit"
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:freezesText="true"
+                    android:gravity="bottom"/>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:paddingLeft="@dimen/_10sdp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/bpm_mean_ap"/>
+
+                <TextView
+                    android:id="@+id/tv_mean_ap"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:freezesText="true"
+                    android:gravity="right"
+                    android:text="@string/not_available_value"
+                    android:textSize="36sp"/>
+
+                <TextView
+                    android:id="@+id/tv_mean_ap_unit"
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:freezesText="true"
+                    android:gravity="bottom"/>
+            </TableRow>
+        </TableLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:text="@string/bpm_section_pulse_header"
+            android:textColor="#FFFFFF"/>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/tableBackground">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/_10sdp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/bpm_pulse"/>
+
+                <TextView
+                    android:id="@+id/tv_pulse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:freezesText="true"
+                    android:gravity="right"
+                    android:text="@string/not_available_value"
+                    android:textSize="36sp"/>
+
+                <TextView
+                    android:layout_width="45dp"
+                    android:layout_height="match_parent"
+                    android:freezesText="true"
+                    android:gravity="bottom"
+                    android:text="@string/bpm_unit_bpm"/>
+            </TableRow>
+        </TableLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:text="@string/bpm_section_timestamp_header"
+            android:textColor="#FFFFFF"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/tableBackground">
+
+            <TextView
+                android:id="@+id/tv_timestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:freezesText="true"
+                android:padding="8dp"
+                android:text="@string/not_available"
+                android:textSize="22sp"/>
+        </FrameLayout>
+    </LinearLayout>
+</LinearLayout>
