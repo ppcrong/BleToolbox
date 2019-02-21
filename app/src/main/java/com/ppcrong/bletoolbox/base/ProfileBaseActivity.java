@@ -871,60 +871,79 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         onPreWorkDone();
     }
 
+    /**
+     * For easy use, enable UUID1's notification (CSC, RSC, HRM...etc)
+     */
     protected void setupFilterCccNotification() {
 
+        setupCccNotification(getFilterCccUUID());
+    }
+
+    protected void setupCccNotification(final UUID uuid) {
+
+        setupCccNotification(uuid, this::onFilterCccNotificationSetupDone);
+    }
+
+    protected void setupCccNotification(final UUID uuid,
+                                        final Consumer<Observable<byte[]>> doOnNext) {
+
+        setupCccNotification(uuid, doOnNext,
+                this::onFilterCccNotificationReceived, this::onCccNotificationSetupFailure);
+    }
+
+    protected void setupCccNotification(final UUID uuid,
+                                        final Consumer<Observable<byte[]>> doOnNext,
+                                        final Consumer<byte[]> onNotified,
+                                        final Consumer<Throwable> onError) {
+
         // Enable notify of selected ccc
         if (isConnected()) {
 
             KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
                     Calendar.getInstance().getTimeInMillis(),
-                    "Enabling notifications for " + getFilterCccUUID()));
+                    "Enabling notifications for " + uuid));
 
             mConnectionObservable
                     .flatMap(rxBleConnection ->
-                            rxBleConnection.setupNotification(getFilterCccUUID()))
-                    .doOnNext(this::onFilterCccNotificationSetupDone)
+                            rxBleConnection.setupNotification(uuid))
+                    .doOnNext(doOnNext)
                     .flatMap(notificationObservable -> notificationObservable)
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(this::onFilterCccNotificationReceived, this::onCccNotificationSetupFailure);
+                    .subscribe(onNotified, onError);
         }
     }
 
-    protected void setupFilterCccNotification(final Consumer<Observable<byte[]>> onFilterCccNotificationSetupDone) {
+    protected void setupCccIndication(final UUID uuid) {
 
-        // Enable notify of selected ccc
-        if (isConnected()) {
-
-            KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
-                    Calendar.getInstance().getTimeInMillis(),
-                    "Enabling notifications for " + getFilterCccUUID()));
-
-            mConnectionObservable
-                    .flatMap(rxBleConnection ->
-                            rxBleConnection.setupNotification(getFilterCccUUID()))
-                    .doOnNext(onFilterCccNotificationSetupDone)
-                    .flatMap(notificationObservable -> notificationObservable)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(this::onFilterCccNotificationReceived, this::onCccNotificationSetupFailure);
-        }
+        setupCccIndication(uuid, this::onFilterCccIndicationSetupDone);
     }
 
-    protected void setupFilterCccIndication() {
+    protected void setupCccIndication(final UUID uuid,
+                                      final Consumer<Observable<byte[]>> doOnNext) {
+
+        setupCccNotification(uuid, doOnNext,
+                this::onFilterCccIndicationReceived, this::onCccIndicationSetupFailure);
+    }
+
+    protected void setupCccIndication(final UUID uuid,
+                                      final Consumer<Observable<byte[]>> doOnNext,
+                                      final Consumer<byte[]> onIndicated,
+                                      final Consumer<Throwable> onError) {
 
         // Enable indication of selected ccc
         if (isConnected()) {
 
             KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
                     Calendar.getInstance().getTimeInMillis(),
-                    "Enabling indications for " + getFilterCccUUID2()));
+                    "Enabling indications for " + uuid));
 
             mConnectionObservable
                     .flatMap(rxBleConnection ->
-                            rxBleConnection.setupIndication(getFilterCccUUID2()))
-                    .doOnNext(this::onFilterCccIndicationSetupDone)
+                            rxBleConnection.setupIndication(uuid))
+                    .doOnNext(doOnNext)
                     .flatMap(notificationObservable -> notificationObservable)
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(this::onFilterCccIndicationReceived, this::onCccIndicationSetupFailure);
+                    .subscribe(onIndicated, onError);
         }
     }
 

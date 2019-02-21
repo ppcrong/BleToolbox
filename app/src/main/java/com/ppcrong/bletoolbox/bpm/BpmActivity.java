@@ -57,13 +57,13 @@ public class BpmActivity extends ProfileBaseActivity {
     protected void onPreWorkDone() {
 
         // Enable ICP indication, then enableBPM notification
-        setupFilterCccNotification(this::onIcpNotificationSetupDone);
+        setupCccNotification(getFilterCccUUID(), this::onIcpNotificationSetupDone);
     }
 
     private void onIcpNotificationSetupDone(Observable<byte[]> observable) {
 
-        // EnableBPM notification
-        setupFilterCccIndication();
+        // Enable BPM notification
+        setupCccIndication(getFilterCccUUID2());
     }
 
     @Override
