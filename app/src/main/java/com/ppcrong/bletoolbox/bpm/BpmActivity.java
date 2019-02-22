@@ -42,12 +42,6 @@ public class BpmActivity extends ProfileBaseActivity {
     // region [Override Function]
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        setDefaultUI();
-    }
-
-    @Override
     protected void onCreateView(Bundle savedInstanceState) {
 
         setContentView(R.layout.activity_bpm);

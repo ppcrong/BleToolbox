@@ -39,7 +39,7 @@ public class HtmActivity extends ProfileBaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        setDefaultUI();
+        setUnits();
     }
 
     @Override
