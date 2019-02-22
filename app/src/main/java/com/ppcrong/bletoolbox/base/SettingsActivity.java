@@ -8,6 +8,7 @@ import android.view.MenuItem;
 
 import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.csc.settings.CscSettingsFragment;
+import com.ppcrong.bletoolbox.htm.settings.HtmSettingsFragment;
 import com.ppcrong.bletoolbox.rsc.settings.RscSettingsFragment;
 
 import butterknife.BindView;
@@ -49,6 +50,8 @@ public class SettingsActivity extends AppCompatActivity {
             getFragmentManager().beginTransaction().replace(R.id.content, new CscSettingsFragment()).commit();
         } else if (title.equalsIgnoreCase(getString(R.string.rsc_settings_title))) {
             getFragmentManager().beginTransaction().replace(R.id.content, new RscSettingsFragment()).commit();
+        } else if (title.equalsIgnoreCase(getString(R.string.hts_settings_title))) {
+            getFragmentManager().beginTransaction().replace(R.id.content, new HtmSettingsFragment()).commit();
         }
     }
 

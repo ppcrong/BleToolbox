@@ -31,6 +31,7 @@ import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.battery.BleBatteryManager;
 import com.ppcrong.bletoolbox.csc.CscActivity;
 import com.ppcrong.bletoolbox.eventbus.BleEvents;
+import com.ppcrong.bletoolbox.htm.HtmActivity;
 import com.ppcrong.bletoolbox.rsc.RscActivity;
 import com.ppcrong.bletoolbox.uart.log.LogManager;
 import com.ppcrong.utils.MiscUtils;
@@ -250,9 +251,10 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
                 R.drawable.ic_menu_bluetooth_connected : R.drawable.ic_menu_bluetooth_white;
         item.setIcon(btIcon);
 
-        // Settings item (for CSC, OTA, HTM)
+        // Settings item (for CSC, RSC, HTM)
         item = menu.findItem(R.id.action_settings);
-        if (this instanceof CscActivity || this instanceof RscActivity) {
+        if (this instanceof CscActivity || this instanceof RscActivity ||
+                this instanceof HtmActivity) {
             item.setVisible(true);
         } else {
             item.setVisible(false);
@@ -291,6 +293,8 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
                     intent.putExtra(SettingsActivity.SETTINGS_TITLE, getString(R.string.csc_settings_title));
                 } else if (this instanceof RscActivity) {
                     intent.putExtra(SettingsActivity.SETTINGS_TITLE, getString(R.string.rsc_settings_title));
+                } else if (this instanceof HtmActivity) {
+                    intent.putExtra(SettingsActivity.SETTINGS_TITLE, getString(R.string.hts_settings_title));
                 }
                 MiscUtils.startSafeIntent(this, intent);
                 break;

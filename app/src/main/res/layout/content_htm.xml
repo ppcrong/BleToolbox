@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".htm.HtmActivity"
+    tools:showIn="@layout/activity_htm">
+
+    <include layout="@layout/content_ble_base_info"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:gravity="center"
+            android:text="@string/hts_feature_title_long"
+            android:textColor="#FFFFFF"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/tv_hts_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:ellipsize="end"
+                android:freezesText="true"
+                android:maxLines="1"
+                android:text="@string/not_available_value"
+                android:textSize="80sp"/>
+
+            <TextView
+                android:id="@+id/tv_hts_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/tv_hts_value"
+                android:text="@string/hts_unit_celsius"
+                android:textSize="30sp"/>
+
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>
