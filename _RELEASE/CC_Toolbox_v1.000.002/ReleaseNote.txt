@@ -1,0 +1,12 @@
+[CC_Toolbox_v1.000.002]
+  1. Add P2 features (RSC, BPM, HTM)
+  2. Update gradle to 3.3.2.
+[CC_Toolbox_v1.000.001]
+  1. Add UART.
+  2. Add "About" for OTA, CSC, HRM, UART and Main Feature.
+  3. Add Settings for CSC.
+  4. Add Menu for all features.
+  5. Upgrade gradle to 3.3.2.
+[CC_Toolbox_v1.000.000]
+  1. 1st formal release.
+  2. Current scope includes CSC, HRM and OTA.
