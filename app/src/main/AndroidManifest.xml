@@ -158,6 +158,21 @@
                 <category android:name="com.ppcrong.bletoolbox.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <!-- BGM -->
+        <activity
+            android:name=".gls.GlucoseActivity"
+            android:icon="@drawable/ic_feature_bgm"
+            android:label="@string/gls_feature_title"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="com.ppcrong.bletoolbox.LAUNCHER"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
