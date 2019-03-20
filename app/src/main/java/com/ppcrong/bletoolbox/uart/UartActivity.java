@@ -353,7 +353,7 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
 
             // Depending on whether the characteristic has the WRITE REQUEST property or not, we will either send it as it is (hoping the long write is implemented),
             // or divide it into up to 20 bytes chunks and send them one by one.
-            final boolean writeRequest = isCccWritable(getMustCccs().FilterCcc2);
+            final boolean writeRequest = isCccWritable(getMustCccs2().FilterCcc2);
             KLog.i("writeRequest: " + writeRequest);
             KLog.i("text.length: " + text.length());
 

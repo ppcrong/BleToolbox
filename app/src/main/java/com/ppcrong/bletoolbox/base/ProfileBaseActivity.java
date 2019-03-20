@@ -72,7 +72,8 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     private Observable<RxBleConnection> mConnectionObservable;
     private PublishSubject<Boolean> disconnectTriggerSubject = PublishSubject.create();
     CopyOnWriteArrayList<RxBleDevice> mSelectedDevices = new CopyOnWriteArrayList<>();
-    private MustCccs mMustCccs;
+    private MustCccs2 mMustCccs2;
+    private MustCccs3 mMustCccs3;
 
     /**
      * Show Detail Log
@@ -397,13 +398,34 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     }
 
     /**
-     * Get MustCccs which has filterUUID and filterUUID2 (also battery)
+     * The 3nd CCC UUID is used (with filter service UUID) to make sure device that does have such CCC.
+     * <br/>
+     * This API is used for the profile needs 3 must CCCs, like BGM
      *
-     * @return MustCccs
+     * @return the required ccc UUID or <code>null</code>
      */
-    protected MustCccs getMustCccs() {
+    protected UUID getFilterCccUUID3() {
+        return null;
+    }
 
-        return mMustCccs;
+    /**
+     * Get MustCccs2 which has filterUUID and filterUUID2
+     *
+     * @return MustCccs2
+     */
+    protected MustCccs2 getMustCccs2() {
+
+        return mMustCccs2;
+    }
+
+    /**
+     * Get MustCccs3 which has filterUUID and filterUUID2 and filterUUID3
+     *
+     * @return MustCccs3
+     */
+    protected MustCccs3 getMustCccs3() {
+
+        return mMustCccs3;
     }
 
     /**
@@ -657,20 +679,43 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     }
 
     /**
-     * Must have 2 or 3 Characteristics
+     * Must have 2 Characteristics
      * <br/>
-     * 1. Filter CCC with notification
+     * 1. Filter CCC
      * <br/>
      * 2. Filter CCC2
      */
-    public class MustCccs {
+    public class MustCccs2 {
 
         public BluetoothGattCharacteristic FilterCcc;
         public BluetoothGattCharacteristic FilterCcc2;
 
-        public MustCccs(BluetoothGattCharacteristic filterCcc, BluetoothGattCharacteristic filterCcc2) {
+        public MustCccs2(BluetoothGattCharacteristic filterCcc, BluetoothGattCharacteristic filterCcc2) {
             FilterCcc = filterCcc;
             FilterCcc2 = filterCcc2;
+        }
+    }
+
+    /**
+     * Must have 3 Characteristics
+     * <br/>
+     * 1. Filter CCC
+     * <br/>
+     * 2. Filter CCC2
+     * <br/>
+     * 3. Filter CCC3
+     */
+    public class MustCccs3 {
+
+        public BluetoothGattCharacteristic FilterCcc;
+        public BluetoothGattCharacteristic FilterCcc2;
+        public BluetoothGattCharacteristic FilterCcc3;
+
+        public MustCccs3(BluetoothGattCharacteristic filterCcc,
+                         BluetoothGattCharacteristic filterCcc2, BluetoothGattCharacteristic filterCcc3) {
+            FilterCcc = filterCcc;
+            FilterCcc2 = filterCcc2;
+            FilterCcc3 = filterCcc3;
         }
     }
 
@@ -679,24 +724,49 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         // When svc discovered, get filter ccc/ccc2 and battery ccc
         if (isConnected()) {
 
-            if (getFilterCccUUID2() == null) {
+            if (getFilterCccUUID() != null) {
 
-                KLog.i("2nd CCC UUID is null");
-                mConnectionObservable
-                        .flatMapSingle(rxBleConnection -> services.getCharacteristic(getFilterCccUUID()))
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(this::onMustCccGet, this::onConnectionFailure);
+                KLog.i("1st UUID is NOT null");
+
+                if (getFilterCccUUID2() != null) {
+
+                    KLog.i("2nd UUID is NOT null");
+
+                    if (getFilterCccUUID3() != null) {
+
+                        KLog.i("3rd UUID is NOT null");
+                        mConnectionObservable
+                                .firstOrError()
+                                .flatMap(rxBleConnection -> Single.zip(
+                                        services.getCharacteristic(getFilterCccUUID()),
+                                        services.getCharacteristic(getFilterCccUUID2()),
+                                        services.getCharacteristic(getFilterCccUUID3()),
+                                        MustCccs3::new))
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(this::onMustCccs3Get, this::onConnectionFailure);
+                    } else {
+
+                        KLog.i("3rd UUID is null");
+                        mConnectionObservable
+                                .firstOrError()
+                                .flatMap(rxBleConnection -> Single.zip(
+                                        services.getCharacteristic(getFilterCccUUID()),
+                                        services.getCharacteristic(getFilterCccUUID2()),
+                                        MustCccs2::new))
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .subscribe(this::onMustCccs2Get, this::onConnectionFailure);
+                    }
+                } else {
+
+                    KLog.i("2nd UUID is null");
+                    mConnectionObservable
+                            .flatMapSingle(rxBleConnection -> services.getCharacteristic(getFilterCccUUID()))
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(this::onMustCccGet, this::onConnectionFailure);
+                }
             } else {
 
-                KLog.i("2nd CCC UUID is NOT null");
-                mConnectionObservable
-                        .firstOrError()
-                        .flatMap(rxBleConnection -> Single.zip(
-                                services.getCharacteristic(getFilterCccUUID()),
-                                services.getCharacteristic(getFilterCccUUID2()),
-                                MustCccs::new))
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(this::onMustCccsGet, this::onConnectionFailure);
+                KLog.i("1st UUID is null");
             }
         }
     }
@@ -782,23 +852,6 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     }
 
     /**
-     * When MUST filter CCC and CCC2  are GET!!!
-     *
-     * @param mustCccs
-     */
-    private void onMustCccsGet(MustCccs mustCccs) {
-
-        KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
-                Calendar.getInstance().getTimeInMillis(), "Primary and Secondary services found"));
-
-        mMustCccs = mustCccs;
-
-        showCccLog(mustCccs);
-
-        readBattery();
-    }
-
-    /**
      * When MUST filter CCC is GET!!!
      *
      * @param ccc
@@ -806,11 +859,45 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     private void onMustCccGet(BluetoothGattCharacteristic ccc) {
 
         KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
-                Calendar.getInstance().getTimeInMillis(), "Primary service found"));
+                Calendar.getInstance().getTimeInMillis(), "1st CCC found"));
 
-        mMustCccs = new MustCccs(ccc, null);
+        mMustCccs2 = new MustCccs2(ccc, null);
 
-        showCccLog(mMustCccs);
+        showCccLog(mMustCccs2);
+
+        readBattery();
+    }
+
+    /**
+     * When MUST filter CCC and CCC2 are GET!!!
+     *
+     * @param mustCccs2
+     */
+    private void onMustCccs2Get(MustCccs2 mustCccs2) {
+
+        KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
+                Calendar.getInstance().getTimeInMillis(), "1st and 2nd CCCs found"));
+
+        mMustCccs2 = mustCccs2;
+
+        showCccLog(mustCccs2);
+
+        readBattery();
+    }
+
+    /**
+     * When MUST filter CCC and CCC2 and CCC3 are GET!!!
+     *
+     * @param mustCccs3
+     */
+    private void onMustCccs3Get(MustCccs3 mustCccs3) {
+
+        KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
+                Calendar.getInstance().getTimeInMillis(), "1st and 2nd and 3rd CCCs found"));
+
+        mMustCccs3 = mustCccs3;
+
+        showCccLog(mustCccs3);
 
         readBattery();
     }
@@ -818,15 +905,31 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     /**
      * Show log to print filter CCC and CCC2 UUIDs
      *
-     * @param mustCccs
+     * @param mustCccs2
      */
-    private void showCccLog(MustCccs mustCccs) {
+    private void showCccLog(MustCccs2 mustCccs2) {
 
-        UUID filterCcc = mustCccs.FilterCcc != null ? mustCccs.FilterCcc.getUuid() : null;
-        UUID filterCcc2 = mustCccs.FilterCcc2 != null ? mustCccs.FilterCcc2.getUuid() : null;
+        UUID filterCcc = mustCccs2.FilterCcc != null ? mustCccs2.FilterCcc.getUuid() : null;
+        UUID filterCcc2 = mustCccs2.FilterCcc2 != null ? mustCccs2.FilterCcc2.getUuid() : null;
 
         KLog.i("GET===" + filterCcc + "===");
         KLog.i("GET===" + filterCcc2 + "===");
+    }
+
+    /**
+     * Show log to print filter CCC and CCC2 and CCC3 UUIDs
+     *
+     * @param mustCccs3
+     */
+    private void showCccLog(MustCccs3 mustCccs3) {
+
+        UUID filterCcc = mustCccs3.FilterCcc != null ? mustCccs3.FilterCcc.getUuid() : null;
+        UUID filterCcc2 = mustCccs3.FilterCcc2 != null ? mustCccs3.FilterCcc2.getUuid() : null;
+        UUID filterCcc3 = mustCccs3.FilterCcc3 != null ? mustCccs3.FilterCcc3.getUuid() : null;
+
+        KLog.i("GET===" + filterCcc + "===");
+        KLog.i("GET===" + filterCcc2 + "===");
+        KLog.i("GET===" + filterCcc3 + "===");
     }
 
     private void readBattery() {
