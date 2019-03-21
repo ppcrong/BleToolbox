@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".csc.CscActivity"
+    tools:context=".rsc.RscActivity"
     tools:showIn="@layout/activity_rsc">
 
     <include layout="@layout/content_ble_base_info"/>
