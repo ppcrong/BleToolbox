@@ -83,7 +83,7 @@ public class GlucoseActivity extends ExpandableListActivity {
             return true;
         });
         MenuInflater inflater = menu.getMenuInflater();
-        inflater.inflate(R.menu.menu_gls, menu.getMenu());
+        inflater.inflate(R.menu.menu_gls_more, menu.getMenu());
         menu.show();
     }
 
