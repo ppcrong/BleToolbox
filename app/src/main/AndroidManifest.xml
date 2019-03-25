@@ -173,6 +173,21 @@
                 <category android:name="com.ppcrong.bletoolbox.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <!-- BGM -->
+        <activity
+            android:name=".cgms.CgmsActivity"
+            android:icon="@drawable/ic_feature_cgms"
+            android:label="@string/cgms_feature_title"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="com.ppcrong.bletoolbox.LAUNCHER"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
