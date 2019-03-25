@@ -374,16 +374,6 @@ public class GlucoseActivity extends ExpandableListActivity {
     }
 
     @Override
-    protected void onFilterCccNotified(byte[] bytes) {
-        super.onFilterCccNotified(bytes);
-    }
-
-    @Override
-    protected void onFilterCccIndicated(byte[] bytes) {
-        super.onFilterCccIndicated(bytes);
-    }
-
-    @Override
     protected UUID getFilterSvcUUID() {
         return GlucoseManager.GLS_SERVICE_UUID;
     }
