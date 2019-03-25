@@ -697,6 +697,7 @@ public class GlucoseActivity extends ExpandableListActivity {
             case CONNECTED:
                 break;
             case DISCONNECTED:
+                setOperationInProgress(false);
                 break;
             case DISCONNECTING:
                 break;
