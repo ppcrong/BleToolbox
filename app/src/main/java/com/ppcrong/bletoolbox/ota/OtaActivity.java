@@ -1,9 +1,13 @@
 package com.ppcrong.bletoolbox.ota;
 
 import android.app.ActivityManager;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -18,9 +22,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.folderselector.FileChooserDialog;
-import com.ppcrong.bletoolbox.R;
 import com.ppcrong.blescanner.BleScanner;
 import com.ppcrong.blescanner.ScannerFragment;
+import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.base.AppHelpFragment;
 import com.ppcrong.otalib.OtaLib;
 import com.ppcrong.otalib.ota.OtaService;
@@ -44,6 +48,10 @@ import butterknife.OnClick;
 
 public class OtaActivity extends AppCompatActivity implements FileChooserDialog.FileCallback,
         ScannerFragment.OnDeviceSelectedListener {
+
+    // region [Constant]
+    protected static final int REQUEST_ENABLE_BT = 2;
+    // endregion [Constant]
 
     // region [Variable]
     private String mFilePath;
@@ -122,6 +130,11 @@ public class OtaActivity extends AppCompatActivity implements FileChooserDialog.
         super.onCreate(savedInstanceState);
 
         KLog.d();
+
+        ensureBLESupported();
+        if (!isBLEEnabled()) {
+            showBLEDialog();
+        }
 
         initView();
     }
@@ -203,6 +216,17 @@ public class OtaActivity extends AppCompatActivity implements FileChooserDialog.
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == REQUEST_ENABLE_BT && resultCode == RESULT_OK) {
+        } else if (requestCode == REQUEST_ENABLE_BT) {
+            Toast.makeText(this, R.string.bt_not_enabled, Toast.LENGTH_SHORT).show();
+            KLog.d("Finish activity");
+            finish();
+        }
+    }
     // endregion [Life Cycle]
 
     // region [Private Function]
@@ -415,6 +439,26 @@ public class OtaActivity extends AppCompatActivity implements FileChooserDialog.
         }
         return false;
     }
+
+    // region [BLE]
+    private void ensureBLESupported() {
+        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+            Toast.makeText(this, R.string.no_ble, Toast.LENGTH_LONG).show();
+            finish();
+        }
+    }
+
+    protected boolean isBLEEnabled() {
+        final BluetoothManager bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        final BluetoothAdapter adapter = bluetoothManager.getAdapter();
+        return adapter != null && adapter.isEnabled();
+    }
+
+    protected void showBLEDialog() {
+        final Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+    }
+    // endregion [BLE]
     // endregion [Private Function]
 
     // region [Callback]
