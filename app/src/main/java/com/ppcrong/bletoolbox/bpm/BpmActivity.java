@@ -50,26 +50,34 @@ public class BpmActivity extends ProfileBaseActivity {
     @Override
     protected void onPreWorkDone() {
 
-        // Enable ICP notification, then enable BPM indication
-        setupCccNotification(getFilterCccUUID(), this::onIcpNotificationSetupDone);
+        // Enable BPM indication
+        setupCccIndication(getFilterCccUUID(), this::onBpmNotificationSetupDone);
     }
 
-    private void onIcpNotificationSetupDone(Observable<byte[]> observable) {
+    private void onBpmNotificationSetupDone(Observable<byte[]> observable) {
 
-        // Enable BPM indication
-        setupCccIndication(getFilterCccUUID2());
+        // If optional ICP exists, enable its notification
+        if (null != getOptionalCccs2() && null != getOptionalCccs2().OptionalCcc) {
+
+            // Enable ICP notification
+            setupCccNotification(getOptionalCccUUID());
+        }
     }
 
     @Override
     protected void onFilterCccNotified(byte[] bytes) {
         super.onFilterCccNotified(bytes);
-        parseBPMValue(getFilterCccUUID(), bytes);
+
+        // ICP
+        parseBPMValue(getOptionalCccUUID(), bytes);
     }
 
     @Override
     protected void onFilterCccIndicated(byte[] bytes) {
         super.onFilterCccIndicated(bytes);
-        parseBPMValue(getFilterCccUUID2(), bytes);
+
+        // BPM
+        parseBPMValue(getFilterCccUUID(), bytes);
     }
 
     @Override
@@ -79,12 +87,12 @@ public class BpmActivity extends ProfileBaseActivity {
 
     @Override
     protected UUID getFilterCccUUID() {
-        return BpmManager.ICP_CHARACTERISTIC_UUID;
+        return BpmManager.BPM_CHARACTERISTIC_UUID;
     }
 
     @Override
-    protected UUID getFilterCccUUID2() {
-        return BpmManager.BPM_CHARACTERISTIC_UUID;
+    protected UUID getOptionalCccUUID() {
+        return BpmManager.ICP_CHARACTERISTIC_UUID;
     }
 
     @Override

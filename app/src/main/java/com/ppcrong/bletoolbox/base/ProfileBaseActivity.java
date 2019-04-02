@@ -74,6 +74,8 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     CopyOnWriteArrayList<RxBleDevice> mSelectedDevices = new CopyOnWriteArrayList<>();
     private MustCccs2 mMustCccs2;
     private MustCccs3 mMustCccs3;
+    private OptionalCccs2 mOptionalCccs2;
+    private OptionalCccs3 mOptionalCccs3;
 
     /**
      * Show Detail Log
@@ -429,6 +431,37 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     }
 
     /**
+     * Get OptionalCccs2
+     *
+     * @return OptionalCccs2
+     */
+    protected OptionalCccs2 getOptionalCccs2() {
+
+        return mOptionalCccs2;
+    }
+
+    /**
+     * Get OptionalCccs3
+     *
+     * @return OptionalCccs3
+     */
+    protected OptionalCccs3 getOptionalCccs3() {
+
+        return mOptionalCccs3;
+    }
+
+    /**
+     * The optional CCC UUID is used (with filter service UUID) to make sure device that does have such CCC.
+     * <br/>
+     * This API is used for the profile like BPM's ICP CCC.
+     *
+     * @return the optional ccc UUID or <code>null</code>
+     */
+    protected UUID getOptionalCccUUID() {
+        return null;
+    }
+
+    /**
      * Returns the string resource id that will be shown in About box
      *
      * @return the about resource id
@@ -719,6 +752,49 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         }
     }
 
+    /**
+     * Optional 2 Characteristics
+     * <br/>
+     * 1. CCC
+     * <br/>
+     * 2.  CCC2
+     */
+    public class OptionalCccs2 {
+
+        public BluetoothGattCharacteristic OptionalCcc;
+        public BluetoothGattCharacteristic OptionalCcc2;
+
+        public OptionalCccs2(BluetoothGattCharacteristic optionalCcc,
+                             BluetoothGattCharacteristic optionalCcc2) {
+            OptionalCcc = optionalCcc;
+            OptionalCcc2 = optionalCcc2;
+        }
+    }
+
+    /**
+     * Optional 3 Characteristics
+     * <br/>
+     * 1. CCC
+     * <br/>
+     * 2.  CCC2
+     * <br/>
+     * 2.  CCC2
+     */
+    public class OptionalCccs3 {
+
+        public BluetoothGattCharacteristic OptionalCcc;
+        public BluetoothGattCharacteristic OptionalCcc2;
+        public BluetoothGattCharacteristic OptionalCcc3;
+
+        public OptionalCccs3(BluetoothGattCharacteristic optionalCcc,
+                             BluetoothGattCharacteristic optionalCcc2,
+                             BluetoothGattCharacteristic optionalCcc3) {
+            OptionalCcc = optionalCcc;
+            OptionalCcc2 = optionalCcc2;
+            OptionalCcc3 = optionalCcc3;
+        }
+    }
+
     private void onSvcDiscovered(RxBleDeviceServices services) {
 
         // When svc discovered, get filter ccc/ccc2 and battery ccc
@@ -767,6 +843,15 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
             } else {
 
                 KLog.i("1st UUID is null");
+            }
+
+            // If optional ccc isn't null, get it
+            if (null != getOptionalCccUUID()) {
+                KLog.i("Optional UUID is NOT null");
+                mConnectionObservable
+                        .flatMapSingle(rxBleConnection -> services.getCharacteristic(getOptionalCccUUID()))
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(this::onOptionalCccGet, this::onConnectionFailure);
             }
         }
     }
@@ -903,6 +988,23 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     }
 
     /**
+     * When OPTIONAL CCC is GET!!!
+     *
+     * @param ccc
+     */
+    private void onOptionalCccGet(BluetoothGattCharacteristic ccc) {
+
+        KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
+                Calendar.getInstance().getTimeInMillis(), "Optional CCC found"));
+
+        mOptionalCccs2 = new OptionalCccs2(ccc, null);
+
+        showCccLog(mOptionalCccs2);
+
+        readBattery();
+    }
+
+    /**
      * Show log to print filter CCC and CCC2 UUIDs
      *
      * @param mustCccs2
@@ -930,6 +1032,20 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         KLog.i("GET===" + filterCcc + "===");
         KLog.i("GET===" + filterCcc2 + "===");
         KLog.i("GET===" + filterCcc3 + "===");
+    }
+
+    /**
+     * Show log to print optoinal CCC and CCC2 UUIDs
+     *
+     * @param optionalCccs2
+     */
+    private void showCccLog(OptionalCccs2 optionalCccs2) {
+
+        UUID ccc = optionalCccs2.OptionalCcc != null ? optionalCccs2.OptionalCcc.getUuid() : null;
+        UUID ccc2 = optionalCccs2.OptionalCcc2 != null ? optionalCccs2.OptionalCcc2.getUuid() : null;
+
+        KLog.i("GET===" + ccc + "=== (Optional)");
+        KLog.i("GET===" + ccc2 + "=== (Optional)");
     }
 
     private void readBattery() {
@@ -1028,7 +1144,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     protected void setupCccIndication(final UUID uuid,
                                       final Consumer<Observable<byte[]>> doOnNext) {
 
-        setupCccNotification(uuid, doOnNext,
+        setupCccIndication(uuid, doOnNext,
                 this::onFilterCccIndicationReceived, this::onCccIndicationSetupFailure);
     }
 
@@ -1048,7 +1164,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
                     .flatMap(rxBleConnection ->
                             rxBleConnection.setupIndication(uuid))
                     .doOnNext(doOnNext)
-                    .flatMap(notificationObservable -> notificationObservable)
+                    .flatMap(indicationObservable -> indicationObservable)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(onIndicated, onError);
         }
