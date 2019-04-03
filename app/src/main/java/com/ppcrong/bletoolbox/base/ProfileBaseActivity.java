@@ -1000,8 +1000,6 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         mOptionalCccs2 = new OptionalCccs2(ccc, null);
 
         showCccLog(mOptionalCccs2);
-
-        readBattery();
     }
 
     /**

@@ -122,8 +122,8 @@ public class GlucoseActivity extends ExpandableListActivity {
         KLog.i();
 
         // (1) Enable GM notification
-        // (2) Enable GM_CONTEXT notification
-        // (3) Enable RACP indication
+        // (2) Enable RACP indication
+        // (3) Enable GM_CONTEXT notification
         setupCccNotification(getFilterCccUUID(), this::onGmNotificationSetupDone,
                 this::onGmNotified, this::onGmNotifiedFailure);
     }
@@ -133,24 +133,27 @@ public class GlucoseActivity extends ExpandableListActivity {
         KLog.i();
 
         // (1) Enable GM notification
-        // (2) Enable GM_CONTEXT notification
-        // (3) Enable RACP indication
-        setupCccNotification(getFilterCccUUID2(), this::onGmContextNotificationSetupDone,
-                this::onGmContextNotified, this::onGmContextNotifiedFailure);
-    }
-
-    private void onGmContextNotificationSetupDone(Observable<byte[]> observable) {
-
-        KLog.i();
-
-        // (1) Enable GM notification
-        // (2) Enable GM_CONTEXT notification
-        // (3) Enable RACP indication
-        setupCccIndication(getFilterCccUUID3(), this::onRcapIndicationSetupDone,
+        // (2) Enable RACP indication
+        // (3) Enable GM_CONTEXT notification
+        setupCccIndication(getFilterCccUUID2(), this::onRcapIndicationSetupDone,
                 this::onRcapIndicated, this::onRcapIndicatedFailure);
     }
 
     private void onRcapIndicationSetupDone(Observable<byte[]> observable) {
+
+        KLog.i();
+
+        // If optional GM_CONTEXT exists, enable notification
+        if (null != getOptionalCccs2() && null != getOptionalCccs2().OptionalCcc) {
+            // (1) Enable GM notification
+            // (2) Enable RACP indication
+            // (3) Enable GM_CONTEXT notification
+            setupCccNotification(getOptionalCccUUID(), this::onGmContextNotificationSetupDone,
+                    this::onGmContextNotified, this::onGmContextNotifiedFailure);
+        }
+    }
+
+    private void onGmContextNotificationSetupDone(Observable<byte[]> observable) {
 
         KLog.i();
     }
@@ -356,6 +359,7 @@ public class GlucoseActivity extends ExpandableListActivity {
 
     private void onRequestRecordsWriteFailure(Throwable throwable) {
 
+        KLog.i();
     }
 
     private void onGmNotifiedFailure(Throwable throwable) {
@@ -363,12 +367,12 @@ public class GlucoseActivity extends ExpandableListActivity {
         KLog.i();
     }
 
-    private void onGmContextNotifiedFailure(Throwable throwable) {
+    private void onRcapIndicatedFailure(Throwable throwable) {
 
         KLog.i();
     }
 
-    private void onRcapIndicatedFailure(Throwable throwable) {
+    private void onGmContextNotifiedFailure(Throwable throwable) {
 
         KLog.i();
     }
@@ -385,12 +389,12 @@ public class GlucoseActivity extends ExpandableListActivity {
 
     @Override
     protected UUID getFilterCccUUID2() {
-        return GlucoseManager.GM_CONTEXT_CHARACTERISTIC;
+        return GlucoseManager.RACP_CHARACTERISTIC;
     }
 
     @Override
-    protected UUID getFilterCccUUID3() {
-        return GlucoseManager.RACP_CHARACTERISTIC;
+    protected UUID getOptionalCccUUID() {
+        return GlucoseManager.GM_CONTEXT_CHARACTERISTIC;
     }
 
     @Override
@@ -468,7 +472,7 @@ public class GlucoseActivity extends ExpandableListActivity {
      */
     public void getLastRecord() {
 
-        if (null == getMustCccs3() || null == getMustCccs3().FilterCcc3) return;
+        if (null == getMustCccs2() || null == getMustCccs2().FilterCcc2) return;
 
         clear();
         onOperationStarted();
@@ -495,7 +499,7 @@ public class GlucoseActivity extends ExpandableListActivity {
      */
     public void getFirstRecord() {
 
-        if (null == getMustCccs3() || null == getMustCccs3().FilterCcc3) return;
+        if (null == getMustCccs2() || null == getMustCccs2().FilterCcc2) return;
 
         clear();
         onOperationStarted();
@@ -524,7 +528,7 @@ public class GlucoseActivity extends ExpandableListActivity {
      */
     public void getAllRecords() {
 
-        if (null == getMustCccs3() || null == getMustCccs3().FilterCcc3) return;
+        if (null == getMustCccs2() || null == getMustCccs2().FilterCcc2) return;
 
         clear();
         onOperationStarted();
@@ -556,7 +560,7 @@ public class GlucoseActivity extends ExpandableListActivity {
      */
     public void refreshRecords() {
 
-        if (null == getMustCccs3() || null == getMustCccs3().FilterCcc3) return;
+        if (null == getMustCccs2() || null == getMustCccs2().FilterCcc2) return;
 
         if (mRecords.size() == 0) {
             getAllRecords();
@@ -587,7 +591,7 @@ public class GlucoseActivity extends ExpandableListActivity {
      */
     public void abort() {
 
-        if (null == getMustCccs3() || null == getMustCccs3().FilterCcc3) return;
+        if (null == getMustCccs2() || null == getMustCccs2().FilterCcc2) return;
 
         mAbort = true;
         writeCcc(GlucoseManager.RACP_CHARACTERISTIC,
@@ -612,7 +616,7 @@ public class GlucoseActivity extends ExpandableListActivity {
      */
     public void deleteAllRecords() {
 
-        if (null == getMustCccs3() || null == getMustCccs3().FilterCcc3) return;
+        if (null == getMustCccs2() || null == getMustCccs2().FilterCcc2) return;
 
         clear();
         onOperationStarted();
