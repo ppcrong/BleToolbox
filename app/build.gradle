@@ -10,8 +10,8 @@ android {
         applicationId 'com.cloudchip.bletoolbox'
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 1903111200
-        versionName "1.000.002"
+        versionCode 1904101400
+        versionName "1.000.003"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
