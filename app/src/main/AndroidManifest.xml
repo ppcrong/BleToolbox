@@ -174,7 +174,7 @@
             </intent-filter>
         </activity>
 
-        <!-- BGM -->
+        <!-- CGMS -->
         <activity
             android:name=".cgms.CgmsActivity"
             android:icon="@drawable/ic_feature_cgms"
@@ -185,7 +185,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="com.ppcrong.bletoolbox.LAUNCHER"/>
+                <!--<category android:name="com.ppcrong.bletoolbox.LAUNCHER"/>-->
             </intent-filter>
         </activity>
     </application>
