@@ -10,6 +10,7 @@ import com.polidea.rxandroidble2.helpers.ValueInterpreter;
 import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.base.ProfileBaseActivity;
 import com.ppcrong.bletoolbox.eventbus.BleEvents;
+import com.ppcrong.bletoolbox.parser.RSCMeasurementParser;
 import com.ppcrong.bletoolbox.rsc.settings.RscSettingsFragment;
 import com.socks.library.KLog;
 
@@ -31,13 +32,21 @@ import static com.ppcrong.bletoolbox.rsc.RscManager.WALKING_OR_RUNNING_STATUS_BI
 public class RscActivity extends ProfileBaseActivity {
 
     // region [Variable]
-    /** The last value of a cadence */
+    /**
+     * The last value of a cadence
+     */
     private float mCadence;
-    /** Trip distance in cm */
+    /**
+     * Trip distance in cm
+     */
     private float mDistance;
-    /** Stride length in cm */
+    /**
+     * Stride length in cm
+     */
     private float mStrideLength;
-    /** Number of steps in the trip */
+    /**
+     * Number of steps in the trip
+     */
     private int mStepsNumber;
     private boolean mTaskInProgress;
     private final Handler mHandler = new Handler();
@@ -88,6 +97,8 @@ public class RscActivity extends ProfileBaseActivity {
     @Override
     protected void onFilterCccNotified(byte[] bytes) {
         super.onFilterCccNotified(bytes);
+
+        KLog.i("\"" + RSCMeasurementParser.parse(getMustCccs2().FilterCcc) + "\" received");
 
         // Decode the new data
         int offset = 0;

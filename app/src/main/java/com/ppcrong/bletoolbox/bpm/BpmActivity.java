@@ -7,6 +7,8 @@ import com.polidea.rxandroidble2.helpers.ValueInterpreter;
 import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.base.ProfileBaseActivity;
 import com.ppcrong.bletoolbox.eventbus.BleEvents;
+import com.ppcrong.bletoolbox.parser.BloodPressureMeasurementParser;
+import com.ppcrong.bletoolbox.parser.IntermediateCuffPressureParser;
 import com.socks.library.KLog;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -65,19 +67,23 @@ public class BpmActivity extends ProfileBaseActivity {
     }
 
     @Override
-    protected void onFilterCccNotified(byte[] bytes) {
-        super.onFilterCccNotified(bytes);
-
-        // ICP
-        parseBPMValue(getOptionalCccUUID(), bytes);
-    }
-
-    @Override
     protected void onFilterCccIndicated(byte[] bytes) {
         super.onFilterCccIndicated(bytes);
 
+        KLog.i("\"" + BloodPressureMeasurementParser.parse(getMustCccs2().FilterCcc) + "\" received");
+
         // BPM
         parseBPMValue(getFilterCccUUID(), bytes);
+    }
+
+    @Override
+    protected void onFilterCccNotified(byte[] bytes) {
+        super.onFilterCccNotified(bytes);
+
+        KLog.i("\"" + IntermediateCuffPressureParser.parse(getOptionalCccs2().OptionalCcc) + "\" received");
+
+        // ICP
+        parseBPMValue(getOptionalCccUUID(), bytes);
     }
 
     @Override

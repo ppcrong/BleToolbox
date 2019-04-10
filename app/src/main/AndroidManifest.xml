@@ -185,7 +185,7 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
-                <!--<category android:name="com.ppcrong.bletoolbox.LAUNCHER"/>-->
+                <category android:name="com.ppcrong.bletoolbox.LAUNCHER"/>
             </intent-filter>
         </activity>
     </application>

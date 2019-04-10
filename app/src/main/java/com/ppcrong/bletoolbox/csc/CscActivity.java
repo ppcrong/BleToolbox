@@ -10,6 +10,7 @@ import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.base.ProfileBaseActivity;
 import com.ppcrong.bletoolbox.csc.settings.CscSettingsFragment;
 import com.ppcrong.bletoolbox.eventbus.BleEvents;
+import com.ppcrong.bletoolbox.parser.CSCMeasurementParser;
 import com.socks.library.KLog;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -82,6 +83,8 @@ public class CscActivity extends ProfileBaseActivity {
     @Override
     protected void onFilterCccNotified(byte[] bytes) {
         super.onFilterCccNotified(bytes);
+
+        KLog.i("\"" + CSCMeasurementParser.parse(getMustCccs2().FilterCcc) + "\" received");
 
         // Decode the new data
         int offset = 0;

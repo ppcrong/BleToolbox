@@ -12,6 +12,9 @@ import com.polidea.rxandroidble2.helpers.ValueInterpreter;
 import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.base.ExpandableListActivity;
 import com.ppcrong.bletoolbox.eventbus.BleEvents;
+import com.ppcrong.bletoolbox.parser.GlucoseMeasurementContextParser;
+import com.ppcrong.bletoolbox.parser.GlucoseMeasurementParser;
+import com.ppcrong.bletoolbox.parser.RecordAccessControlPointParser;
 import com.ppcrong.utils.MiscUtils;
 import com.socks.library.KLog;
 
@@ -160,6 +163,8 @@ public class GlucoseActivity extends ExpandableListActivity {
 
     private void onGmNotified(byte[] bytes) {
 
+        KLog.i("\"" + GlucoseMeasurementParser.parse(getMustCccs2().FilterCcc) + "\" received");
+
         int offset = 0;
         final int flags = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_UINT8, offset);
         offset += 1;
@@ -235,6 +240,8 @@ public class GlucoseActivity extends ExpandableListActivity {
 
     private void onGmContextNotified(byte[] bytes) {
 
+        KLog.i("\"" + GlucoseMeasurementContextParser.parse(getOptionalCccs2().OptionalCcc) + "\" received");
+
         int offset = 0;
         final int flags = ValueInterpreter.getIntValue(bytes, ValueInterpreter.FORMAT_UINT8, offset);
         offset += 1;
@@ -303,6 +310,8 @@ public class GlucoseActivity extends ExpandableListActivity {
     }
 
     private void onRcapIndicated(byte[] bytes) {
+
+        KLog.i("\"" + RecordAccessControlPointParser.parse(getMustCccs2().FilterCcc2) + "\" received");
 
         // Record Access Control Point characteristic
         int offset = 0;

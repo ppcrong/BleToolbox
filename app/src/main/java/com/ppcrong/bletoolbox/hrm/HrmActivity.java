@@ -9,8 +9,9 @@ import android.widget.TextView;
 
 import com.polidea.rxandroidble2.helpers.ValueInterpreter;
 import com.ppcrong.bletoolbox.R;
-import com.ppcrong.bletoolbox.eventbus.BleEvents;
 import com.ppcrong.bletoolbox.base.ProfileBaseActivity;
+import com.ppcrong.bletoolbox.eventbus.BleEvents;
+import com.ppcrong.bletoolbox.parser.BodySensorLocationParser;
 import com.socks.library.KLog;
 
 import org.achartengine.GraphicalView;
@@ -109,6 +110,8 @@ public class HrmActivity extends ProfileBaseActivity {
     @Override
     protected void onFilterCccNotified(byte[] bytes) {
         super.onFilterCccNotified(bytes);
+
+        KLog.i("\"" + BodySensorLocationParser.parse(getMustCccs2().FilterCcc) + "\" received");
 
         int hrValue;
         if (isHeartRateInUINT16(bytes[0])) {

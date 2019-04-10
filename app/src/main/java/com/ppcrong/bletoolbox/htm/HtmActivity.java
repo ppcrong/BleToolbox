@@ -10,6 +10,7 @@ import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.base.ProfileBaseActivity;
 import com.ppcrong.bletoolbox.eventbus.BleEvents;
 import com.ppcrong.bletoolbox.htm.settings.HtmSettingsFragment;
+import com.ppcrong.bletoolbox.parser.TemperatureMeasurementParser;
 import com.socks.library.KLog;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -58,6 +59,8 @@ public class HtmActivity extends ProfileBaseActivity {
     @Override
     protected void onFilterCccIndicated(byte[] bytes) {
         super.onFilterCccIndicated(bytes);
+
+        KLog.i("\"" + TemperatureMeasurementParser.parse(getMustCccs2().FilterCcc) + "\" received");
 
         try {
             final double tempValue = decodeTemperature(bytes);
