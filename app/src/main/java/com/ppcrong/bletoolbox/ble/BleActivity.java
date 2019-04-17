@@ -2,6 +2,7 @@ package com.ppcrong.bletoolbox.ble;
 
 import android.bluetooth.BluetoothGattCharacteristic;
 import android.os.Bundle;
+import android.view.WindowManager;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -83,6 +84,20 @@ public class BleActivity extends ProfileBaseActivity {
     protected void onCreateView(Bundle savedInstanceState) {
 
         setContentView(R.layout.activity_ble);
+
+        // Keep screen always on
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        MiscUtils.initWakeLock(this);
+        MiscUtils.acquireWakeLock();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        // Disable screen always on
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        MiscUtils.releaseWakeLock();
     }
 
     @Override
