@@ -188,6 +188,21 @@
                 <category android:name="com.ppcrong.bletoolbox.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <!-- BLE Testing -->
+        <activity
+            android:name=".ble.BleActivity"
+            android:icon="@drawable/ic_menu_bluetooth_white"
+            android:label="@string/ble_feature_title"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="com.ppcrong.bletoolbox.LAUNCHER"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

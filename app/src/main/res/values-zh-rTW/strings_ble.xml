@@ -1,0 +1,10 @@
+<resources>
+    <string name="ble_feature_title">BLE</string>
+    <string name="ble_settings_title">BLE Settings</string>
+    <string name="ble_feature_title_long">BLE Testing</string>
+
+    <string name="ble_repeat_send">Repeat Send</string>
+    <string name="ble_repeat_send_times">times</string>
+    <string name="ble_repeat_send_remind_connect">Please connect a device before switching ON</string>
+    <string name="ble_about_text">General BLE Testing</string>
+</resources>

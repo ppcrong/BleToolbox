@@ -795,7 +795,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         }
     }
 
-    private void onSvcDiscovered(RxBleDeviceServices services) {
+    protected void onSvcDiscovered(RxBleDeviceServices services) {
 
         // When svc discovered, get filter ccc/ccc2 and battery ccc
         if (isConnected()) {
@@ -941,7 +941,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
      *
      * @param ccc
      */
-    private void onMustCccGet(BluetoothGattCharacteristic ccc) {
+    protected void onMustCccGet(BluetoothGattCharacteristic ccc) {
 
         KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
                 Calendar.getInstance().getTimeInMillis(), "1st CCC found"));
@@ -958,7 +958,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
      *
      * @param mustCccs2
      */
-    private void onMustCccs2Get(MustCccs2 mustCccs2) {
+    protected void onMustCccs2Get(MustCccs2 mustCccs2) {
 
         KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
                 Calendar.getInstance().getTimeInMillis(), "1st and 2nd CCCs found"));
@@ -975,7 +975,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
      *
      * @param mustCccs3
      */
-    private void onMustCccs3Get(MustCccs3 mustCccs3) {
+    protected void onMustCccs3Get(MustCccs3 mustCccs3) {
 
         KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
                 Calendar.getInstance().getTimeInMillis(), "1st and 2nd and 3rd CCCs found"));
@@ -992,7 +992,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
      *
      * @param ccc
      */
-    private void onOptionalCccGet(BluetoothGattCharacteristic ccc) {
+    protected void onOptionalCccGet(BluetoothGattCharacteristic ccc) {
 
         KLog.i(LogManager.addLog(LogManager.Level.VERBOSE,
                 Calendar.getInstance().getTimeInMillis(), "Optional CCC found"));
@@ -1046,7 +1046,7 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
         KLog.i("GET===" + ccc2 + "=== (Optional)");
     }
 
-    private void readBattery() {
+    protected void readBattery() {
 
         KLog.i();
 
