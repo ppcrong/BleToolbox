@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
             android:gravity="center"
-            android:text="@string/ahrs_section_ahrs_header"
+            android:text="@string/ahrs_feature_title_long"
             android:textColor="#FFFFFF"/>
 
         <TableLayout
