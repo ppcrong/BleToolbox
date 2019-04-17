@@ -135,7 +135,7 @@ public class BleActivity extends ProfileBaseActivity {
 
         return Observable.create((ObservableOnSubscribe<Integer>) emitter -> {
 
-            int sendtimes = 0;
+            int sendTimes = 0;
 
             do {
 
@@ -143,11 +143,13 @@ public class BleActivity extends ProfileBaseActivity {
                 writeCcc(CcpsManager.CC_CHARACTERISTIC_UUID, new byte[]{0x00, 0x01, 0x02, 0x03},
                         this::onWriteData, this::onWriteError);
 
-                sendtimes++;
-                emitter.onNext(sendtimes);
-                // Delay 10s
-                Thread.sleep(10000);
+                sendTimes++;
+                emitter.onNext(sendTimes);
 
+                // Delay 60s
+                Thread.sleep(60000);
+
+                KLog.i("isConnected: " + isConnected() + ", isChecked: " + mSwitchRepeatSend.isChecked());
             } while (isConnected() && mSwitchRepeatSend.isChecked());
 
             emitter.onComplete();
