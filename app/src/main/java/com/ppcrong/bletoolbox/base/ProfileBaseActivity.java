@@ -364,6 +364,13 @@ public abstract class ProfileBaseActivity extends RxAppCompatActivity implements
     }
 
     /**
+     * Returns the RxBleDevice object of the device that the phone is currently connected to or was connected last time
+     */
+    protected RxBleDevice getRxBleDevice() {
+        return mBleDevice;
+    }
+
+    /**
      * Restores the default UI before reconnecting
      */
     protected void setDefaultUI() {
