@@ -133,7 +133,7 @@ public class BleActivity extends ProfileBaseActivity {
 
     @Override
     protected int getAboutTextId() {
-        return R.string.csc_about_text;
+        return R.string.ble_about_text;
     }
 
     @Override
