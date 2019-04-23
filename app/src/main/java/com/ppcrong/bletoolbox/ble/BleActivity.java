@@ -6,7 +6,6 @@ import android.view.WindowManager;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.polidea.rxandroidble2.RxBleDeviceServices;
 import com.ppcrong.bletoolbox.R;
 import com.ppcrong.bletoolbox.base.ProfileBaseActivity;
 import com.ppcrong.bletoolbox.ccps.CcpsManager;
@@ -18,8 +17,6 @@ import com.socks.library.KLog;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.UUID;
 
 import butterknife.BindView;
@@ -80,11 +77,6 @@ public class BleActivity extends ProfileBaseActivity {
     // endregion [OnCheckChanged]
 
     // region [Override Function]
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
 
     @Override
     protected void onCreateView(Bundle savedInstanceState) {
@@ -188,7 +180,7 @@ public class BleActivity extends ProfileBaseActivity {
     private void onWriteError(Throwable throwable) {
 
         KLog.i(throwable.toString());
-        writeLog(throwable.toString()  + "\n");
+        writeLog(throwable.toString() + "\n");
     }
 
     // region [BLE Connection Log]
@@ -211,7 +203,15 @@ public class BleActivity extends ProfileBaseActivity {
         long timestamp = System.currentTimeMillis();
         sLogConnection.writeLog(getFormattedTime(timestamp) + " ----------END BLE CONNECTION----------\n\n");
         long elapsedTime = timestamp - sStartConnectTimestamp;
-        String elapsedTimeString = new SimpleDateFormat("mm:ss").format(new Date(timestamp - sStartConnectTimestamp));
+//        long elapsedTime = 3l * 24l * 60l * 60l * 1000l + // 3 days
+//                12l * 60l * 60l * 1000l + // 12 hrs
+//                43l * 60l * 1000l + // 43 minutes
+//                55l * 1000l; // 55 seconds
+        long days = elapsedTime / 60l / 60l / 1000l / 24l;
+        long hours = (elapsedTime / 60l / 60l / 1000l) % 24l;
+        long minutes = (elapsedTime / 60l / 1000l) % 60l;
+        long seconds = (elapsedTime / 1000l) % 60l;
+        String elapsedTimeString = String.format("%d day(s), %02d:%02d:%02d", days, hours, minutes, seconds);
         sLogConnection.writeLog(String.format("Elapsed time: %s, %dms\n",
                 elapsedTimeString, elapsedTime));
         KLog.i(String.format(String.format("Elapsed time: %s, %dms\n",
