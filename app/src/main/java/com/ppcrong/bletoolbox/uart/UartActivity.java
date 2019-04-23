@@ -315,7 +315,7 @@ public class UartActivity extends ProfileBaseActivity implements UartInterface,
 
     @Override
     protected UUID getFilterSvcUUID() {
-        return UartManager.UART_SERVICE_UUID;
+        return null; // not used (follow nRF Toolbox)
     }
 
     @Override
