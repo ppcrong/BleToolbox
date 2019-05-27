@@ -211,6 +211,8 @@ public class OtaActivity extends AppCompatActivity implements FileChooserDialog.
         } else if (id == R.id.action_about) {
             final AppHelpFragment fragment = AppHelpFragment.getInstance(R.string.ota_about_text);
             fragment.show(getSupportFragmentManager(), "help_fragment");
+        } else if (id == android.R.id.home) {
+            onBackPressed();
         }
 
         return super.onOptionsItemSelected(item);
@@ -239,6 +241,7 @@ public class OtaActivity extends AppCompatActivity implements FileChooserDialog.
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("CC OTA");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     private void handleMenu(Menu menu) {
