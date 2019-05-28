@@ -78,6 +78,8 @@ public class OtaActivity extends AppCompatActivity implements FileChooserDialog.
     ProgressBar mPbProgress;
     @BindView(R.id.tv_progress)
     TextView mTvProgress;
+    @BindView(R.id.tv_result)
+    TextView mTvResult;
     // endregion [Widget]
 
     // region [String]
@@ -137,6 +139,11 @@ public class OtaActivity extends AppCompatActivity implements FileChooserDialog.
         }
 
         initView();
+
+        // Keep Screen ON
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        MiscUtils.initWakeLock(this);
+        MiscUtils.acquireWakeLock();
     }
 
     @Override
@@ -163,6 +170,10 @@ public class OtaActivity extends AppCompatActivity implements FileChooserDialog.
     protected void onDestroy() {
 
         super.onDestroy();
+
+        // Disable screen always on
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        MiscUtils.releaseWakeLock();
     }
 
     @Override
@@ -359,6 +370,7 @@ public class OtaActivity extends AppCompatActivity implements FileChooserDialog.
         mTvUploading.setVisibility(View.INVISIBLE);
         mBtnSelectFile.setEnabled(true);
         mBtnUpload.setEnabled(true);
+        mTvResult.setText("");
     }
 
     private void clearUI(final boolean clearDevice) {
@@ -410,9 +422,6 @@ public class OtaActivity extends AppCompatActivity implements FileChooserDialog.
     private void startOtaStress(MenuItem item) {
 
         KLog.i("Start OTA Stress Test");
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        MiscUtils.initWakeLock(this);
-        MiscUtils.acquireWakeLock();
 
         /*
          * StressTest init
@@ -426,8 +435,6 @@ public class OtaActivity extends AppCompatActivity implements FileChooserDialog.
     private void stopOtaStress(MenuItem item) {
 
         KLog.i("Stop OTA Stress Test");
-        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        MiscUtils.releaseWakeLock();
 
         OtaLib.stopOtaStressTest();
         item.setTitle("Start Stress Test");
@@ -512,29 +519,22 @@ public class OtaActivity extends AppCompatActivity implements FileChooserDialog.
             mPbProgress.setIndeterminate(true);
             mTvProgress.setText(status);
 
-            if (percent == OtaService.STATUS_START_OTA) {
-
-                showProgressBar();
-            } else if (percent == OtaService.STATUS_DONE) {
-
-                showToast(R.string.ota_done_msg);
-                clearUI();
-            } else if (percent == OtaService.STATUS_BLE_CONNECT_ERROR) {
-
-                showToast(R.string.ota_ble_connect_error);
-                clearUI();
-            } else if (percent == OtaService.STATUS_TIMEOUT_ERROR) {
-
-                showToast(R.string.ota_timeout_error);
-                clearUI();
-            } else if (percent == OtaService.STATUS_OTA_RECONNECT_TOO_MANY_ERROR) {
-
-                showToast(R.string.ota_ota_reconnect_too_many_error);
-                clearUI();
-            } else if (percent == OtaService.STATUS_UNEXPECTED_ERROR) {
-
-                showToast(R.string.ota_unexpected_error);
-                clearUI();
+            switch (percent) {
+                case OtaService.STATUS_START_OTA:
+                    showProgressBar();
+                    break;
+                case OtaService.STATUS_DONE:
+                case OtaService.STATUS_BLE_CONNECT_ERROR:
+                case OtaService.STATUS_TIMEOUT_ERROR:
+                case OtaService.STATUS_OTA_RECONNECT_TOO_MANY_ERROR:
+                case OtaService.STATUS_INIT_FIRMWARE_ERROR:
+                case OtaService.STATUS_UNEXPECTED_ERROR:
+//                    showToast(getFormattedTime(System.currentTimeMillis()) + " " + status);
+                    clearUI();
+                    mTvResult.setText(MiscUtils.getFormattedTime(System.currentTimeMillis()) + " " + status);
+                    break;
+                default:
+                    break;
             }
         }
     }

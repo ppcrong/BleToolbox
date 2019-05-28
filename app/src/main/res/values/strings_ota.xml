@@ -18,6 +18,7 @@
     <string name="ota_success">Application has been transferred successfully.</string>
     <string name="ota_aborted">Uploading of the application has been canceled.</string>
     <string name="ota_stress_test">Start Stress Test</string>
+    <string name="ota_result">RESULT</string>
 
     <!--DFU lib string-->
     <string name="ota_action_abort">Abort</string>
