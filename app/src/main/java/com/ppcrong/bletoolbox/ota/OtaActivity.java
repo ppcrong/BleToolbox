@@ -506,8 +506,10 @@ public class OtaActivity extends AppCompatActivity implements FileChooserDialog.
         OtaProgressInfo info = event.getOtaProgressInfo();
         String uploading = info.getUploading();
         String status = info.getStatus();
+        String error = info.getError();
         int percent = info.getPercentage();
-        KLog.i(String.format("NotifyProgressInfoEvent\nupload: %s\nstatus: %s\npercent:%d%%", uploading, status, percent));
+        KLog.i(String.format("NotifyProgressInfoEvent\nupload: %s\nstatus: %s\npercent:%d%%\nerror: %s",
+                uploading, status, percent, error));
 
         if (0 <= percent && percent <= 100) {
 
@@ -531,7 +533,8 @@ public class OtaActivity extends AppCompatActivity implements FileChooserDialog.
                 case OtaService.STATUS_UNEXPECTED_ERROR:
 //                    showToast(getFormattedTime(System.currentTimeMillis()) + " " + status);
                     clearUI();
-                    mTvResult.setText(MiscUtils.getFormattedTime(System.currentTimeMillis()) + " " + status);
+                    mTvResult.setText(MiscUtils.getFormattedTime(System.currentTimeMillis()) + "\n" +
+                            status + "\n" + error);
                     break;
                 default:
                     break;
