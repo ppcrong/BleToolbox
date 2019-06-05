@@ -1,0 +1,31 @@
+[CC_Toolbox_v1.000.006]
+  1. Support OTA for external flash.
+  2. Add back button for OTA page.
+  3. Show OTA result on UI instead of toast message.
+[CC_Toolbox_v1.000.005]
+  1. For UART feature, remove filter UART characteristic when scanning.
+  2. Add day and hour for BLE Testing elapsed time in log.
+[CC_Toolbox_v1.000.004]
+  1. Add P3 feature CGMS.
+  2. Add feature BLE Testing.
+     (1) BLE Connection.
+     (2) Repeat Send Data.
+     (3) Add testing log for BLE Testing.
+  3. Add parsers for BPM, HRM, CSC, BGM, HTM, RSC.
+[CC_Toolbox_v1.000.003]
+  1. Add P3 feature BGM.
+  2. Fix OTA scan BLE crash when BT is off.
+  3. Support optional characteristic checking rule for BGM and CGMS.
+  4. Correct BPM behavior to treat ICP as optional characteristic.
+[CC_Toolbox_v1.000.002]
+  1. Add P2 features (RSC, BPM, HTM)
+  2. Update gradle to 3.3.2.
+[CC_Toolbox_v1.000.001]
+  1. Add UART.
+  2. Add "About" for OTA, CSC, HRM, UART and Main Feature.
+  3. Add Settings for CSC.
+  4. Add Menu for all features.
+  5. Upgrade gradle to 3.3.2.
+[CC_Toolbox_v1.000.000]
+  1. 1st formal release.
+  2. Current scope includes CSC, HRM and OTA.
