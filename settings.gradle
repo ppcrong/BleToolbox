@@ -11,3 +11,5 @@ include ':unityahrs'
 project(":unityahrs").projectDir = file("../../libs/unityahrs")
 include ':otalib'
 project(":otalib").projectDir = file("../../libs/otalib")
+include ':ccparser'
+project(":ccparser").projectDir = file("../../libs/ccparser")
